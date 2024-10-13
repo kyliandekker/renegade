@@ -1,0 +1,16 @@
+﻿D:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: The intermediate directory (C:\Users\Kylian\source\repos\Renegade\x64\Editor Debug\) contains files shared from another project (Game.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  ExplorerWindow.cpp
+C:\Users\Kylian\source\repos\Renegade\Renegade\external\rapidjson\document.h(15,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  (compiling source file 'src/editor/imgui/windows/ExplorerWindow.cpp')
+  
+C:\Users\Kylian\source\repos\Renegade\Renegade\external\rapidjson\document.h(16,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  (compiling source file 'src/editor/imgui/windows/ExplorerWindow.cpp')
+  
+C:\Users\Kylian\source\repos\Renegade\Renegade\external\rapidjson\document.h(17,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  (compiling source file 'src/editor/imgui/windows/ExplorerWindow.cpp')
+  
+C:\Users\Kylian\source\repos\Renegade\Renegade\include\editor\ExplorerResource.h(58,12): warning C4141: 'virtual': used more than once
+  (compiling source file 'src/editor/imgui/windows/ExplorerWindow.cpp')
+  
+C:\Users\Kylian\source\repos\Renegade\Renegade\include\assets\AssetType.h(87): warning C4702: unreachable code
+  Renegade.vcxproj -> C:\Users\Kylian\source\repos\Renegade\x64\Editor Debug\Renegade.lib

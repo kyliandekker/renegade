@@ -1,0 +1,64 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Renegade", "Renegade\Renegade.vcxproj", "{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "Game\Game.vcxproj", "{DDDCEE36-840C-4000-A493-A3FAEB449B77}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78} = {2DDD1AFB-1CA2-49E0-B424-71EA32448D78}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Editor Debug|x64 = Editor Debug|x64
+		Editor Debug|x86 = Editor Debug|x86
+		Editor Release|x64 = Editor Release|x64
+		Editor Release|x86 = Editor Release|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Debug|x64.ActiveCfg = Debug|x64
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Debug|x64.Build.0 = Debug|x64
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Debug|x86.ActiveCfg = Debug|Win32
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Debug|x86.Build.0 = Debug|Win32
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Editor Debug|x64.ActiveCfg = Editor Debug|x64
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Editor Debug|x64.Build.0 = Editor Debug|x64
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Editor Debug|x86.ActiveCfg = Editor Debug|Win32
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Editor Debug|x86.Build.0 = Editor Debug|Win32
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Editor Release|x64.ActiveCfg = Editor Release|x64
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Editor Release|x64.Build.0 = Editor Release|x64
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Editor Release|x86.ActiveCfg = Editor Release|Win32
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Editor Release|x86.Build.0 = Editor Release|Win32
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Release|x64.ActiveCfg = Release|x64
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Release|x64.Build.0 = Release|x64
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Release|x86.ActiveCfg = Release|Win32
+		{2DDD1AFB-1CA2-49E0-B424-71EA32448D78}.Release|x86.Build.0 = Release|Win32
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Debug|x64.ActiveCfg = Debug|x64
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Debug|x64.Build.0 = Debug|x64
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Debug|x86.ActiveCfg = Debug|Win32
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Debug|x86.Build.0 = Debug|Win32
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Editor Debug|x64.ActiveCfg = Editor Debug|x64
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Editor Debug|x64.Build.0 = Editor Debug|x64
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Editor Debug|x86.ActiveCfg = Editor Debug|Win32
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Editor Debug|x86.Build.0 = Editor Debug|Win32
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Editor Release|x64.ActiveCfg = Editor Release|x64
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Editor Release|x64.Build.0 = Editor Release|x64
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Editor Release|x86.ActiveCfg = Editor Release|Win32
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Editor Release|x86.Build.0 = Editor Release|Win32
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Release|x64.ActiveCfg = Release|x64
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Release|x64.Build.0 = Release|x64
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Release|x86.ActiveCfg = Release|Win32
+		{DDDCEE36-840C-4000-A493-A3FAEB449B77}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F172C5EE-D183-4B41-A81F-AF988949E9A9}
+	EndGlobalSection
+EndGlobal
