@@ -227,8 +227,6 @@ namespace ImGui
 
 	bool EngineResourceNode(const char* id, const char* icon, const char* label, const char* label2, bool& clicked, bool& right_clicked, bool& double_clicked, bool selected, ImVec2 size, ImGuiTreeNodeFlags flags)
 	{
-		ImDrawList* draw_list = ImGui::GetWindowDrawList();
-
 		ImVec2 pos = ImGui::GetCursorScreenPos();
 
 		clicked = ImGui::Selectable(id, &selected);

@@ -58,6 +58,7 @@
     <ClInclude Include="include\editor\imgui\windows\SceneWindow.h" />
     <ClInclude Include="include\editor\ExplorerResource.h" />
     <ClInclude Include="include\graphics\DX12Window.h" />
+    <ClInclude Include="include\graphics\ImgInfo.h" />
     <ClInclude Include="include\graphics\Window.h" />
     <ClInclude Include="include\logger\Logger.h" />
     <ClInclude Include="include\core\System.h" />
@@ -75,6 +76,7 @@
     <ClCompile Include="external\imgui\imgui_stdlib.cpp" />
     <ClCompile Include="external\imgui\imgui_tables.cpp" />
     <ClCompile Include="external\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\graphics\ImgInfo.cpp" />
     <ClCompile Include="src\core\datatypes\Data.cpp" />
     <ClCompile Include="src\core\datatypes\DataStream.cpp" />
     <ClCompile Include="src\core\datatypes\ReserveDataStream.cpp" />

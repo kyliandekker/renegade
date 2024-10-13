@@ -3,8 +3,10 @@
 #include <vector>
 #include <string>
 #include <rapidjson/document.h>
+#include <imgui/imgui.h>
 
 #include "assets/AssetType.h"
+#include "graphics/ImgInfo.h"
 
 #ifdef __EDITOR__
 
@@ -41,6 +43,10 @@ namespace renegade
 			bool m_Show = true;
 			std::vector<ExplorerResource*> m_Parents;
 			ExplorerResourceEditMode m_ResourceEditMode = ExplorerResourceEditMode::None;
+
+			virtual bool Initialize() { return true; };
+			virtual void RenderIcon(const char* icon);
+			void Render(bool& clicked, bool& right_clicked, bool& double_clicked, bool selected, const ImVec2& size, const char* icon, const char* label2);
 
 			bool Scan();
 			bool Rename(const std::string& a_Name);
@@ -80,14 +86,17 @@ namespace renegade
 		class TextureExplorerResource : public ExplorerResource
 		{
 		public:
+			void RenderIcon(const char* icon) override;
+			bool Initialize() override;
+			graphics::ImgInfo m_Image;
 		};
 
-		class SpriteExplorerResource : public ExplorerResource
+		class SpriteExplorerResource : public TextureExplorerResource
 		{
 		public:
 		};
 
-		class FontExplorerResource : public ExplorerResource
+		class FontExplorerResource : public TextureExplorerResource
 		{
 		public:
 		};

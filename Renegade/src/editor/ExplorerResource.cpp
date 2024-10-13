@@ -14,6 +14,9 @@
 #include "core/datatypes/DataStream.h"
 #include "file/FileLoader.h"
 #include "logger/Logger.h"
+#include "core/Engine.h"
+#include "editor/imgui/ImGuiDefines.h"
+#include "utils/string_extensions.h"
 
 namespace fs = std::filesystem;
 
@@ -76,6 +79,31 @@ namespace renegade
 			{
 				delete resource;
 			}
+		}
+
+		void ExplorerResource::RenderIcon(const char* icon)
+		{
+			ImGui::Text(icon);
+		}
+
+		void ExplorerResource::Render(bool& clicked, bool& right_clicked, bool& double_clicked, bool selected, const ImVec2& size, const char* icon, const char* label2)
+		{
+			ImVec2 pos = ImGui::GetCursorScreenPos();
+
+			clicked = ImGui::Selectable(imgui::IMGUI_FORMAT_ID("", SELECTABLE_ID, "RESOURCE_" + string_extensions::StringToUpper(m_Name)).c_str(), &selected);
+			right_clicked = ImGui::IsItemHovered() && ImGui::IsItemClicked(1);
+			double_clicked = ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0);
+
+			ImGui::SetCursorScreenPos(pos);
+			ImGui::SetCursorScreenPos(ImVec2(pos.x + 10, pos.y));
+			RenderIcon(icon);
+			ImGui::SetCursorScreenPos(ImVec2(pos.x + 35, pos.y));
+			ImGui::Text(m_NameWithoutExtension.c_str());
+
+			ImGui::SetCursorScreenPos(ImVec2(pos.x + 300, pos.y));
+			ImVec4 textColor = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+			textColor.w = 0.5f;
+			ImGui::TextColored(textColor, label2);
 		}
 
 		bool ExplorerResource::Scan()
@@ -240,6 +268,7 @@ namespace renegade
 							resource->m_Parent = this;
 							resource->m_ResourceType = ExplorerResourceType::File;
 							resource->m_AssetType = assetType;
+							resource->Initialize();
 							if (hasMetadata)
 							{
 								resource->ProcessMetadata(document);
@@ -367,7 +396,21 @@ namespace renegade
 			}
 			return name;
 		}
-	}
+
+		void TextureExplorerResource::RenderIcon(const char* icon)
+		{
+			//const float width_new = 15;
+			//const float height_new = (m_Image.m_Height * (1.0f / m_Image.m_Width * width_new));
+
+			//ImGui::Image((void*)m_Image.m_Srv_gpu_handle.ptr, ImVec2(width_new, height_new));
+		}
+
+		bool TextureExplorerResource::Initialize()
+		{
+			//return core::ENGINE.GetWindow().GetDX12Window().LoadTexture(m_Path, m_Image);
+			return true;
+		}
+}
 }
 
 #endif // __EDITOR__

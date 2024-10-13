@@ -293,18 +293,7 @@ namespace renegade
 								}
 
 								bool clicked, right_clicked, double_clicked;
-								ImGui::EngineResourceNode(
-									IMGUI_FORMAT_ID("", SELECTABLE_ID, "RESOURCE_" + string_extensions::StringToUpper(item->m_Name) + "_EXPLORER").c_str(),
-									item->m_ResourceType == ExplorerResourceType::Folder ? ICON_FA_FOLDER : RESOURCE_ICONS[(int)item->GetAssetType()].c_str(),
-									item->m_NameWithoutExtension.c_str(),
-									item->m_ResourceType == ExplorerResourceType::Folder ? "" : assets::AssetTypeToString(item->GetAssetType()).c_str(),
-									clicked,
-									right_clicked,
-									double_clicked,
-									false, // TODO: Selected editor resource instance.
-									ImGui::GetContentRegionAvail(),
-									0
-								);
+								item->Render(clicked, right_clicked, double_clicked, false, ImGui::GetContentRegionAvail(), item->m_ResourceType == ExplorerResourceType::Folder ? ICON_FA_FOLDER : RESOURCE_ICONS[(int)item->GetAssetType()].c_str(), item->m_ResourceType == ExplorerResourceType::Folder ? "" : assets::AssetTypeToString(item->GetAssetType()).c_str());
 
 								if (right_clicked)
 								{

@@ -14,6 +14,8 @@ namespace renegade
 {
 	namespace graphics
 	{
+		struct ImgInfo;
+
 		struct FrameContext
 		{
 			ID3D12CommandAllocator* CommandAllocator;
@@ -36,6 +38,8 @@ namespace renegade
 			void CleanupDeviceD3D();
 			bool CleanupTextures();
 			FrameContext* WaitForNextFrameResources();
+
+			bool LoadTexture(const std::string& a_Path, ImgInfo& a_ImgInfo);
 
 			SimpleEvent<> m_OnRenderTargetCreated;
 			SimpleEvent<> m_OnRenderTargetCleaned;
