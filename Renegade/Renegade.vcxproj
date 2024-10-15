@@ -44,6 +44,7 @@
     <ClInclude Include="include\core\Engine.h" />
     <ClInclude Include="include\editor\AssetDatabase.h" />
     <ClInclude Include="include\editor\Editor.h" />
+    <ClInclude Include="include\editor\EditorSelectable.h" />
     <ClInclude Include="include\editor\EditorSettings.h" />
     <ClInclude Include="include\editor\imgui\font_file.h" />
     <ClInclude Include="include\editor\imgui\ImGuiDefines.h" />
@@ -58,8 +59,8 @@
     <ClInclude Include="include\editor\imgui\windows\MainWindow.h" />
     <ClInclude Include="include\editor\imgui\windows\SceneWindow.h" />
     <ClInclude Include="include\editor\ExplorerResource.h" />
+    <ClInclude Include="include\graphics\DescHandle.h" />
     <ClInclude Include="include\graphics\DX12Window.h" />
-    <ClInclude Include="include\graphics\ImgInfo.h" />
     <ClInclude Include="include\graphics\Window.h" />
     <ClInclude Include="include\logger\Logger.h" />
     <ClInclude Include="include\core\System.h" />
@@ -77,7 +78,6 @@
     <ClCompile Include="external\imgui\imgui_stdlib.cpp" />
     <ClCompile Include="external\imgui\imgui_tables.cpp" />
     <ClCompile Include="external\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\graphics\ImgInfo.cpp" />
     <ClCompile Include="src\core\datatypes\Data.cpp" />
     <ClCompile Include="src\core\datatypes\DataStream.cpp" />
     <ClCompile Include="src\core\datatypes\ReserveDataStream.cpp" />
@@ -85,6 +85,7 @@
     <ClCompile Include="src\core\System.cpp" />
     <ClCompile Include="src\editor\AssetDatabase.cpp" />
     <ClCompile Include="src\editor\Editor.cpp" />
+    <ClCompile Include="src\editor\EditorSelectable.cpp" />
     <ClCompile Include="src\editor\EditorSettings.cpp" />
     <ClCompile Include="src\editor\imgui\ImGuiDefines.cpp" />
     <ClCompile Include="src\editor\imgui\ImGuiUIView.cpp" />
@@ -98,6 +99,7 @@
     <ClCompile Include="src\editor\imgui\windows\MainWindow.cpp" />
     <ClCompile Include="src\editor\imgui\windows\SceneWindow.cpp" />
     <ClCompile Include="src\editor\ExplorerResource.cpp" />
+    <ClCompile Include="src\graphics\DescHandle.cpp" />
     <ClCompile Include="src\graphics\DX12Window.cpp" />
     <ClCompile Include="src\graphics\Window.cpp" />
     <ClCompile Include="src\logger\Logger.cpp" />

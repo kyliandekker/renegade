@@ -12,7 +12,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-#include "graphics/ImgInfo.h"
 #include "logger/Logger.h"
 #include "core/datatypes/Data.h"
 
@@ -226,6 +225,23 @@ namespace renegade
 					LOGF(LOGSEVERITY_ERROR, "SRV descriptor heap is null.");
 					return false;
 				}
+
+				for (size_t i = 0; i < NUM_SRV_DESC_HANDLES; i++)
+				{
+					UINT handle_increment = g_pd3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+					DescHandle& handle = m_SrvDescriptorHandles[i];
+					handle.InUse = 0;
+					handle.Index = static_cast<int>(i);
+					handle.CpuHandle = g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart();
+					handle.CpuHandle.ptr += (handle_increment * handle.Index);
+					handle.GpuHandle = g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart();
+					handle.GpuHandle.ptr += (handle_increment * handle.Index);
+				}
+
+#ifdef __EDITOR__
+				m_SrvDescriptorHandles[0].InUse = 1;
+#endif
 			}
 
 			{
@@ -360,7 +376,14 @@ namespace renegade
 
 		bool DX12Window::CleanupTextures()
 		{
-			descriptor_index = 1;
+			int index = 0;
+#ifdef __EDITOR__
+			index = 1;
+#endif
+			for (size_t i = index; i < NUM_SRV_DESC_HANDLES; i++)
+			{
+				m_SrvDescriptorHandles[i].Release();
+			}
 			return true;
 		}
 
@@ -390,25 +413,43 @@ namespace renegade
 			return frameCtx;
 		}
 
-		bool DX12Window::LoadTexture(const std::string& a_Path, ImgInfo& a_ImgInfo)
+		bool DX12Window::LoadTexture(const std::string& a_Path, DescHandle*& a_DescHandle)
 		{
-			UINT handle_increment = g_pd3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-			a_ImgInfo.srv_cpu_handle = g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart();
-			a_ImgInfo.srv_cpu_handle.ptr += (handle_increment * descriptor_index);
-			a_ImgInfo.srv_gpu_handle = g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart();
-			a_ImgInfo.srv_gpu_handle.ptr += (handle_increment * descriptor_index);
+			for (size_t i = 0; i < NUM_SRV_DESC_HANDLES; i++)
+			{
+				if (m_SrvDescriptorHandles[i].Path == a_Path)
+				{
+					a_DescHandle = &m_SrvDescriptorHandles[i];
+					a_DescHandle->InUse++;
+					return true;
+				}
+			}
+
+			for (size_t i = 0; i < NUM_SRV_DESC_HANDLES; i++)
+			{
+				if (m_SrvDescriptorHandles[i].InUse == 0)
+				{
+					a_DescHandle = &m_SrvDescriptorHandles[i];
+					break;
+				}
+			}
+
+			if (a_DescHandle->Invalid())
+			{
+				return false;
+			}
 
 			int texChannels;
-			if (stbi_info(a_Path.c_str(), &a_ImgInfo.m_Width, &a_ImgInfo.m_Height, &texChannels) != 1)
+			if (stbi_info(a_Path.c_str(), &a_DescHandle->Width, &a_DescHandle->Height, &texChannels) != 1)
 			{
 				LOGF(LOGSEVERITY_ERROR, "Could not load texture info '%s'.", a_Path.c_str());
 				return false;
 			}
 
-			core::Data textureData((a_ImgInfo.m_Width * a_ImgInfo.m_Height) * 4);
+			core::Data textureData((a_DescHandle->Width * a_DescHandle->Height) * 4);
 			unsigned char* texPtr = textureData.tdata<unsigned char>();
 
-			texPtr = stbi_load(a_Path.c_str(), &a_ImgInfo.m_Width, &a_ImgInfo.m_Height, &texChannels, STBI_rgb_alpha);
+			texPtr = stbi_load(a_Path.c_str(), &a_DescHandle->Width, &a_DescHandle->Height, &texChannels, STBI_rgb_alpha);
 
 			if (textureData.empty())
 			{
@@ -427,8 +468,8 @@ namespace renegade
 			ZeroMemory(&desc, sizeof(desc));
 			desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 			desc.Alignment = 0;
-			desc.Width = a_ImgInfo.m_Width;
-			desc.Height = a_ImgInfo.m_Height;
+			desc.Width = a_DescHandle->Width;
+			desc.Height = a_DescHandle->Height;
 			desc.DepthOrArraySize = 1;
 			desc.MipLevels = 1;
 			desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -448,8 +489,8 @@ namespace renegade
 			}
 
 			// Create a temporary upload resource to move the data in
-			UINT uploadPitch = (a_ImgInfo.m_Width * 4 + D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1u) & ~(D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1u);
-			UINT uploadSize = a_ImgInfo.m_Height * uploadPitch;
+			UINT uploadPitch = (a_DescHandle->Width * 4 + D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1u) & ~(D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1u);
+			UINT uploadSize = a_DescHandle->Height * uploadPitch;
 			desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
 			desc.Alignment = 0;
 			desc.Width = uploadSize;
@@ -486,9 +527,9 @@ namespace renegade
 				return false;
 			}
 
-			for (int y = 0; y < a_ImgInfo.m_Height; y++)
+			for (int y = 0; y < a_DescHandle->Height; y++)
 			{
-				memcpy((void*)((uintptr_t)mapped + y * uploadPitch), texPtr + y * a_ImgInfo.m_Width * 4, a_ImgInfo.m_Width * 4);
+				memcpy((void*)((uintptr_t)mapped + y * uploadPitch), texPtr + y * a_DescHandle->Width * 4, a_DescHandle->Width * 4);
 			}
 			uploadBuffer->Unmap(0, &range);
 
@@ -497,8 +538,8 @@ namespace renegade
 			srcLocation.pResource = uploadBuffer;
 			srcLocation.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
 			srcLocation.PlacedFootprint.Footprint.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			srcLocation.PlacedFootprint.Footprint.Width = a_ImgInfo.m_Width;
-			srcLocation.PlacedFootprint.Footprint.Height = a_ImgInfo.m_Height;
+			srcLocation.PlacedFootprint.Footprint.Width = a_DescHandle->Width;
+			srcLocation.PlacedFootprint.Footprint.Height = a_DescHandle->Height;
 			srcLocation.PlacedFootprint.Footprint.Depth = 1;
 			srcLocation.PlacedFootprint.Footprint.RowPitch = uploadPitch;
 
@@ -597,12 +638,6 @@ namespace renegade
 				return false;
 			}
 
-			if (a_ImgInfo.srv_cpu_handle.ptr == 0)
-			{
-				LOGF(LOGSEVERITY_ERROR, "SRV CPU descriptor handle is invalid (null).");
-				return false;
-			}
-
 			// Create a shader resource view for the texture
 			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc;
 			ZeroMemory(&srvDesc, sizeof(srvDesc));
@@ -611,12 +646,11 @@ namespace renegade
 			srvDesc.Texture2D.MipLevels = desc.MipLevels;
 			srvDesc.Texture2D.MostDetailedMip = 0;
 			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-			g_pd3dDevice->CreateShaderResourceView(pTexture, &srvDesc, a_ImgInfo.srv_cpu_handle);
+			g_pd3dDevice->CreateShaderResourceView(pTexture, &srvDesc, a_DescHandle->CpuHandle);
 
 			// Return results
-			a_ImgInfo.m_Texture = pTexture;
-
-			descriptor_index++;
+			a_DescHandle->Texture = pTexture;
+			a_DescHandle->InUse++;
 
 			return true;
 		}

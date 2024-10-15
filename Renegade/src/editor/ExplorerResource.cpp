@@ -98,7 +98,7 @@ namespace renegade
 			ImGui::SetCursorScreenPos(ImVec2(pos.x + 10, pos.y));
 			RenderIcon(icon);
 			ImGui::SetCursorScreenPos(ImVec2(pos.x + 35, pos.y));
-			ImGui::Text(m_NameWithoutExtension.c_str());
+			ImGui::Text(m_Name.c_str());
 
 			ImGui::SetCursorScreenPos(ImVec2(pos.x + 300, pos.y));
 			ImVec4 textColor = ImGui::GetStyleColorVec4(ImGuiCol_Text);
@@ -131,13 +131,13 @@ namespace renegade
 				return false;
 			}
 
-			m_Name = string_extensions::GetFileName(m_Path);
-			m_NameWithoutExtension = string_extensions::GetFileWithoutExtension(m_Name);
-
-			if (m_Name.empty())
+			m_NameWithExtension = string_extensions::GetFileName(m_Path);
+			if (m_NameWithExtension.empty())
 			{
-				m_Name = m_Path;
+				m_NameWithExtension = m_Path;
 			}
+
+			m_Name = string_extensions::GetFileWithoutExtension(m_NameWithExtension);
 
 			// This is for the editor so that we can show the path like this: "Root -> Images -> Haan.png"
 			m_Parents = GetParents(*this);
@@ -397,16 +397,27 @@ namespace renegade
 			return name;
 		}
 
+		TextureExplorerResource::~TextureExplorerResource()
+		{
+			if (m_DescHandle)
+			{
+				m_DescHandle->Release();
+			}
+		}
+
 		void TextureExplorerResource::RenderIcon(const char*)
 		{
-			const float width_new = 15;
-			const float height_new = (m_Image.m_Height * (1.0f / m_Image.m_Width * width_new));
-			ImGui::Image((void*)m_Image.srv_gpu_handle.ptr, ImVec2(width_new, height_new));
+			if (!m_DescHandle->Invalid())
+			{
+				const float width_new = 15;
+				const float height_new = (m_DescHandle->Height * (1.0f / m_DescHandle->Width * width_new));
+				ImGui::Image((void*)m_DescHandle->GpuHandle.ptr, ImVec2(width_new, height_new));
+			}
 		}
 
 		bool TextureExplorerResource::Initialize()
 		{
-			if (!core::ENGINE.GetWindow().GetDX12Window().LoadTexture(m_Path, m_Image))
+			if (!core::ENGINE.GetWindow().GetDX12Window().LoadTexture(m_Path, m_DescHandle))
 			{
 				return false;
 			}

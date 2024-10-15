@@ -9,6 +9,8 @@ namespace renegade
 {
 	namespace editor
 	{
+		class EditorSelectable;
+
 		class AssetDatabase : public core::System
 		{
 		public:
@@ -17,6 +19,7 @@ namespace renegade
 
 			bool Scan();
 			ExplorerResource m_Root;
+			EditorSelectable* m_EditorSelectable;
 		};
 	}
 }

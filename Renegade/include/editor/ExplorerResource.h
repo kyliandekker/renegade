@@ -6,7 +6,8 @@
 #include <imgui/imgui.h>
 
 #include "assets/AssetType.h"
-#include "graphics/ImgInfo.h"
+#include "graphics/DescHandle.h"
+#include "editor/EditorSelectable.h"
 
 #ifdef __EDITOR__
 
@@ -29,12 +30,12 @@ namespace renegade
 		class ExplorerResource
 		{
 		public:
-			~ExplorerResource();
+			virtual ~ExplorerResource();
 
+			std::string m_Name;
 			std::vector<ExplorerResource*> m_Resources;
 			std::string m_Path;
-			std::string m_Name;
-			std::string m_NameWithoutExtension;
+			std::string m_NameWithExtension;
 			ExplorerResourceType m_ResourceType = ExplorerResourceType::Folder;
 
 			ExplorerResource* m_Parent = nullptr;
@@ -86,9 +87,11 @@ namespace renegade
 		class TextureExplorerResource : public ExplorerResource
 		{
 		public:
+			~TextureExplorerResource() override;
+
 			void RenderIcon(const char* icon) override;
 			bool Initialize() override;
-			graphics::ImgInfo m_Image;
+			graphics::DescHandle* m_DescHandle;
 		};
 
 		class SpriteExplorerResource : public TextureExplorerResource

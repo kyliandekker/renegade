@@ -27,7 +27,7 @@ namespace renegade
 				bool m_ShowContextMenu = false;
 				bool m_ShowExplorerInspector = false;
 				bool m_NeedsRefresh = true;
-				bool m_NeedsRescan = true;
+				bool m_NeedsRescan = false;
 
 				char SEARCHSTRING_EXPLORER[256] = { '\0' };
 				char EXPLORER_INSPECTOR_RENAME_RESOURCE[256] = { '\0' };

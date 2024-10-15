@@ -34,9 +34,6 @@ namespace renegade
 				void ToggleEnabled();
 				std::string GetName() const;
 				bool IsEnabled() const;
-
-				void BeginToolbar(const ImVec2& a_Size);
-				void EndToolbar();
 			protected:
 				ImGuiWindowFlags m_Flags = 0;
 				ImVec2 m_Size = ImVec2(0, 0);

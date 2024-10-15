@@ -235,10 +235,10 @@ namespace renegade
 							{
 								bool selected;
 								if (ImGui::Selectable(
-									IMGUI_FORMAT_ID(parent->m_NameWithoutExtension, SELECTABLE_ID, std::string("FILES_INNER_HEADER_" + string_extensions::StringToUpper(parent->m_NameWithoutExtension) + "_EXPLORER").c_str()).c_str(),
+									IMGUI_FORMAT_ID(parent->m_Name, SELECTABLE_ID, std::string("FILES_INNER_HEADER_" + string_extensions::StringToUpper(parent->m_Name) + "_EXPLORER").c_str()).c_str(),
 									&selected,
 									0,
-									ImGui::CalcTextSize(parent->m_NameWithoutExtension.c_str())
+									ImGui::CalcTextSize(parent->m_Name.c_str())
 								))
 								{
 									SetExplorerRoot(parent);
@@ -249,7 +249,7 @@ namespace renegade
 							}
 							else
 							{
-								ImGui::TextColored(ImGui::GetStyleColorVec4(ImGuiCol_Text), parent->m_NameWithoutExtension.c_str());
+								ImGui::TextColored(ImGui::GetStyleColorVec4(ImGuiCol_Text), parent->m_Name.c_str());
 							}
 						}
 						ImGui::PopStyleColor(6);

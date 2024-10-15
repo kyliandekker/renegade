@@ -84,7 +84,6 @@ namespace renegade
 					return "";
 				}
 			}
-			return "";
 		}
 	}
 }

@@ -2,6 +2,8 @@
 
 #ifdef __EDITOR__
 
+#include <imgui/imgui.h>
+
 namespace renegade
 {
 	namespace editor
@@ -17,6 +19,8 @@ namespace renegade
 				virtual void Render() = 0;
 
 				ImGuiWindow& Window() const;
+                void BeginToolbar(const ImVec2& a_Size);
+				void EndToolbar();
 			protected:
 				ImGuiWindow& m_Window;
 			};

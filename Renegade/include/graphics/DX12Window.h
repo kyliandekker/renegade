@@ -5,8 +5,10 @@
 #include <d3d12.h>
 #include <dxgi1_4.h>
 #include <string>
+#include <wrl/client.h>
 
 #include "core/datatypes/Event.h"
+#include "graphics/DescHandle.h"
 
 struct HWND__;
 typedef HWND__* HWND;
@@ -40,7 +42,7 @@ namespace renegade
 			bool CleanupTextures();
 			FrameContext* WaitForNextFrameResources();
 
-			bool LoadTexture(const std::string& a_Path, ImgInfo& a_ImgInfo);
+			bool LoadTexture(const std::string& a_Path, DescHandle*& a_ImgInfo);
 
 			SimpleEvent<> m_OnRenderTargetCreated;
 			SimpleEvent<> m_OnRenderTargetCleaned;
@@ -71,8 +73,7 @@ namespace renegade
 				[3] = {};
 
 			UINT NUM_SRV_DESC_HANDLES = 100;
-
-			int descriptor_index = 1;
+			DescHandle m_SrvDescriptorHandles[100] = { { false } };
 		};
 	}
 }
