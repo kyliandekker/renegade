@@ -181,7 +181,6 @@ namespace renegade
 				))
 				{
 					static const float timestamp_width = ImGui::CalcTextSize("00:00:00:0000").x;
-					int count = 0;
 
 					ImGui::PushTextWrapPos();
 					std::lock_guard<std::mutex> lock(MESSAGE_MUTEX);

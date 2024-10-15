@@ -88,18 +88,6 @@ namespace renegade
 					m_Size.y = temp.y;
 				}
 			}
-			// Previous projects array
-			if (document.HasMember(JSON_PREVIOUS_PROJECTS_VAR) && document[JSON_PREVIOUS_PROJECTS_VAR].IsArray())
-			{
-				for (auto& element : document[JSON_PREVIOUS_PROJECTS_VAR].GetArray())
-				{
-					if (!element.IsString())
-					{
-						continue;
-					}
-					m_PreviousProjects.insert(element.GetString());
-				}
-			}
 
 			return true;
 		}
@@ -123,12 +111,6 @@ namespace renegade
 			document.AddMember(JSON_WINDOW_SIZE_VAR, rapidjson::Value().SetObject(), allocator);
 			document[JSON_WINDOW_SIZE_VAR].AddMember(JSON_WINDOW_SIZE_X_VAR, m_Size.x, allocator);
 			document[JSON_WINDOW_SIZE_VAR].AddMember(JSON_WINDOW_SIZE_Y_VAR, m_Size.y, allocator);
-
-			document.AddMember(JSON_PREVIOUS_PROJECTS_VAR, rapidjson::Value().SetArray(), allocator);
-			for (auto& previousProject : m_PreviousProjects)
-			{
-				document[JSON_PREVIOUS_PROJECTS_VAR].PushBack(rapidjson::Value().SetString(previousProject.c_str(), previousProject.size()), allocator);
-			}
 
 			rapidjson::StringBuffer buffer;
 			rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
@@ -247,32 +229,6 @@ namespace renegade
 		bool EditorSettings::Awesome() const
 		{
 			return m_Awesome;
-		}
-
-		void EditorSettings::SetPreviousProjects(const std::unordered_set<std::string>& a_PreviousProjects)
-		{
-			m_PreviousProjects = a_PreviousProjects;
-
-			Save();
-		}
-
-		const std::unordered_set<std::string>& EditorSettings::GetPreviousProjects() const
-		{
-			return m_PreviousProjects;
-		}
-
-		void EditorSettings::AddToPreviousProjects(const std::string& a_PreviousProject)
-		{
-			m_PreviousProjects.insert(a_PreviousProject);
-
-			Save();
-		}
-
-		void EditorSettings::ErasePreviousProject(const std::string& a_PreviousProject)
-		{
-			m_PreviousProjects.erase(a_PreviousProject);
-
-			Save();
 		}
 	}
 }

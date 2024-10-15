@@ -86,7 +86,7 @@ namespace renegade
 			ImGui::Text(icon);
 		}
 
-		void ExplorerResource::Render(bool& clicked, bool& right_clicked, bool& double_clicked, bool selected, const ImVec2& size, const char* icon, const char* label2)
+		void ExplorerResource::Render(bool& clicked, bool& right_clicked, bool& double_clicked, bool selected, const char* icon, const char* label2)
 		{
 			ImVec2 pos = ImGui::GetCursorScreenPos();
 
@@ -275,7 +275,7 @@ namespace renegade
 							}
 							else
 							{
-								resource->SaveMetadata(resource->PrepareMetadata());
+								resource->SaveMetadata();
 							}
 							m_Resources.push_back(resource);
 						}
@@ -355,7 +355,7 @@ namespace renegade
 			return true;
 		}
 		
-		bool ExplorerResource::SaveMetadata(const rapidjson::Document& a_JsonFile) const
+		bool ExplorerResource::SaveMetadata() const
 		{
 			rapidjson::Document document = PrepareMetadata();
 			return saveMetadata(document, m_Path);
@@ -397,17 +397,20 @@ namespace renegade
 			return name;
 		}
 
-		void TextureExplorerResource::RenderIcon(const char* icon)
+		void TextureExplorerResource::RenderIcon(const char*)
 		{
-			//const float width_new = 15;
-			//const float height_new = (m_Image.m_Height * (1.0f / m_Image.m_Width * width_new));
-
-			//ImGui::Image((void*)m_Image.m_Srv_gpu_handle.ptr, ImVec2(width_new, height_new));
+			const float width_new = 15;
+			const float height_new = (m_Image.m_Height * (1.0f / m_Image.m_Width * width_new));
+			ImGui::Image((void*)m_Image.srv_gpu_handle.ptr, ImVec2(width_new, height_new));
 		}
 
 		bool TextureExplorerResource::Initialize()
 		{
-			//return core::ENGINE.GetWindow().GetDX12Window().LoadTexture(m_Path, m_Image);
+			if (!core::ENGINE.GetWindow().GetDX12Window().LoadTexture(m_Path, m_Image))
+			{
+				return false;
+			}
+
 			return true;
 		}
 }

@@ -46,7 +46,7 @@ namespace renegade
 
 			virtual bool Initialize() { return true; };
 			virtual void RenderIcon(const char* icon);
-			void Render(bool& clicked, bool& right_clicked, bool& double_clicked, bool selected, const ImVec2& size, const char* icon, const char* label2);
+			void Render(bool& clicked, bool& right_clicked, bool& double_clicked, bool selected, const char* icon, const char* label2);
 
 			bool Scan();
 			bool Rename(const std::string& a_Name);
@@ -60,8 +60,8 @@ namespace renegade
 			bool LoadMetadata();
 			virtual bool ProcessMetadata(const rapidjson::Document& a_JsonFile);
 
-			bool SaveMetadata(const rapidjson::Document& a_JsonFile) const;
-			virtual virtual rapidjson::Document PrepareMetadata() const;
+			bool SaveMetadata() const;
+			virtual rapidjson::Document PrepareMetadata() const;
 
 			static std::string GetUniqueName(const ExplorerResource& a_Resource, const std::string& a_Name);
 		private:

@@ -31,7 +31,7 @@ namespace renegade
 			ImGuiWindow::~ImGuiWindow()
 			{ }
 
-			bool ImGuiWindow::Initialize(int a_NumArgs, ...)
+			bool ImGuiWindow::Initialize(int, ...)
 			{
 				IMGUI_CHECKVERSION();
 				ImGui::CreateContext();
@@ -46,8 +46,6 @@ namespace renegade
 				}
 
 				CreateImGui();
-
-				graphics::DX12Window& dx12window = core::ENGINE.GetWindow().GetDX12Window();
 
 				LOGF(LOGSEVERITY_SUCCESS, "Created ImGui.");
 

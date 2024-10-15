@@ -12,7 +12,7 @@ namespace renegade
 {
 	namespace logger
 	{
-		bool Logger::Initialize(int a_NumArgs, ...)
+		bool Logger::Initialize(int, ...)
 		{
 			bool success = System::Initialize();
 			if (!success)
@@ -114,8 +114,6 @@ namespace renegade
 				{
 					const Message lm = m_Messages.front();
 					m_Messages.pop();
-
-					DWORD written = 0;
 
 					std::cout << "[" << LOGGER_SEVERITY_COLOR[lm.a_Severity].c_str() << LOGGER_SEVERITY_TEXT[lm.a_Severity].c_str() << COLOR_WHITE << "]: " << lm.m_RawMessage.c_str() << lm.m_Location.c_str() << std::endl;
 

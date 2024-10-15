@@ -4,6 +4,7 @@
 
 #include <d3d12.h>
 #include <dxgi1_4.h>
+#include <string>
 
 #include "core/datatypes/Event.h"
 
@@ -47,6 +48,9 @@ namespace renegade
 
 			UINT g_frameIndex = 0;
 
+			D3D12_DESCRIPTOR_HEAP_DESC g_imguiDesc;
+			D3D12_DESCRIPTOR_HEAP_DESC g_desc;
+
 			ID3D12Device* g_pd3dDevice = nullptr;
 			ID3D12DescriptorHeap* g_pd3dRtvDescHeap = nullptr;
 			ID3D12DescriptorHeap* g_pd3dSrvDescHeap = nullptr;
@@ -60,10 +64,13 @@ namespace renegade
 			HANDLE g_hSwapChainWaitableObject = nullptr;
 
 			UINT NUM_FRAMES_IN_FLIGHT = 3;
-			UINT NUM_BACK_BUFFERS = 3;
+			UINT NUM_RTV_DESC_HANDLES = 3;
 			FrameContext g_frameContext[3] = {};
 			ID3D12Resource* g_mainRenderTargetResource[3] = {};
-			D3D12_CPU_DESCRIPTOR_HANDLE g_mainRenderTargetDescriptor[3] = {};
+			D3D12_CPU_DESCRIPTOR_HANDLE g_rtvRenderTargetDescriptor
+				[3] = {};
+
+			UINT NUM_SRV_DESC_HANDLES = 100;
 
 			int descriptor_index = 1;
 		};

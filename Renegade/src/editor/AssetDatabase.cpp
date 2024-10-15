@@ -15,7 +15,7 @@ namespace renegade
 			return std::string(buffer).substr(0, pos);
 		}
 
-		bool AssetDatabase::Initialize(int a_NumArgs, ...)
+		bool AssetDatabase::Initialize(int, ...)
 		{
 			if (Scan())
 			{
@@ -39,9 +39,8 @@ namespace renegade
 			{
 				LOGF(LOGSEVERITY_SUCCESS, "Scanned asset database.");
 				m_Ready = true;
-				return true;
 			}
-			return false;
+			return m_Ready;
 		}
 	}
 }

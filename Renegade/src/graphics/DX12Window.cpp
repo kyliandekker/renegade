@@ -1,5 +1,8 @@
 #include "graphics/DX12Window.h"
 
+#include <d3dx12_core.h>
+#include <d3dx12_resource_helpers.h>
+#include <d3dx12_barriers.h>
 #include <Windows.h>
 #include <d3d12.h>
 #include <dxgi1_4.h>
@@ -11,6 +14,7 @@
 
 #include "graphics/ImgInfo.h"
 #include "logger/Logger.h"
+#include "core/datatypes/Data.h"
 
 namespace renegade
 {
@@ -45,11 +49,11 @@ namespace renegade
 
 		void DX12Window::CreateRenderTarget()
 		{
-			for (UINT i = 0; i < NUM_BACK_BUFFERS; i++)
+			for (UINT i = 0; i < NUM_RTV_DESC_HANDLES; i++)
 			{
 				ID3D12Resource* pBackBuffer = nullptr;
 				g_pSwapChain->GetBuffer(i, IID_PPV_ARGS(&pBackBuffer));
-				g_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, g_mainRenderTargetDescriptor[i]);
+				g_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, g_rtvRenderTargetDescriptor[i]);
 				g_mainRenderTargetResource[i] = pBackBuffer;
 			}
 			m_OnRenderTargetCreated();
@@ -74,8 +78,8 @@ namespace renegade
 
 			// Render Dear ImGui graphics
 			const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
-			g_pd3dCommandList->ClearRenderTargetView(g_mainRenderTargetDescriptor[backBufferIdx], clear_color_with_alpha, 0, nullptr);
-			g_pd3dCommandList->OMSetRenderTargets(1, &g_mainRenderTargetDescriptor[backBufferIdx], FALSE, nullptr);
+			g_pd3dCommandList->ClearRenderTargetView(g_rtvRenderTargetDescriptor[backBufferIdx], clear_color_with_alpha, 0, nullptr);
+			g_pd3dCommandList->OMSetRenderTargets(1, &g_rtvRenderTargetDescriptor[backBufferIdx], FALSE, nullptr);
 			g_pd3dCommandList->SetDescriptorHeaps(1, &g_pd3dSrvDescHeap);
 
 			m_OnDrawRenderData(g_pd3dCommandList);
@@ -121,7 +125,7 @@ namespace renegade
 			WaitForLastSubmittedFrame();
 
 			m_OnRenderTargetCleaned();
-			for (UINT i = 0; i < NUM_BACK_BUFFERS; i++)
+			for (UINT i = 0; i < NUM_RTV_DESC_HANDLES; i++)
 			{
 				if (g_mainRenderTargetResource[i]) { g_mainRenderTargetResource[i]->Release(); g_mainRenderTargetResource[i] = nullptr; }
 			}
@@ -133,7 +137,7 @@ namespace renegade
 			DXGI_SWAP_CHAIN_DESC1 sd;
 			{
 				ZeroMemory(&sd, sizeof(sd));
-				sd.BufferCount = NUM_BACK_BUFFERS;
+				sd.BufferCount = NUM_RTV_DESC_HANDLES;
 				sd.Width = 0;
 				sd.Height = 0;
 				sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -149,11 +153,17 @@ namespace renegade
 
 			// [DEBUG] Enable debug interface
 #ifdef DX12_ENABLE_DEBUG_LAYER
-			ID3D12Debug* pdx12Debug = nullptr;
-			if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&pdx12Debug))))
+			ID3D12Debug* debugController;
+			if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
 			{
-				pdx12Debug->EnableDebugLayer();
+				debugController->EnableDebugLayer();
+				ID3D12Debug1* debugController1;
+				if (SUCCEEDED(debugController->QueryInterface(IID_PPV_ARGS(&debugController1))))
+				{
+					debugController1->SetEnableGPUBasedValidation(TRUE);
+				}
 			}
+
 #endif
 
 			// Create device
@@ -166,7 +176,7 @@ namespace renegade
 
 			// [DEBUG] Setup debug interface to break on any warnings/errors
 #ifdef DX12_ENABLE_DEBUG_LAYER
-			if (pdx12Debug != nullptr)
+			if (debugController != nullptr)
 			{
 				ID3D12InfoQueue* pInfoQueue = nullptr;
 				g_pd3dDevice->QueryInterface(IID_PPV_ARGS(&pInfoQueue));
@@ -174,17 +184,18 @@ namespace renegade
 				pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
 				pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
 				pInfoQueue->Release();
-				pdx12Debug->Release();
+				debugController->Release();
 			}
 #endif
 
 			{
-				D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-				desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-				desc.NumDescriptors = NUM_BACK_BUFFERS;
-				desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-				desc.NodeMask = 1;
-				if (g_pd3dDevice->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&g_pd3dRtvDescHeap)) != S_OK)
+				// Setup RTV heap.
+				g_desc = {};
+				g_desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+				g_desc.NumDescriptors = NUM_RTV_DESC_HANDLES;
+				g_desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+				g_desc.NodeMask = 1;
+				if (g_pd3dDevice->CreateDescriptorHeap(&g_desc, IID_PPV_ARGS(&g_pd3dRtvDescHeap)) != S_OK)
 				{
 					LOGF(LOGSEVERITY_ASSERT, "Could not create descriptor heap for DX12.");
 					return false;
@@ -192,21 +203,27 @@ namespace renegade
 
 				SIZE_T rtvDescriptorSize = g_pd3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 				D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = g_pd3dRtvDescHeap->GetCPUDescriptorHandleForHeapStart();
-				for (UINT i = 0; i < NUM_BACK_BUFFERS; i++)
+				for (UINT i = 0; i < NUM_RTV_DESC_HANDLES; i++)
 				{
-					g_mainRenderTargetDescriptor[i] = rtvHandle;
+					g_rtvRenderTargetDescriptor[i] = rtvHandle;
 					rtvHandle.ptr += rtvDescriptorSize;
 				}
-			}
 
-			{
-				D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-				desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-				desc.NumDescriptors = 1;
-				desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-				if (g_pd3dDevice->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&g_pd3dSrvDescHeap)) != S_OK)
+				// Setup SRV heap.
+				g_imguiDesc = {};
+				g_imguiDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+				g_imguiDesc.NumDescriptors = NUM_SRV_DESC_HANDLES;
+				g_imguiDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+				if (g_pd3dDevice->CreateDescriptorHeap(&g_imguiDesc, IID_PPV_ARGS(&g_pd3dSrvDescHeap)) != S_OK)
 				{
 					LOGF(LOGSEVERITY_ASSERT, "Could not create descriptor heap for DX12.");
+					return false;
+				}
+
+				// Ensure this heap is valid
+				if (!g_pd3dSrvDescHeap)
+				{
+					LOGF(LOGSEVERITY_ERROR, "SRV descriptor heap is null.");
 					return false;
 				}
 			}
@@ -272,7 +289,7 @@ namespace renegade
 				}
 				swapChain1->Release();
 				dxgiFactory->Release();
-				g_pSwapChain->SetMaximumFrameLatency(NUM_BACK_BUFFERS);
+				g_pSwapChain->SetMaximumFrameLatency(NUM_RTV_DESC_HANDLES);
 				g_hSwapChainWaitableObject = g_pSwapChain->GetFrameLatencyWaitableObject();
 			}
 
@@ -338,14 +355,6 @@ namespace renegade
 				g_pd3dDevice = nullptr;
 			}
 
-#ifdef DX12_ENABLE_DEBUG_LAYER
-			IDXGIDebug1* pDebug = nullptr;
-			if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&pDebug))))
-			{
-				pDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY);
-				pDebug->Release();
-			}
-#endif
 			LOGF(LOGSEVERITY_SUCCESS, "Cleaned up D3D device from DX12.");
 		}
 
@@ -373,7 +382,10 @@ namespace renegade
 				numWaitableObjects = 2;
 			}
 
-			WaitForMultipleObjects(numWaitableObjects, waitableObjects, TRUE, INFINITE);
+			if (numWaitableObjects > 0)
+			{
+				WaitForMultipleObjects(numWaitableObjects, waitableObjects, TRUE, INFINITE);
+			}
 
 			return frameCtx;
 		}
@@ -381,17 +393,26 @@ namespace renegade
 		bool DX12Window::LoadTexture(const std::string& a_Path, ImgInfo& a_ImgInfo)
 		{
 			UINT handle_increment = g_pd3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-			a_ImgInfo.m_Srv_cpu_handle = g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart();
-			a_ImgInfo.m_Srv_cpu_handle.ptr += (handle_increment * descriptor_index);
-			a_ImgInfo.m_Srv_gpu_handle = g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart();
-			a_ImgInfo.m_Srv_gpu_handle.ptr += (handle_increment * descriptor_index);
-			descriptor_index++;
+			a_ImgInfo.srv_cpu_handle = g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart();
+			a_ImgInfo.srv_cpu_handle.ptr += (handle_increment * descriptor_index);
+			a_ImgInfo.srv_gpu_handle = g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart();
+			a_ImgInfo.srv_gpu_handle.ptr += (handle_increment * descriptor_index);
 
-			int image_width = 0;
-			int image_height = 0;
-			unsigned char* image_data = stbi_load(a_Path.c_str(), &image_width, &image_height, nullptr, 4);
-			if (image_data == nullptr)
+			int texChannels;
+			if (stbi_info(a_Path.c_str(), &a_ImgInfo.m_Width, &a_ImgInfo.m_Height, &texChannels) != 1)
 			{
+				LOGF(LOGSEVERITY_ERROR, "Could not load texture info '%s'.", a_Path.c_str());
+				return false;
+			}
+
+			core::Data textureData((a_ImgInfo.m_Width * a_ImgInfo.m_Height) * 4);
+			unsigned char* texPtr = textureData.tdata<unsigned char>();
+
+			texPtr = stbi_load(a_Path.c_str(), &a_ImgInfo.m_Width, &a_ImgInfo.m_Height, &texChannels, STBI_rgb_alpha);
+
+			if (textureData.empty())
+			{
+				LOGF(LOGSEVERITY_ERROR, "Could not load texture '%s'.", a_Path.c_str());
 				return false;
 			}
 
@@ -406,8 +427,8 @@ namespace renegade
 			ZeroMemory(&desc, sizeof(desc));
 			desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 			desc.Alignment = 0;
-			desc.Width = image_width;
-			desc.Height = image_height;
+			desc.Width = a_ImgInfo.m_Width;
+			desc.Height = a_ImgInfo.m_Height;
 			desc.DepthOrArraySize = 1;
 			desc.MipLevels = 1;
 			desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -416,13 +437,19 @@ namespace renegade
 			desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 			desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-			ID3D12Resource* pTexture = nullptr;
-			g_pd3dDevice->CreateCommittedResource(&props, D3D12_HEAP_FLAG_NONE, &desc,
-				D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&pTexture));
+			ID3D12Resource* pTexture = NULL;
+			HRESULT hr = g_pd3dDevice->CreateCommittedResource(&props, D3D12_HEAP_FLAG_NONE, &desc,
+				D3D12_RESOURCE_STATE_COPY_DEST, NULL, IID_PPV_ARGS(&pTexture));
+
+			if (FAILED(hr))
+			{
+				LOGF(LOGSEVERITY_ERROR, "Could not create texture resource for image '%s'.", a_Path.c_str());
+				return false;
+			}
 
 			// Create a temporary upload resource to move the data in
-			UINT uploadPitch = (image_width * 4 + D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1u) & ~(D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1u);
-			UINT uploadSize = image_height * uploadPitch;
+			UINT uploadPitch = (a_ImgInfo.m_Width * 4 + D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1u) & ~(D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1u);
+			UINT uploadSize = a_ImgInfo.m_Height * uploadPitch;
 			desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
 			desc.Alignment = 0;
 			desc.Width = uploadSize;
@@ -439,26 +466,30 @@ namespace renegade
 			props.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
 			props.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
 
-			ID3D12Resource* uploadBuffer = nullptr;
-			HRESULT hr = g_pd3dDevice->CreateCommittedResource(&props, D3D12_HEAP_FLAG_NONE, &desc,
-				D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&uploadBuffer));
-			if (!SUCCEEDED(hr))
+			ID3D12Resource* uploadBuffer = NULL;
+			hr = g_pd3dDevice->CreateCommittedResource(&props, D3D12_HEAP_FLAG_NONE, &desc,
+				D3D12_RESOURCE_STATE_GENERIC_READ, NULL, IID_PPV_ARGS(&uploadBuffer));
+
+			if (FAILED(hr))
 			{
-				LOGF(LOGSEVERITY_ASSERT, "Could not create commited resource for image '%s'.", a_Path.c_str());
+				LOGF(LOGSEVERITY_ERROR, "Could not create temporary committed resource for image '%s'.", a_Path.c_str());
 				return false;
 			}
 
 			// Write pixels into the upload resource
-			void* mapped = nullptr;
+			void* mapped = NULL;
 			D3D12_RANGE range = { 0, uploadSize };
 			hr = uploadBuffer->Map(0, &range, &mapped);
-			if (!SUCCEEDED(hr))
+			if (FAILED(hr))
 			{
-				LOGF(LOGSEVERITY_ASSERT, "Could not upload buffer for image '%s'.", a_Path.c_str());
+				LOGF(LOGSEVERITY_ERROR, "Could not map resource to upload buffer for image '%s'.", a_Path.c_str());
 				return false;
 			}
-			for (int y = 0; y < image_height; y++)
-				memcpy((void*)((uintptr_t)mapped + y * uploadPitch), image_data + y * image_width * 4, image_width * 4);
+
+			for (int y = 0; y < a_ImgInfo.m_Height; y++)
+			{
+				memcpy((void*)((uintptr_t)mapped + y * uploadPitch), texPtr + y * a_ImgInfo.m_Width * 4, a_ImgInfo.m_Width * 4);
+			}
 			uploadBuffer->Unmap(0, &range);
 
 			// Copy the upload resource content into the real resource
@@ -466,8 +497,8 @@ namespace renegade
 			srcLocation.pResource = uploadBuffer;
 			srcLocation.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
 			srcLocation.PlacedFootprint.Footprint.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			srcLocation.PlacedFootprint.Footprint.Width = image_width;
-			srcLocation.PlacedFootprint.Footprint.Height = image_height;
+			srcLocation.PlacedFootprint.Footprint.Width = a_ImgInfo.m_Width;
+			srcLocation.PlacedFootprint.Footprint.Height = a_ImgInfo.m_Height;
 			srcLocation.PlacedFootprint.Footprint.Depth = 1;
 			srcLocation.PlacedFootprint.Footprint.RowPitch = uploadPitch;
 
@@ -485,18 +516,18 @@ namespace renegade
 			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 
 			// Create a temporary command queue to do the copy with
-			ID3D12Fence* fence = nullptr;
+			ID3D12Fence* fence = NULL;
 			hr = g_pd3dDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
-			if (!SUCCEEDED(hr))
+			if (FAILED(hr))
 			{
-				LOGF(LOGSEVERITY_ASSERT, "Could not create fence for image '%s'.", a_Path.c_str());
+				LOGF(LOGSEVERITY_ERROR, "Could not create fence for image '%s'.", a_Path.c_str());
 				return false;
 			}
 
 			HANDLE event = CreateEvent(0, 0, 0, 0);
-			if (!event)
+			if (event == nullptr)
 			{
-				LOGF(LOGSEVERITY_ASSERT, "Could not create event for image '%s'.", a_Path.c_str());
+				LOGF(LOGSEVERITY_ERROR, "Could not create event for image '%s'.", a_Path.c_str());
 				return false;
 			}
 
@@ -505,46 +536,46 @@ namespace renegade
 			queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 			queueDesc.NodeMask = 1;
 
-			ID3D12CommandQueue* cmdQueue = nullptr;
+			ID3D12CommandQueue* cmdQueue = NULL;
 			hr = g_pd3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&cmdQueue));
-			if (!SUCCEEDED(hr))
+			if (FAILED(hr))
 			{
-				LOGF(LOGSEVERITY_ASSERT, "Could not create command queue for image '%s'.", a_Path.c_str());
+				LOGF(LOGSEVERITY_ERROR, "Could not create command queue for image '%s'.", a_Path.c_str());
 				return false;
 			}
 
-			ID3D12CommandAllocator* cmdAlloc = nullptr;
+			ID3D12CommandAllocator* cmdAlloc = NULL;
 			hr = g_pd3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&cmdAlloc));
-			if (!SUCCEEDED(hr))
+			if (FAILED(hr))
 			{
-				LOGF(LOGSEVERITY_ASSERT, "Could not create command allocator for image '%s'.", a_Path.c_str());
+				LOGF(LOGSEVERITY_ERROR, "Could not create command allocator for image '%s'.", a_Path.c_str());
 				return false;
 			}
 
-			ID3D12GraphicsCommandList* cmdList = nullptr;
-			hr = g_pd3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdAlloc, nullptr, IID_PPV_ARGS(&cmdList));
-			if (!SUCCEEDED(hr))
+			ID3D12GraphicsCommandList* cmdList = NULL;
+			hr = g_pd3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdAlloc, NULL, IID_PPV_ARGS(&cmdList));
+			if (FAILED(hr))
 			{
-				LOGF(LOGSEVERITY_ASSERT, "Could not create command list for image '%s'.", a_Path.c_str());
+				LOGF(LOGSEVERITY_ERROR, "Could not create command list for image '%s'.", a_Path.c_str());
 				return false;
 			}
 
-			cmdList->CopyTextureRegion(&dstLocation, 0, 0, 0, &srcLocation, nullptr);
+			cmdList->CopyTextureRegion(&dstLocation, 0, 0, 0, &srcLocation, NULL);
 			cmdList->ResourceBarrier(1, &barrier);
 
 			hr = cmdList->Close();
-			if (!SUCCEEDED(hr))
+			if (FAILED(hr))
 			{
-				LOGF(LOGSEVERITY_ASSERT, "Could not close command list for image '%s'.", a_Path.c_str());
+				LOGF(LOGSEVERITY_ERROR, "Could not close command list for image '%s'.", a_Path.c_str());
 				return false;
 			}
 
 			// Execute the copy
 			cmdQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&cmdList);
 			hr = cmdQueue->Signal(fence, 1);
-			if (!SUCCEEDED(hr))
+			if (FAILED(hr))
 			{
-				LOGF(LOGSEVERITY_ASSERT, "Could not signal command queue for image '%s'.", a_Path.c_str());
+				LOGF(LOGSEVERITY_ERROR, "Could not signal fence for image '%s'.", a_Path.c_str());
 				return false;
 			}
 
@@ -560,6 +591,18 @@ namespace renegade
 			fence->Release();
 			uploadBuffer->Release();
 
+			if (!pTexture)
+			{
+				LOGF(LOGSEVERITY_ERROR, "pTexture is null before creating SRV.");
+				return false;
+			}
+
+			if (a_ImgInfo.srv_cpu_handle.ptr == 0)
+			{
+				LOGF(LOGSEVERITY_ERROR, "SRV CPU descriptor handle is invalid (null).");
+				return false;
+			}
+
 			// Create a shader resource view for the texture
 			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc;
 			ZeroMemory(&srvDesc, sizeof(srvDesc));
@@ -568,13 +611,12 @@ namespace renegade
 			srvDesc.Texture2D.MipLevels = desc.MipLevels;
 			srvDesc.Texture2D.MostDetailedMip = 0;
 			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-			g_pd3dDevice->CreateShaderResourceView(pTexture, &srvDesc, a_ImgInfo.m_Srv_cpu_handle);
+			g_pd3dDevice->CreateShaderResourceView(pTexture, &srvDesc, a_ImgInfo.srv_cpu_handle);
 
 			// Return results
 			a_ImgInfo.m_Texture = pTexture;
-			a_ImgInfo.m_Width = image_width;
-			a_ImgInfo.m_Height = image_height;
-			stbi_image_free(image_data);
+
+			descriptor_index++;
 
 			return true;
 		}

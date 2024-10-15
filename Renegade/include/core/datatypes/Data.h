@@ -19,14 +19,25 @@ namespace renegade
 
 			Data& operator=(const Data& a_Other);
 
-			const size_t size() const
+			size_t size() const
 			{
 				return m_Size;
+			}
+
+			bool empty() const
+			{
+				return m_Data == nullptr && m_Size == 0;
 			}
 
 			void* data() const
 			{
 				return m_Data;
+			}
+
+			template <typename T>
+			T* tdata() const
+			{
+				return reinterpret_cast<T*>(m_Data);
 			}
 
 			virtual void Free();

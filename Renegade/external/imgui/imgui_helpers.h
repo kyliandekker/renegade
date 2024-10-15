@@ -9,36 +9,16 @@
 
 namespace ImGui
 {
-    ImVec2 operator+(ImVec2 const &a, ImVec2 const &b);
-    ImVec2 operator-(ImVec2 const &a, ImVec2 const &b);
+    ImVec2 operator+(const ImVec2& a, const ImVec2& b);
+    ImVec2 operator-(const ImVec2& a, const ImVec2& b);
 
-    void ShowTooltipOnHover(
-        char const *tooltip);
-
-    bool DropDown(
-        char const *label,
-        unsigned char &value,
-        char const *const names[],
-        unsigned int nameCount,
-        char const *tooltip);
-
-    void TextBox(
-        char const *label,
-        ImVec2 const &size);
-
-    bool CheckboxButton(const char *label, bool *p_value, const ImVec2 &size_arg = ImVec2(0, 0));
-	bool CheckboxText(const char* label, bool* p_value, const std::string& checked_text, const std::string& unchecked_text, const ImVec2& size_arg = ImVec2(0, 0));
-    bool InvisButton(const char *label, const ImVec2 &size_arg = ImVec2(0, 0), ImU32 button_color_hover = IM_COL32(200, 200, 200, 100));
-    bool TransparentButton(const char *label, const ImVec2 &size_arg = ImVec2(0, 0), ImVec4 color = ImVec4(1, 1, 1, 1));
+    bool CheckboxButton(const char *label, bool *p_value, const ImVec2& size_arg = ImVec2(0, 0));
+    bool TransparentButton(const char *label, const ImVec2& size_arg = ImVec2(0, 0), ImVec4 color = ImVec4(1, 1, 1, 1));
 	bool TransparentCheckboxButton(const char* label, bool* p_value, const ImVec2& size_arg = ImVec2(0, 0), ImVec4 color = ImVec4(1, 1, 1, 1));
-    bool HierarchyItem(const char *label, const ImVec2 &size_arg = ImVec2(0, 0), bool selected = false, ImU32 button_color_hover = IM_COL32(200, 200, 200, 100));
-	bool EngineTreeNodeExS(const char* id, const char* icon, const char* label, bool& clicked, bool& right_clicked, bool selected, ImVec2 size, ImGuiTreeNodeFlags flags);
-	bool EngineResourceNode(const char* id, const char* icon, const char* label, const char* label2, bool& clicked, bool& right_clicked, bool& double_clicked, bool selected, ImVec2 size, ImGuiTreeNodeFlags flags);
-	int InvisInputText(const char* label, char* buf, size_t buf_size, ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = NULL, void* user_data = NULL);
-	bool SearchBar(float fontSize, const char* label, char* buf, size_t buf_size, ImVec2 size = ImVec2(0, 0), float padding = 4, ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = NULL, void* user_data = NULL);
-	void DisplayHeader(ImFont* boldFont, const char* label);
-
-	bool RangeSliderFloat(const char *label, float *v1, float *v2, float v_min, float v_max, const char *display_format = "(%.3f, %.3f)", float power = 1.0f);
+    //bool HierarchyItem(const char *label, const ImVec2 &size_arg = ImVec2(0, 0), bool selected = false, ImU32 button_color_hover = IM_COL32(200, 200, 200, 100));
+	bool EngineTreeNodeExS(const char* id, const char* icon, const char* label, bool& clicked, bool& right_clicked, bool selected, const ImVec2& size, ImGuiTreeNodeFlags flags);
+	bool EngineResourceNode(const char* id, const char* icon, const char* label, const char* label2, bool& clicked, bool& right_clicked, bool& double_clicked, bool selected);
+	bool SearchBar(float fontSize, const char* label, char* buf, size_t buf_size, const ImVec2& size = ImVec2(0, 0), float padding = 4, ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = nullptr, void* user_data = nullptr);
 
 	inline ImU32 ImColorConvertFloat4ToU32(const ImVec4& in)
 	{

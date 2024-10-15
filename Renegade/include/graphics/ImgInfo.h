@@ -2,7 +2,7 @@
 
 #include <d3d12.h>
 #include <dxgi1_4.h>
-#include <wrl.h>
+#include <wrl/client.h>
 
 namespace renegade
 {
@@ -12,10 +12,12 @@ namespace renegade
 		{
 			~ImgInfo();
 
-			D3D12_CPU_DESCRIPTOR_HANDLE m_Srv_cpu_handle;
-			D3D12_GPU_DESCRIPTOR_HANDLE  m_Srv_gpu_handle;
+			bool Initialize(UINT width, UINT height);
+
 			int m_Width, m_Height;
 
+			D3D12_CPU_DESCRIPTOR_HANDLE srv_cpu_handle;
+			D3D12_GPU_DESCRIPTOR_HANDLE srv_gpu_handle;
 			Microsoft::WRL::ComPtr<ID3D12Resource> m_Texture;
 		};
 	}

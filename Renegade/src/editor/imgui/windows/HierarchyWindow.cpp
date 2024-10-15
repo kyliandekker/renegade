@@ -17,9 +17,6 @@ namespace renegade
 			HierarchyWindow::HierarchyWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_HIERARCHY) + " Hierarchy", "Hierarchy")
 			{ }
 
-			int SELECTED_HIERARCHY_ITEM = -1;
-			char SEARCHSTRING[256] = { '\0' };
-			std::string searchString;
 			void HierarchyWindow::Render()
 			{
 				//if (m_NeedsRefresh)
@@ -190,7 +187,7 @@ namespace renegade
 
 			void HierarchyWindow::SetShowContextMenu(bool a_ShowContextMenu)
 			{
-				m_ShowContextMenu = true;
+				m_ShowContextMenu = a_ShowContextMenu;
 			}
 
 			void HierarchyWindow::SetIsRenaming(bool a_IsRenaming)

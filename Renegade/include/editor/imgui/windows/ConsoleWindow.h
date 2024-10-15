@@ -34,7 +34,7 @@ namespace renegade
 			private:
 				bool m_NeedsRefresh = true;
 				std::vector<logger::Message> m_Messages;
-				std::vector<int> m_FilteredMessages;
+				std::vector<size_t> m_FilteredMessages;
 
 				SearchBarInput m_SearchBar;
 			};
