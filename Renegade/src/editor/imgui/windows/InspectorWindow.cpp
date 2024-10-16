@@ -7,6 +7,7 @@
 #include "editor/imgui/ImGuiDefines.h"
 #include "logger/Logger.h"
 #include "editor/imgui/ImGuiWindow.h"
+#include "core/Engine.h"
 
 namespace renegade
 {
@@ -19,6 +20,10 @@ namespace renegade
 
 			void InspectorWindow::Render()
 			{
+				if (core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable)
+				{
+					core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable->RenderSelectable();
+				}
 				//if (ImGui::Button("Info"))
 				//{
 				//	LOGF(LOGSEVERITY_INFO, "This is an info message.");

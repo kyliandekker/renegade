@@ -37,19 +37,10 @@ namespace renegade
 				//	//}
 				//}
 
-				ImDrawList* draw_list = ImGui::GetWindowDrawList();
+				ImVec2 toolbarSize = ImVec2(ImGui::GetContentRegionAvail().x, m_Window.HeaderSize().y);
+				ImGui::BeginToolbar(toolbarSize);
 
-				ImVec2 header_pos = ImGui::GetCursorScreenPos();
-				ImVec2 header_size = ImVec2(ImGui::GetContentRegionAvail().x, m_Window.FontSize() * 2); // Width, Height
-
-				ImVec2 header_min = header_pos;
-				ImVec2 header_max = ImVec2(header_pos.x + header_size.x, header_pos.y + header_size.y);
-
-				draw_list->AddRectFilled(header_min, header_max, ImGui::ImColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_Button)), 0);
-
-				float x = ImGui::GetContentRegionAvail().x / 2 - (header_size.y / 2);
-
-				ImGui::SetCursorPosX(x);
+				ImGui::EndToolbar(m_Window.GetWindowPadding());
 
 				//ImDrawList* draw_list = ImGui::GetWindowDrawList();
 

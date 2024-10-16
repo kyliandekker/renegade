@@ -9,6 +9,7 @@
 #include <rapidjson/utils.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/prettywriter.h>
+#include <imgui/imgui_helpers.h>
 
 #include "utils/string_extensions.h"
 #include "core/datatypes/DataStream.h"
@@ -17,6 +18,7 @@
 #include "core/Engine.h"
 #include "editor/imgui/ImGuiDefines.h"
 #include "utils/string_extensions.h"
+#include "editor/imgui/StringTextInput.h"
 
 namespace fs = std::filesystem;
 
@@ -105,6 +107,73 @@ namespace renegade
 			textColor.w = 0.5f;
 			ImGui::TextColored(textColor, label2);
 		}
+
+		void ExplorerResource::RenderInnerProperties()
+		{
+		}
+
+		imgui::StringTextInput EXPLORER_TEXT_INPUT;
+		void ExplorerResource::RenderSelectable()
+		{
+			ImVec2 toolbarSize = ImVec2(ImGui::GetContentRegionAvail().x, core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y * 2);
+			ImGui::BeginToolbar(toolbarSize);
+
+			ImVec2 padding = core::ENGINE.GetEditor().GetImGuiWindow().GetWindowPadding();
+			ImGui::EndToolbar(padding);
+
+			float fontSize = core::ENGINE.GetEditor().GetImGuiWindow().FontSize();
+
+			float y = ImGui::GetCursorPosY();
+			float x = ImGui::GetCursorPosX() + fontSize;
+			ImGui::SetCursorPos(ImVec2(x, y + fontSize));
+			ImGui::PushFont(core::ENGINE.GetEditor().GetImGuiWindow().CapitalIcon());
+			ImGui::Text(m_Icon.c_str());
+			ImGui::PopFont();
+
+			ImGui::SetCursorPosY(y + (fontSize / 2));
+			ImGui::SetCursorPosX(x + (fontSize * 3));
+
+			EXPLORER_TEXT_INPUT.SetString(m_Name);
+			if (EXPLORER_TEXT_INPUT.Render(imgui::IMGUI_FORMAT_ID("", INPUT_ID, "NAME_INSPECTOR").c_str(), ImGuiInputTextFlags_EnterReturnsTrue))
+			{
+				Rename(EXPLORER_TEXT_INPUT.GetString());
+			}
+
+			ImGui::SetCursorPosY(y + toolbarSize.y);
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x);
+
+			ImVec2 framePadding = core::ENGINE.GetEditor().GetImGuiWindow().GetFramePadding();
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(framePadding.x * 2, framePadding.y * 2));
+			if (ImGui::BeginChild(
+				imgui::IMGUI_FORMAT_ID("", CHILD_ID, "EXPLORER_RESOURCE_INSPECTOR").c_str(),
+				ImVec2(
+					ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x,
+					ImGui::GetContentRegionAvail().y - ImGui::GetStyle().ItemSpacing.y
+				),
+				ImGuiChildFlags_Borders
+			))
+			{
+				RenderInnerProperties();
+			}
+			ImGui::PopStyleVar();
+			ImGui::EndChild();
+		}
+
+		std::vector<std::string> RESOURCE_ICONS =
+		{
+			ICON_FA_ASSET_CFG,
+			ICON_FA_ASSET_SCENE,
+			ICON_FA_ASSET_MAT,
+			ICON_FA_ASSET_TEX,
+			ICON_FA_ASSET_SPR,
+			ICON_FA_ASSET_FONT,
+			ICON_FA_ASSET_SND,
+			ICON_FA_ASSET_SONG,
+			ICON_FA_ASSET_VO,
+			ICON_FA_ASSET_ANIM,
+			ICON_FA_ASSET_LOC,
+			ICON_FA_ASSET_MOD,
+		};
 
 		bool ExplorerResource::Scan()
 		{
@@ -268,6 +337,7 @@ namespace renegade
 							resource->m_Parent = this;
 							resource->m_ResourceType = ExplorerResourceType::File;
 							resource->m_AssetType = assetType;
+							resource->m_Icon = RESOURCE_ICONS[(int)assetType];
 							resource->Initialize();
 							if (hasMetadata)
 							{
@@ -303,13 +373,16 @@ namespace renegade
 
 		bool ExplorerResource::Rename(const std::string& a_Name)
 		{
-			std::string complete_name = a_Name;
-			if (!string_extensions::EndsWith(a_Name, ".MD"))
-			{
-				complete_name = a_Name + ".MD";
-			}
+			std::string complete_name = a_Name + string_extensions::GetExtensionFromPath(m_NameWithExtension, true);
 			std::string new_path = string_extensions::GetPath(m_Path) + "/" + complete_name;
-			return std::rename(m_Path.c_str(), new_path.c_str());
+			if (std::rename(m_Path.c_str(), new_path.c_str()) == 0)
+			{
+				m_Path = new_path;
+
+				Scan();
+				return true;
+			}
+			return false;
 		}
 
 		void ExplorerResource::Delete()
@@ -402,6 +475,55 @@ namespace renegade
 			if (m_DescHandle)
 			{
 				m_DescHandle->Release();
+			}
+		}
+
+		void TextureExplorerResource::RenderInnerProperties()
+		{
+			ImGui::DisplayHeader(core::ENGINE.GetEditor().GetImGuiWindow().Bold(), "Type");
+			ImGui::SameLine();
+			int items[3] = {
+				(int)assets::AssetType::Texture,
+				(int)assets::AssetType::Sprite,
+				(int)assets::AssetType::Font,
+			};
+			int current_item = 0;
+			{
+				if (m_AssetType == assets::AssetType::Sprite)
+				{
+					current_item = 1;
+				}
+				else if (m_AssetType == assets::AssetType::Font)
+				{
+					current_item = 2;
+				}
+			}
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 0));
+			if (ImGui::BeginCombo(imgui::IMGUI_FORMAT_ID("", COMBO_ID, "ASSETTYPE_INSPECTOR_EXPLORER").c_str(), assets::AssetTypeToString((assets::AssetType)items[current_item]).c_str()))
+			{
+				for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+				{
+					bool is_selected = (current_item == n);
+					if (ImGui::Selectable(assets::AssetTypeToString((assets::AssetType)items[n]).c_str(), is_selected))
+					{
+						m_AssetType = (assets::AssetType)items[n];
+						SaveMetadata();
+					}
+
+					if (is_selected)
+					{
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+				ImGui::EndCombo();
+			}
+			ImGui::PopStyleVar();
+
+			if (!m_DescHandle->Invalid())
+			{
+				const float width_new = ImGui::GetContentRegionAvail().x;
+				const float height_new = (m_DescHandle->Height * (1.0f / m_DescHandle->Width * width_new));
+				ImGui::Image((void*)m_DescHandle->GpuHandle.ptr, ImVec2(width_new, height_new));
 			}
 		}
 

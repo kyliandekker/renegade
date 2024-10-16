@@ -27,12 +27,14 @@ namespace renegade
 			File,
 		};
 
-		class ExplorerResource
+		// TODO: This is a monster class and needs to be split up asap. The explorer functionality should not be mixed with the imgui functionality in any sort of way.
+		class ExplorerResource : public EditorSelectable
 		{
 		public:
 			virtual ~ExplorerResource();
 
 			std::string m_Name;
+			std::string m_Icon;
 			std::vector<ExplorerResource*> m_Resources;
 			std::string m_Path;
 			std::string m_NameWithExtension;
@@ -48,6 +50,8 @@ namespace renegade
 			virtual bool Initialize() { return true; };
 			virtual void RenderIcon(const char* icon);
 			void Render(bool& clicked, bool& right_clicked, bool& double_clicked, bool selected, const char* icon, const char* label2);
+			void RenderSelectable() override;
+			virtual void RenderInnerProperties();
 
 			bool Scan();
 			bool Rename(const std::string& a_Name);
@@ -65,7 +69,7 @@ namespace renegade
 			virtual rapidjson::Document PrepareMetadata() const;
 
 			static std::string GetUniqueName(const ExplorerResource& a_Resource, const std::string& a_Name);
-		private:
+		protected:
 			assets::AssetType m_AssetType;
 		};
 
@@ -88,6 +92,8 @@ namespace renegade
 		{
 		public:
 			~TextureExplorerResource() override;
+
+			void RenderInnerProperties() override;
 
 			void RenderIcon(const char* icon) override;
 			bool Initialize() override;

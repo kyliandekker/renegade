@@ -4,9 +4,5 @@ namespace renegade
 {
 	namespace editor
 	{
-		void EditorSelectable::Render()
-		{
-
-		}
 	}
 }

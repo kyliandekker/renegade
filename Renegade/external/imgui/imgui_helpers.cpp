@@ -209,6 +209,40 @@ namespace ImGui
 
         return result;
     }
+
+	void BeginToolbar(const ImVec2& a_Size)
+	{
+		ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+		ImVec2 header_pos = ImGui::GetCursorScreenPos();
+		ImVec2 header_size = a_Size;
+
+		ImVec2 header_min = header_pos;
+		ImVec2 header_max = ImVec2(header_pos.x + header_size.x, header_pos.y + header_size.y);
+
+		draw_list->AddRectFilled(header_min, header_max, ImGui::ImColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_Button)), 0);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+	}
+
+	void EndToolbar(const ImVec2& a_Padding)
+	{
+		ImGui::PopStyleVar();
+		ImGui::PopStyleVar();
+
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + a_Padding.y);
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + a_Padding.x);
+	}
+
+	void DisplayHeader(ImFont* boldFont, const char* label)
+	{
+		ImGui::PushFont(boldFont);
+		ImGui::Text(label);
+		ImGui::PopFont();
+		ImGui::SameLine();
+		ImGui::Text(":");
+	}
 }
 
 #endif // __EDITOR__

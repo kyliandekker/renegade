@@ -21,22 +21,6 @@ namespace renegade
 				SetExplorerRoot(&core::ENGINE.GetEditor().GetAssetDatabase().m_Root);
 			}
 
-			std::vector<std::string> RESOURCE_ICONS =
-			{
-				ICON_FA_ASSET_CFG,
-				ICON_FA_ASSET_SCENE,
-				ICON_FA_ASSET_MAT,
-				ICON_FA_ASSET_TEX,
-				ICON_FA_ASSET_SPR,
-				ICON_FA_ASSET_FONT,
-				ICON_FA_ASSET_SND,
-				ICON_FA_ASSET_SONG,
-				ICON_FA_ASSET_VO,
-				ICON_FA_ASSET_ANIM,
-				ICON_FA_ASSET_LOC,
-				ICON_FA_ASSET_MOD,
-			};
-
 			void ExplorerWindow::SetExplorerRoot(editor::ExplorerResource* a_Resource)
 			{
 				m_NewExplorerRoot = a_Resource;
@@ -136,6 +120,11 @@ namespace renegade
 				// We rescan the database here.
 				if (m_NeedsRescan)
 				{
+					if (ExplorerResource* derivedPtr = dynamic_cast<ExplorerResource*>(core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable))
+					{
+						core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable = nullptr;
+					}
+
 					core::ENGINE.GetEditor().GetAssetDatabase().m_Root.Scan();
 					SetExplorerRoot(&core::ENGINE.GetEditor().GetAssetDatabase().m_Root);
 					m_NeedsRefresh = true;
@@ -163,16 +152,14 @@ namespace renegade
 
 				m_ShowContextMenu = false;
 
-				ImVec2 toolbarSize = ImVec2(ImGui::GetContentRegionAvail().x, m_Window.FontSize() * 2);
-				BeginToolbar(toolbarSize);
+				ImVec2 toolbarSize = ImVec2(ImGui::GetContentRegionAvail().x, m_Window.HeaderSize().y);
+				ImGui::BeginToolbar(toolbarSize);
 
 				if (ImGui::TransparentButton(
 					IMGUI_FORMAT_ID(std::string(ICON_FA_REFRESH), BUTTON_ID, "RESCAN_EXPLORER").c_str(), ImVec2(0, toolbarSize.y)))
 				{
 					m_NeedsRescan = true;
 				}
-
-				float posY = ImGui::GetCursorPosY();
 
 				ImGui::SameLine();
 
@@ -183,16 +170,14 @@ namespace renegade
 					m_NeedsRefresh = true;
 				}
 
-				EndToolbar();
+				ImGui::EndToolbar(m_Window.GetWindowPadding());
 
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(m_Window.GetFramePadding().x, m_Window.GetFramePadding().y));
-				float x = ImGui::GetContentRegionAvail().x - m_Window.GetWindowPadding().x;
-				float explorerWidth = x * 0.15f;
 				if (ImGui::BeginChild(
 					IMGUI_FORMAT_ID("", CHILD_ID, "DIRECTORIES_EXPLORER").c_str(),
 					ImVec2(
-						explorerWidth,
-						ImGui::GetWindowHeight() - (posY + (m_Window.GetWindowPadding().y * 2))
+						(ImGui::GetContentRegionAvail().x - m_Window.GetWindowPadding().x) * 0.15f,
+						ImGui::GetContentRegionAvail().y - ImGui::GetStyle().ItemSpacing.y
 					),
 					ImGuiChildFlags_Borders
 				))
@@ -202,7 +187,6 @@ namespace renegade
 					ImGui::PopStyleVar();
 				}
 				ImGui::EndChild();
-				x -= (explorerWidth + ImGui::GetStyle().ItemSpacing.x);
 
 				ImGui::PopStyleVar();
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(m_Window.GetFramePadding().x * 2, m_Window.GetFramePadding().y * 2));
@@ -210,8 +194,8 @@ namespace renegade
 				if (ImGui::BeginChild(
 					IMGUI_FORMAT_ID("", CHILD_ID, "FILES_EXPLORER").c_str(),
 					ImVec2(
-						x,
-						ImGui::GetWindowHeight() - (posY + (m_Window.GetWindowPadding().y * 2))
+						ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x,
+						ImGui::GetContentRegionAvail().y - ImGui::GetStyle().ItemSpacing.y
 					),
 					ImGuiChildFlags_Borders
 				))
@@ -274,7 +258,7 @@ namespace renegade
 									clicked,
 									right_clicked,
 									double_clicked,
-									false // TODO: Selected editor resource instance.
+									false
 								);
 
 								if (double_clicked)
@@ -291,8 +275,12 @@ namespace renegade
 								}
 
 								bool clicked, right_clicked, double_clicked;
-								item->Render(clicked, right_clicked, double_clicked, false, item->m_ResourceType == ExplorerResourceType::Folder ? ICON_FA_FOLDER : RESOURCE_ICONS[(int)item->GetAssetType()].c_str(), item->m_ResourceType == ExplorerResourceType::Folder ? "" : assets::AssetTypeToString(item->GetAssetType()).c_str());
+								item->Render(clicked, right_clicked, double_clicked, item == core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable, item->m_ResourceType == ExplorerResourceType::Folder ? ICON_FA_FOLDER : item->m_Icon.c_str(), item->m_ResourceType == ExplorerResourceType::Folder ? "" : assets::AssetTypeToString(item->GetAssetType()).c_str());
 
+								if (clicked)
+								{
+									core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable = item;
+								}
 								if (right_clicked)
 								{
 									m_SelectedResource = item;

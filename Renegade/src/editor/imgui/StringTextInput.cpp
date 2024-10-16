@@ -27,9 +27,9 @@ namespace renegade
 				return std::string(reinterpret_cast<char*>(m_Data.data()));
 			}
 
-			bool StringTextInput::Render(const char* a_Label)
+			bool StringTextInput::Render(const char* a_Label, ImGuiInputTextFlags flags)
 			{
-				bool success = ImGui::InputText(a_Label, reinterpret_cast<char*>(m_Data.data()), m_Data.size());
+				bool success = ImGui::InputText(a_Label, reinterpret_cast<char*>(m_Data.data()), m_Data.size(), flags);
 				return success;
 			}
 
@@ -39,11 +39,6 @@ namespace renegade
 			bool SearchBarInput::Render(const char* a_Label, const ImVec2& a_Size, float a_Padding)
 			{
 				return ImGui::SearchBar(core::ENGINE.GetEditor().GetImGuiWindow().FontSize(), a_Label, reinterpret_cast<char*>(m_Data.data()), m_Data.size(), a_Size, a_Padding);
-			}
-
-			bool SearchBarInput::Render(const char* a_Label)
-			{
-				return Render(a_Label, ImVec2(0, 0), 4);
 			}
 		}
 	}

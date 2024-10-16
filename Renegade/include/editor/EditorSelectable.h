@@ -8,13 +8,10 @@ namespace renegade
 {
 	namespace editor
 	{
-		class EditorSelectable : public imgui::ImGuiUIView
+		class EditorSelectable
 		{
 		public:
-			std::string m_Name;
-			std::string m_Icon;
-
-			virtual void Render() override;
+			virtual void RenderSelectable() = 0;
 		};
 	}
 }

@@ -84,8 +84,8 @@ namespace renegade
 					}
 				}
 
-				ImVec2 toolbarSize = ImVec2(ImGui::GetContentRegionAvail().x, m_Window.FontSize() * 2);
-				BeginToolbar(toolbarSize);
+				ImVec2 toolbarSize = ImVec2(ImGui::GetContentRegionAvail().x, m_Window.HeaderSize().y);
+				ImGui::BeginToolbar(toolbarSize);
 
 				if (ImGui::TransparentButton(
 					IMGUI_FORMAT_ID(std::string(ICON_FA_ERASE) + " Clear", BUTTON_ID, "CLEAR_CONSOLE").c_str(), ImVec2(0, toolbarSize.y)))
@@ -168,7 +168,7 @@ namespace renegade
 					m_NeedsRefresh = true;
 				}
 
-				EndToolbar();
+				ImGui::EndToolbar(m_Window.GetWindowPadding());
 
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(m_Window.GetFramePadding().x * 2, m_Window.GetFramePadding().y * 2));
 				if (ImGui::BeginChild(

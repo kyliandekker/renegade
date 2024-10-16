@@ -21,7 +21,7 @@ namespace renegade
 
 				std::string GetString();
 
-				virtual bool Render(const char* a_Label);
+				bool Render(const char* a_Label, ImGuiInputTextFlags flags = 0);
 			protected:
 				core::Data m_Data;
 			};
@@ -32,7 +32,6 @@ namespace renegade
 				SearchBarInput(const std::string& a_InitialValue = "", size_t a_BufferSize = 256);
 
 				bool Render(const char* a_Label, const ImVec2& a_Size, float a_Padding);
-				bool Render(const char* a_Label) override;
 
 				int m_PreviousResult = 0;
 			};

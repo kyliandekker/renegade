@@ -143,7 +143,7 @@ namespace renegade
 			ImFont* m_BoldItalicsFont;
 			ImFont* m_IconFont;
 
-			void ImGuiWindow::CreateImGui() const
+			void ImGuiWindow::CreateImGui()
 			{
 				ImGuiIO& io = ImGui::GetIO();
 				io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
@@ -271,6 +271,8 @@ namespace renegade
 				style.LogSliderDeadzone = 4;
 				style.FramePadding = m_FramePadding;
 				style.ItemSpacing = m_FramePadding;
+
+				m_HeaderSize = ImVec2(0, FontSize() * 2);
 			}
 
 			ImFont*& ImGuiWindow::H1() const
@@ -321,6 +323,11 @@ namespace renegade
 			ImVec2 ImGuiWindow::GetWindowPadding() const
 			{
 				return m_WindowPadding;
+			}
+
+			ImVec2 ImGuiWindow::HeaderSize() const
+			{
+				return m_HeaderSize;
 			}
 
 			void ImGuiWindow::UpdateMouseCursor()

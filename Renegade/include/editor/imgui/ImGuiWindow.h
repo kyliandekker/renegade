@@ -45,7 +45,7 @@ namespace renegade
 
 				bool CreateContextWin32();
 				bool CreateContextDX12();
-				void CreateImGui() const;
+				void CreateImGui();
 				void Render();
 
 				ImFont*& Capital() const;
@@ -59,6 +59,7 @@ namespace renegade
 				float SmallFontSize() const;
 				ImVec2 GetFramePadding() const;
 				ImVec2 GetWindowPadding() const;
+				ImVec2 HeaderSize() const;
 			private:
 				void UpdateMouseCursor();
 
@@ -69,6 +70,7 @@ namespace renegade
 
 				ImVec2 m_FramePadding = ImVec2(8, 8);
 				ImVec2 m_WindowPadding = ImVec2(8, 8);
+				ImVec2 m_HeaderSize;
 
 				MainWindow mainWindow;
 				ConsoleWindow consoleWindow;

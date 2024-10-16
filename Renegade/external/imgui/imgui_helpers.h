@@ -19,6 +19,9 @@ namespace ImGui
 	bool EngineTreeNodeExS(const char* id, const char* icon, const char* label, bool& clicked, bool& right_clicked, bool selected, const ImVec2& size, ImGuiTreeNodeFlags flags);
 	bool EngineResourceNode(const char* id, const char* icon, const char* label, const char* label2, bool& clicked, bool& right_clicked, bool& double_clicked, bool selected);
 	bool SearchBar(float fontSize, const char* label, char* buf, size_t buf_size, const ImVec2& size = ImVec2(0, 0), float padding = 4, ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = nullptr, void* user_data = nullptr);
+	void BeginToolbar(const ImVec2& a_Size);
+	void EndToolbar(const ImVec2& a_Padding);
+	void DisplayHeader(ImFont* boldFont, const char* label);
 
 	inline ImU32 ImColorConvertFloat4ToU32(const ImVec4& in)
 	{
