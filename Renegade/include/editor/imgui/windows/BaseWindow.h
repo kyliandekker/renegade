@@ -23,6 +23,8 @@ namespace renegade
 				BaseWindow(ImGuiWindow& a_Window, ImGuiWindowFlags a_Flags, const std::string& a_Name, std::string a_WindowID, bool a_FullScreen = false);
 				~BaseWindow();
 
+				virtual bool Initialize();
+
 				virtual bool WindowBegin();
 				virtual void WindowEnd();
 				void Update();

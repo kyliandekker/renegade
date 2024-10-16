@@ -27,6 +27,8 @@ namespace renegade
 				~ConsoleWindow();
 				void Render() override;
 
+				bool Initialize() override;
+
 				void Clear();
 				void AddMessage(const logger::Message& a_Message);
 

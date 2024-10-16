@@ -14,6 +14,9 @@ namespace renegade
 			{
 			public:
 				MainWindow(ImGuiWindow& a_Window);
+
+				bool Initialize() override;
+
 				void Render() override;
 			};
 		}

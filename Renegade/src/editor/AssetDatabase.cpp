@@ -34,7 +34,6 @@ namespace renegade
 		{
 			m_Ready = false;
 			m_Root.m_Path = ExePath() + "/assets";
-			m_Root.m_FoldedOut = true;
 			if (m_Root.Scan())
 			{
 				LOGF(LOGSEVERITY_SUCCESS, "Scanned asset database.");

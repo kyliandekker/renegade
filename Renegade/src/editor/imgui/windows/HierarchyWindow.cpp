@@ -17,6 +17,11 @@ namespace renegade
 			HierarchyWindow::HierarchyWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_HIERARCHY) + " Hierarchy", "Hierarchy")
 			{ }
 
+            bool HierarchyWindow::Initialize()
+            {
+                return true;
+            }
+
 			void HierarchyWindow::Render()
 			{
 				//if (m_NeedsRefresh)

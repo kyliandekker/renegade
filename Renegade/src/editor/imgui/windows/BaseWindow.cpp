@@ -7,6 +7,7 @@
 
 #include "utils/string_extensions.h"
 #include "editor/imgui/ImGuiWindow.h"
+#include "core/Engine.h"
 
 namespace renegade
 {
@@ -18,6 +19,11 @@ namespace renegade
 			{ }
 
 			BaseWindow::~BaseWindow() = default;
+
+            bool BaseWindow::Initialize()
+            {
+                return true;
+            }
 
 			bool BaseWindow::WindowBegin()
 			{
@@ -32,6 +38,11 @@ namespace renegade
 			void BaseWindow::Update()
 			{
 				if (!m_Enabled)
+				{
+					return;
+				}
+				
+				if (!core::ENGINE.GetEditor().Ready())
 				{
 					return;
 				}

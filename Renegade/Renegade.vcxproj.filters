@@ -105,7 +105,10 @@
     <ClInclude Include="include\graphics\DescHandle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\EditorSelectable.h">
+    <ClInclude Include="include\editor\imgui\EditorSelectable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\editor\imgui\ExplorerResourceUIView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -215,7 +218,10 @@
     <ClCompile Include="src\graphics\DescHandle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\editor\EditorSelectable.cpp">
+    <ClCompile Include="src\editor\imgui\EditorSelectable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\editor\imgui\ExplorerResourceUIView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

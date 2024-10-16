@@ -49,6 +49,13 @@ namespace renegade
 
 				LOGF(LOGSEVERITY_SUCCESS, "Created ImGui.");
 
+				mainWindow.Initialize();
+				consoleWindow.Initialize();
+				sceneWindow.Initialize();
+				inspectorWindow.Initialize();
+				hierarchyWindow.Initialize();
+				explorerWindow.Initialize();
+
 				return System::Initialize();
 			}
 
@@ -102,6 +109,11 @@ namespace renegade
 
 			void ImGuiWindow::OnDrawRenderData(ID3D12GraphicsCommandList* a_CommandList)
 			{
+				if (!m_Ready)
+				{
+					return;
+				}
+
 				ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), a_CommandList);
 			}
 
@@ -374,6 +386,11 @@ namespace renegade
 
 			void ImGuiWindow::Render()
 			{
+				if (!m_Ready)
+				{
+					return;
+				}
+
 				ImGui_ImplDX12_NewFrame();
 				ImGui_ImplWin32_NewFrame();
 				ImGui::NewFrame();

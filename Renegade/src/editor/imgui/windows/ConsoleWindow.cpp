@@ -16,9 +16,7 @@ namespace renegade
 		namespace imgui
 		{
 			ConsoleWindow::ConsoleWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_CONSOLE) + " Console", "Console")
-			{
-				logger::LOGGER.OnMessageLogged += std::bind(&ConsoleWindow::LoggerCallback, this, std::placeholders::_1);
-			}
+			{ }
 
 			ConsoleWindow::~ConsoleWindow()
 			{
@@ -222,6 +220,12 @@ namespace renegade
 
 				ImGui::EndChild();
 			}
+
+            bool ConsoleWindow::Initialize()
+            {
+				logger::LOGGER.OnMessageLogged += std::bind(&ConsoleWindow::LoggerCallback, this, std::placeholders::_1);
+                return true;
+            }
 
 			void ConsoleWindow::Clear()
 			{

@@ -19,9 +19,10 @@ namespace renegade
 				};
         }
 
-        bool Editor::Initialize(int a_NumArgs, ...)
+        bool Editor::Initialize(int, ...)
 		{
-			bool success = InitializeSystem(&m_Window) && InitializeSystem(&m_AssetDatabase);
+			bool success = InitializeSystem(&m_AssetDatabase);
+			success |= InitializeSystem(&m_Window);
 			return success && System::Initialize();
 		}
 

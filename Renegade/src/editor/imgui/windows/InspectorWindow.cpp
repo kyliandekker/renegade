@@ -18,6 +18,11 @@ namespace renegade
 			InspectorWindow::InspectorWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_INSPECTOR) + " Inspector", "Inspector")
 			{ }
 
+			bool InspectorWindow::Initialize()
+			{
+				return true;
+			}
+
 			void InspectorWindow::Render()
 			{
 				if (core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable)

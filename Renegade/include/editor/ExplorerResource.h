@@ -7,7 +7,6 @@
 
 #include "assets/AssetType.h"
 #include "graphics/DescHandle.h"
-#include "editor/EditorSelectable.h"
 
 #ifdef __EDITOR__
 
@@ -15,12 +14,6 @@ namespace renegade
 {
 	namespace editor
 	{
-		enum class ExplorerResourceEditMode
-		{
-			None,
-			Rename
-		};
-
 		enum class ExplorerResourceType
 		{
 			Folder,
@@ -28,36 +21,22 @@ namespace renegade
 		};
 
 		// TODO: This is a monster class and needs to be split up asap. The explorer functionality should not be mixed with the imgui functionality in any sort of way.
-		class ExplorerResource : public EditorSelectable
+		class ExplorerResource
 		{
 		public:
 			virtual ~ExplorerResource();
 
-			std::string m_Name;
-			std::string m_Icon;
 			std::vector<ExplorerResource*> m_Resources;
 			std::string m_Path;
-			std::string m_NameWithExtension;
 			ExplorerResourceType m_ResourceType = ExplorerResourceType::Folder;
 
 			ExplorerResource* m_Parent = nullptr;
 
-			bool m_FoldedOut = false;
-			bool m_Show = true;
-			std::vector<ExplorerResource*> m_Parents;
-			ExplorerResourceEditMode m_ResourceEditMode = ExplorerResourceEditMode::None;
-
 			virtual bool Initialize() { return true; };
-			virtual void RenderIcon(const char* icon);
-			void Render(bool& clicked, bool& right_clicked, bool& double_clicked, bool selected, const char* icon, const char* label2);
-			void RenderSelectable() override;
-			virtual void RenderInnerProperties();
 
 			bool Scan();
 			bool Rename(const std::string& a_Name);
 			void Delete();
-
-            bool HasFolders() const;
 
 			assets::AssetType GetAssetType() const;
 			void SetAssetType(assets::AssetType a_AssetType);
@@ -88,24 +67,26 @@ namespace renegade
 		public:
 		};
 
-		class TextureExplorerResource : public ExplorerResource
+		class ImageExplorerResource : public ExplorerResource
 		{
 		public:
-			~TextureExplorerResource() override;
+			virtual ~ImageExplorerResource() override;
 
-			void RenderInnerProperties() override;
-
-			void RenderIcon(const char* icon) override;
 			bool Initialize() override;
 			graphics::DescHandle* m_DescHandle;
 		};
 
-		class SpriteExplorerResource : public TextureExplorerResource
+		class TextureExplorerResource : public ImageExplorerResource
 		{
 		public:
 		};
 
-		class FontExplorerResource : public TextureExplorerResource
+		class SpriteExplorerResource : public ImageExplorerResource
+		{
+		public:
+		};
+
+		class FontExplorerResource : public ImageExplorerResource
 		{
 		public:
 		};

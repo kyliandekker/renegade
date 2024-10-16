@@ -19,6 +19,11 @@ namespace renegade
 			MainWindow::MainWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDocking, "", "DockSpace", true)
 			{ }
 
+            bool MainWindow::Initialize()
+            {
+                return true;
+            }
+
 			void MainWindow::Render()
 			{
 				ImGui::DockSpace(ImGui::GetID("DockSpace"));

@@ -9,6 +9,8 @@
 #include "imgui/imgui_helpers.h"
 #include "editor/Editor.h"
 #include "core/Engine.h"
+#include "editor/ExplorerResource.h"
+#include "editor/imgui/ExplorerResourceUIView.h"
 
 namespace renegade
 {
@@ -17,76 +19,85 @@ namespace renegade
 		namespace imgui
 		{
 			ExplorerWindow::ExplorerWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_EXPLORER) + " Explorer", "Explorer")
+			{ }
+
+			bool ExplorerWindow::Initialize()
 			{
-				SetExplorerRoot(&core::ENGINE.GetEditor().GetAssetDatabase().m_Root);
+				m_AssetRoot.SetResource(&core::ENGINE.GetEditor().GetAssetDatabase().m_Root);
+				SetExplorerRoot(&m_AssetRoot);
+				return true;
 			}
 
-			void ExplorerWindow::SetExplorerRoot(editor::ExplorerResource* a_Resource)
+			void ExplorerWindow::SetExplorerRoot(ExplorerResourceUIView* a_Resource)
 			{
-				m_NewExplorerRoot = a_Resource;
-			}
-
-			void ExplorerWindow::Rescan()
-			{
-				m_NeedsRescan = true;
-			}
-
-			void ExplorerWindow::RenderFolder(editor::ExplorerResource* a_Resource)
-			{
-				if (a_Resource->m_Name.empty() ||
-					a_Resource->m_Path.empty() ||
-					!a_Resource->m_Show)
+				if (!a_Resource)
 				{
 					return;
 				}
 
-				if (a_Resource->m_ResourceType != ExplorerResourceType::Folder)
+				m_FolderRoot = a_Resource;
+				m_FolderRoot->GetChildren();
+			}
+
+			void ExplorerWindow::RenderFolder(ExplorerResourceUIView& a_Resource)
+			{
+				if (a_Resource.m_Name.empty() ||
+					a_Resource.m_Resource->m_Path.empty() ||
+					!a_Resource.m_Show)
 				{
 					return;
 				}
 
-				std::string name = a_Resource->m_Name;
+				if (a_Resource.m_Resource->m_ResourceType != ExplorerResourceType::Folder)
+				{
+					return;
+				}
+
+				std::string name = a_Resource.m_Name;
 				std::string icon = ICON_FA_FOLDER_OPEN;
-				if (a_Resource->m_ResourceType == ExplorerResourceType::Folder && a_Resource->m_FoldedOut && a_Resource->HasFolders())
+				if (a_Resource.m_Resource->m_ResourceType == ExplorerResourceType::Folder && a_Resource.m_FoldedOut && a_Resource.HasFolders())
 				{
 					icon = ICON_FA_FOLDER_OPEN;
 				}
-				else if (a_Resource->m_ResourceType == ExplorerResourceType::Folder)
+				else if (a_Resource.m_Resource->m_ResourceType == ExplorerResourceType::Folder)
 				{
 					icon = ICON_FA_FOLDER;
 				}
-				std::string id = IMGUI_FORMAT_ID("", TREE_NODE_ID, "TREE_NODE_" + string_extensions::StringToUpper(a_Resource->m_Path) + "_EXPLORER");
+				std::string id = IMGUI_FORMAT_ID("", TREE_NODE_ID, "TREE_NODE_" + string_extensions::StringToUpper(a_Resource.m_Resource->m_Path) + "_EXPLORER");
 
 				bool clicked, right_clicked;
 
-				ImGui::SetNextItemOpen(a_Resource->m_FoldedOut);
 				int flags = ImGuiTreeNodeFlags_OpenOnArrow;
-				if (!a_Resource->HasFolders())
+				if (!a_Resource.HasFolders())
 				{
 					flags = ImGuiTreeNodeFlags_Leaf;
 				}
-				const bool fold = ImGui::EngineTreeNodeExS(id.c_str(), icon.c_str(), name.c_str(), clicked, right_clicked, a_Resource == m_SelectedResource, ImVec2(ImGui::GetContentRegionAvail().x, m_Window.FontSize()), flags);
+				const bool fold = ImGui::EngineTreeNodeExS(id.c_str(), icon.c_str(), name.c_str(), clicked, right_clicked, &a_Resource == m_FolderRoot, ImVec2(ImGui::GetContentRegionAvail().x, m_Window.FontSize()), flags);
 
 				if (right_clicked)
 				{
 					m_ShowContextMenu |= true;
-					m_SelectedResource = a_Resource;
+					m_SelectedResource = &a_Resource;
 				}
 
 				if (clicked)
 				{
-					SetExplorerRoot(a_Resource);
-					m_SelectedResource = a_Resource;
+					m_NewFolderRoot = &a_Resource;
+					m_SelectedResource = &a_Resource;
 				}
 
-				if (a_Resource->m_FoldedOut != fold)
+				if (a_Resource.m_FoldedOut != fold)
 				{
-					a_Resource->m_FoldedOut = fold;
+					a_Resource.m_FoldedOut = fold;
+					if (a_Resource.m_FoldedOut)
+					{
+						a_Resource.GetChildren();
+					}
 				}
 
-				if (a_Resource->m_FoldedOut)
+				if (a_Resource.m_FoldedOut)
 				{
-					for (auto& resource : a_Resource->m_Resources)
+					for (auto& resource : a_Resource.m_Resources)
 					{
 						RenderFolder(resource);
 					}
@@ -108,32 +119,37 @@ namespace renegade
 
 				// This needs to be done at the start of the frame to avoid errors.
 				// We set the root directory of the second window that shows the assets.
-				if (m_NewExplorerRoot)
+				if (m_NewFolderRoot)
 				{
+					if (ExplorerResourceUIView* derivedPtr = dynamic_cast<ExplorerResourceUIView*>(core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable))
+					{
+						core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable = nullptr;
+					}
+
 					m_SelectedResource = nullptr;
-					m_ExplorerRoot = m_NewExplorerRoot;
+					SetExplorerRoot(m_NewFolderRoot);
 					m_NeedsRefresh = true;
-					m_NewExplorerRoot = nullptr;
+					m_NewFolderRoot = nullptr;
 				}
 
 				// This needs to be done at the start of the frame to avoid errors.
 				// We rescan the database here.
 				if (m_NeedsRescan)
 				{
-					if (ExplorerResource* derivedPtr = dynamic_cast<ExplorerResource*>(core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable))
+					if (ExplorerResourceUIView* derivedPtr = dynamic_cast<ExplorerResourceUIView*>(core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable))
 					{
 						core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable = nullptr;
 					}
 
-					core::ENGINE.GetEditor().GetAssetDatabase().m_Root.Scan();
-					SetExplorerRoot(&core::ENGINE.GetEditor().GetAssetDatabase().m_Root);
+					m_AssetRoot.SetResource(&core::ENGINE.GetEditor().GetAssetDatabase().m_Root);
+					SetExplorerRoot(&m_AssetRoot);
 					m_NeedsRefresh = true;
 					m_NeedsRescan = false;
 				}
 
 				// This needs to be done at the start of the frame to avoid errors.
 				// We refresh the assets that show up based on the searchbar and the root directory.
-				if (m_NeedsRefresh && m_ExplorerRoot)
+				if (m_NeedsRefresh)
 				{
 					m_ResourcesToShow.clear();
 
@@ -141,14 +157,19 @@ namespace renegade
 
 					bool isEmptyString = m_SearchBar.GetString().empty();
 
-					for (auto& resource : m_ExplorerRoot->m_Resources)
+					for (auto& resource : m_FolderRoot->m_Resources)
 					{
-						if (isEmptyString || string_extensions::StringToLower(resource->m_Name).find(m_SearchBar.GetString()) != std::string::npos)
+						if (isEmptyString || string_extensions::StringToLower(resource.m_Name).find(m_SearchBar.GetString()) != std::string::npos)
 						{
-							m_ResourcesToShow.push_back(resource);
+							m_ResourcesToShow.push_back(&resource);
 						}
 					}
 				}
+				if (!m_FolderRoot)
+				{
+					return;
+				}
+
 
 				m_ShowContextMenu = false;
 
@@ -183,7 +204,7 @@ namespace renegade
 				))
 				{
 					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-					RenderFolder(&core::ENGINE.GetEditor().GetAssetDatabase().m_Root);
+					RenderFolder(m_AssetRoot);
 					ImGui::PopStyleVar();
 				}
 				ImGui::EndChild();
@@ -200,45 +221,8 @@ namespace renegade
 					ImGuiChildFlags_Borders
 				))
 				{
-					if (m_ExplorerRoot)
+					if (m_FolderRoot)
 					{
-						ImVec4 transparent(0, 0, 0, 0);
-						ImGui::PushStyleColor(ImGuiCol_Header, transparent);
-						ImGui::PushStyleColor(ImGuiCol_HeaderHovered, transparent);
-						ImGui::PushStyleColor(ImGuiCol_HeaderActive, transparent);
-						ImGui::PushStyleColor(ImGuiCol_FrameBg, transparent);
-						ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, transparent);
-						ImGui::PushStyleColor(ImGuiCol_FrameBgActive, transparent);
-						ImVec4 textColor = ImGui::GetStyleColorVec4(ImGuiCol_Text);
-						textColor.w = 0.5f;
-						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + m_Window.GetFramePadding().x);
-						for (size_t i = 0; i < m_ExplorerRoot->m_Parents.size(); i++)
-						{
-							ExplorerResource* parent = m_ExplorerRoot->m_Parents[i];
-							if (i < m_ExplorerRoot->m_Parents.size() - 1)
-							{
-								bool selected;
-								if (ImGui::Selectable(
-									IMGUI_FORMAT_ID(parent->m_Name, SELECTABLE_ID, std::string("FILES_INNER_HEADER_" + string_extensions::StringToUpper(parent->m_Name) + "_EXPLORER").c_str()).c_str(),
-									&selected,
-									0,
-									ImGui::CalcTextSize(parent->m_Name.c_str())
-								))
-								{
-									SetExplorerRoot(parent);
-								}
-								ImGui::SameLine();
-								ImGui::TextColored(textColor, ICON_FA_ARROW_RIGHT);
-								ImGui::SameLine();
-							}
-							else
-							{
-								ImGui::TextColored(ImGui::GetStyleColorVec4(ImGuiCol_Text), parent->m_Name.c_str());
-							}
-						}
-						ImGui::PopStyleColor(6);
-						ImGui::Separator();
-
 						if (ImGui::BeginChild(
 							IMGUI_FORMAT_ID("", CHILD_ID, "FILES_INNER_EXPLORER").c_str(),
 							ImVec2(
@@ -247,7 +231,7 @@ namespace renegade
 							)
 						))
 						{
-							if (m_ExplorerRoot->m_Parent)
+							if (m_FolderRoot->m_Parent)
 							{
 								bool clicked, right_clicked, double_clicked;
 								ImGui::EngineResourceNode(
@@ -261,13 +245,14 @@ namespace renegade
 									false
 								);
 
+								// TODO: Get parent.
 								if (double_clicked)
 								{
-									SetExplorerRoot(m_ExplorerRoot->m_Parent);
+									m_NewFolderRoot = m_FolderRoot->m_Parent;
 								}
 							}
 
-							for (auto& item : m_ResourcesToShow)
+							for (ExplorerResourceUIView* item : m_ResourcesToShow)
 							{
 								if (!item)
 								{
@@ -275,9 +260,9 @@ namespace renegade
 								}
 
 								bool clicked, right_clicked, double_clicked;
-								item->Render(clicked, right_clicked, double_clicked, item == core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable, item->m_ResourceType == ExplorerResourceType::Folder ? ICON_FA_FOLDER : item->m_Icon.c_str(), item->m_ResourceType == ExplorerResourceType::Folder ? "" : assets::AssetTypeToString(item->GetAssetType()).c_str());
+								item->Render(clicked, right_clicked, double_clicked, item == core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable);
 
-								if (clicked)
+								if (clicked && item->m_Resource->m_ResourceType != ExplorerResourceType::Folder)
 								{
 									core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable = item;
 								}
@@ -286,9 +271,9 @@ namespace renegade
 									m_SelectedResource = item;
 									m_ShowContextMenu |= true;
 								}
-								if (double_clicked && item->m_ResourceType == ExplorerResourceType::Folder)
+								if (double_clicked && item->m_Resource->m_ResourceType == ExplorerResourceType::Folder)
 								{
-									SetExplorerRoot(item);
+									m_NewFolderRoot = item;
 								}
 							}
 						}
@@ -303,63 +288,63 @@ namespace renegade
 					ImGui::OpenPopup(IMGUI_FORMAT_ID("", POPUP_WINDOW_ID, "RESOURCE_OPTIONS_EXPLORER").c_str());
 				}
 
-				auto createNewFolder = [](const ExplorerResource& a_Folder)
-					{
-						std::string name = ExplorerResource::GetUniqueName(a_Folder, "New Folder");
-						bool success = file::FileLoader::CreateFolder(a_Folder.m_Path + "/" + name);
-						return success;
-					};
+				//auto createNewFolder = [](const ExplorerResource& a_Folder)
+				//	{
+				//		std::string name = ExplorerResource::GetUniqueName(a_Folder, "New Folder");
+				//		bool success = file::FileLoader::CreateFolder(a_Folder.m_Path + "/" + name);
+				//		return success;
+				//	};
 
-				if (m_SelectedResource)
-				{
-					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(m_Window.GetFramePadding().x * 2, m_Window.GetFramePadding().y * 2));
-					if (ImGui::BeginPopup(IMGUI_FORMAT_ID("", POPUP_WINDOW_ID, "RESOURCE_OPTIONS_EXPLORER").c_str()))
-					{
-						ImVec4 textColor = ImGui::GetStyleColorVec4(ImGuiCol_Text);
-						textColor.w = 0.5f;
-						ImGui::TextColored(textColor, m_SelectedResource->m_Name.c_str());
+				//if (m_SelectedResource)
+				//{
+				//	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(m_Window.GetFramePadding().x * 2, m_Window.GetFramePadding().y * 2));
+				//	if (ImGui::BeginPopup(IMGUI_FORMAT_ID("", POPUP_WINDOW_ID, "RESOURCE_OPTIONS_EXPLORER").c_str()))
+				//	{
+				//		ImVec4 textColor = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+				//		textColor.w = 0.5f;
+				//		ImGui::TextColored(textColor, m_SelectedResource->m_Name.c_str());
 
-						if (m_SelectedResource->m_ResourceType != ExplorerResourceType::Folder)
-						{
-							ImGui::Separator();
-							if (ImGui::MenuItem(IMGUI_FORMAT_ID(std::string(ICON_FA_ARROW_TURN_UP) + " Show in explorer", MENU_ITEM_ID, "SHOW_FILE_IN_EXPLORER_EXPLORER").c_str()))
-							{
-								file::FileLoader::OpenInExplorer(m_SelectedResource->m_Parent->m_Path.c_str());
-							}
-							ImGui::Separator();
-							if (ImGui::MenuItem(IMGUI_FORMAT_ID(std::string(ICON_FA_DELETE) + " Delete note", MENU_ITEM_ID, "DELETE_FILE_EXPLORER").c_str()))
-							{
-								m_SelectedResource->Delete();
-								m_NeedsRescan = true;
-							}
-						}
-						else
-						{
-							ImGui::Separator();
+				//		if (m_SelectedResource->m_ResourceType != ExplorerResourceType::Folder)
+				//		{
+				//			ImGui::Separator();
+				//			if (ImGui::MenuItem(IMGUI_FORMAT_ID(std::string(ICON_FA_ARROW_TURN_UP) + " Show in explorer", MENU_ITEM_ID, "SHOW_FILE_IN_EXPLORER_EXPLORER").c_str()))
+				//			{
+				//				file::FileLoader::OpenInExplorer(m_SelectedResource->m_Parent->m_Path.c_str());
+				//			}
+				//			ImGui::Separator();
+				//			if (ImGui::MenuItem(IMGUI_FORMAT_ID(std::string(ICON_FA_DELETE) + " Delete note", MENU_ITEM_ID, "DELETE_FILE_EXPLORER").c_str()))
+				//			{
+				//				m_SelectedResource->Delete();
+				//				m_NeedsRescan = true;
+				//			}
+				//		}
+				//		else
+				//		{
+				//			ImGui::Separator();
 
-							if (ImGui::MenuItem(IMGUI_FORMAT_ID(std::string(ICON_FA_FOLDER_PLUS) + " New folder", MENU_ITEM_ID, "CREATE_NEW_FOLDER").c_str()))
-							{
-								if (createNewFolder(*m_SelectedResource))
-								{
-									m_NeedsRescan = true;
-								}
-							}
-							ImGui::Separator();
-							if (ImGui::MenuItem(IMGUI_FORMAT_ID(std::string(ICON_FA_ARROW_TURN_UP) + " Show in explorer", MENU_ITEM_ID, "SHOW_FOLDER_IN_EXPLORER").c_str()))
-							{
-								file::FileLoader::OpenInExplorer(m_SelectedResource->m_Parent->m_Path.c_str());
-							}
-							ImGui::Separator();
-							if (ImGui::MenuItem(IMGUI_FORMAT_ID(std::string(ICON_FA_DELETE) + " Delete", MENU_ITEM_ID, "DELETE_FILE_EXPLORER").c_str()))
-							{
-								m_SelectedResource->Delete();
-								m_NeedsRescan = true;
-							}
-						}
-						ImGui::EndPopup();
-					}
-					ImGui::PopStyleVar();
-				}
+				//			if (ImGui::MenuItem(IMGUI_FORMAT_ID(std::string(ICON_FA_FOLDER_PLUS) + " New folder", MENU_ITEM_ID, "CREATE_NEW_FOLDER").c_str()))
+				//			{
+				//				if (createNewFolder(*m_SelectedResource))
+				//				{
+				//					m_NeedsRescan = true;
+				//				}
+				//			}
+				//			ImGui::Separator();
+				//			if (ImGui::MenuItem(IMGUI_FORMAT_ID(std::string(ICON_FA_ARROW_TURN_UP) + " Show in explorer", MENU_ITEM_ID, "SHOW_FOLDER_IN_EXPLORER").c_str()))
+				//			{
+				//				file::FileLoader::OpenInExplorer(m_SelectedResource->m_Parent->m_Path.c_str());
+				//			}
+				//			ImGui::Separator();
+				//			if (ImGui::MenuItem(IMGUI_FORMAT_ID(std::string(ICON_FA_DELETE) + " Delete", MENU_ITEM_ID, "DELETE_FILE_EXPLORER").c_str()))
+				//			{
+				//				m_SelectedResource->Delete();
+				//				m_NeedsRescan = true;
+				//			}
+				//		}
+				//		ImGui::EndPopup();
+				//	}
+				//	ImGui::PopStyleVar();
+				//}
 			}
 		}
 	}

@@ -16,6 +16,11 @@ namespace renegade
 			SceneWindow::SceneWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_SCENE) + " Scene", "Scene")
 			{ }
 
+            bool SceneWindow::Initialize()
+            {
+                return true;
+            }
+
 			bool f = false, b = false;
 			void SceneWindow::Render()
 			{

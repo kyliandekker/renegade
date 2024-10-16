@@ -101,15 +101,8 @@ namespace ImGui
 
 		ImVec2 pos = ImGui::GetCursorScreenPos();
 
-		const bool fold = ImGui::TreeNodeExS(id, size, flags);
-
-		clicked = ImGui::IsItemHovered() && ImGui::IsItemClicked(0);
-		right_clicked = ImGui::IsItemHovered() && ImGui::IsItemClicked(1);
-
-		ImVec2 itemSize = ImGui::GetItemRectSize();
-
 		ImVec2 select_min = pos;
-		ImVec2 select_max = ImVec2(pos.x + itemSize.x, pos.y + itemSize.y);
+		ImVec2 select_max = ImVec2(pos.x + size.x, pos.y + size.y);
 
 		if (selected)
 		{
@@ -118,6 +111,12 @@ namespace ImGui
 
 			draw_list->AddRectFilled(select_min, select_max, select_color, 0);
 		}
+
+		ImGui::SetNextItemAllowOverlap();
+		const bool fold = ImGui::TreeNodeExS(id, size, flags);
+
+		clicked = ImGui::IsItemHovered() && ImGui::IsItemClicked(0);
+		right_clicked = ImGui::IsItemHovered() && ImGui::IsItemClicked(1);
 
 		// Adjust icon and label positions after the tree node is drawn
 		float iconPos = pos.x + 35;

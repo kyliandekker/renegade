@@ -16,6 +16,9 @@ namespace renegade
 			{
 			public:
 				InspectorWindow(ImGuiWindow& a_Window);
+
+				bool Initialize() override;
+				
 				void Render() override;
 			};
 		}

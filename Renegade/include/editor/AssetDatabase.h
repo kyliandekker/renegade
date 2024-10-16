@@ -9,7 +9,10 @@ namespace renegade
 {
 	namespace editor
 	{
-		class EditorSelectable;
+		namespace imgui
+		{
+			class EditorSelectable;
+		}
 
 		class AssetDatabase : public core::System
 		{
@@ -19,7 +22,7 @@ namespace renegade
 
 			bool Scan();
 			ExplorerResource m_Root;
-			EditorSelectable* m_EditorSelectable;
+			imgui::EditorSelectable* m_EditorSelectable;
 		};
 	}
 }

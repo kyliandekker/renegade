@@ -44,8 +44,9 @@
     <ClInclude Include="include\core\Engine.h" />
     <ClInclude Include="include\editor\AssetDatabase.h" />
     <ClInclude Include="include\editor\Editor.h" />
-    <ClInclude Include="include\editor\EditorSelectable.h" />
+    <ClInclude Include="include\editor\imgui\EditorSelectable.h" />
     <ClInclude Include="include\editor\EditorSettings.h" />
+    <ClInclude Include="include\editor\imgui\ExplorerResourceUIView.h" />
     <ClInclude Include="include\editor\imgui\font_file.h" />
     <ClInclude Include="include\editor\imgui\ImGuiDefines.h" />
     <ClInclude Include="include\editor\imgui\ImGuiUIView.h" />
@@ -78,6 +79,7 @@
     <ClCompile Include="external\imgui\imgui_stdlib.cpp" />
     <ClCompile Include="external\imgui\imgui_tables.cpp" />
     <ClCompile Include="external\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\editor\imgui\ExplorerResourceUIView.cpp" />
     <ClCompile Include="src\core\datatypes\Data.cpp" />
     <ClCompile Include="src\core\datatypes\DataStream.cpp" />
     <ClCompile Include="src\core\datatypes\ReserveDataStream.cpp" />
@@ -85,7 +87,7 @@
     <ClCompile Include="src\core\System.cpp" />
     <ClCompile Include="src\editor\AssetDatabase.cpp" />
     <ClCompile Include="src\editor\Editor.cpp" />
-    <ClCompile Include="src\editor\EditorSelectable.cpp" />
+    <ClCompile Include="src\editor\imgui\EditorSelectable.cpp" />
     <ClCompile Include="src\editor\EditorSettings.cpp" />
     <ClCompile Include="src\editor\imgui\ImGuiDefines.cpp" />
     <ClCompile Include="src\editor\imgui\ImGuiUIView.cpp" />

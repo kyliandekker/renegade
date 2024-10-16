@@ -16,6 +16,9 @@ namespace renegade
 			{
 			public:
 				HierarchyWindow(ImGuiWindow& a_Window);
+
+				bool Initialize() override;
+
 				void Render() override;
 
 				void SetShowContextMenu(bool a_ShowContextMenu);
