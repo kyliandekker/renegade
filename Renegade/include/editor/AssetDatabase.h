@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef __EDITOR__
+
 #include "editor/ExplorerResource.h"
 #include "core/System.h"
-
-#ifdef __EDITOR__
 
 namespace renegade
 {

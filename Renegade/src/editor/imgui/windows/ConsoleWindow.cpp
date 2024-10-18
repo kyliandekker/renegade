@@ -16,13 +16,16 @@ namespace renegade
 		namespace imgui
 		{
 			ConsoleWindow::ConsoleWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_CONSOLE) + " Console", "Console")
-			{ }
+			{
+				// We want every log message. Not just the ones after ImGui has been initialized.
+				logger::LOGGER.OnMessageLogged += std::bind(&ConsoleWindow::LoggerCallback, this, std::placeholders::_1);
+			}
 
 			ConsoleWindow::~ConsoleWindow()
 			{
 			}
 
-			char logo_arr[7][10] =
+			const char logo_arr[7][10] =
 			{
 				ICON_FA_INFO,
 				ICON_FA_WARNING,
@@ -223,7 +226,6 @@ namespace renegade
 
             bool ConsoleWindow::Initialize()
             {
-				logger::LOGGER.OnMessageLogged += std::bind(&ConsoleWindow::LoggerCallback, this, std::placeholders::_1);
                 return true;
             }
 

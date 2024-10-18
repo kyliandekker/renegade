@@ -25,7 +25,6 @@ namespace renegade
 
 				bool Initialize() override;
 
-				bool m_ShowContextMenu = false;
 				bool m_ShowExplorerInspector = false;
 				bool m_NeedsRefresh = true;
 				bool m_NeedsRescan = false;
@@ -34,7 +33,6 @@ namespace renegade
 				char EXPLORER_INSPECTOR_RENAME_RESOURCE[256] = { '\0' };
 
 				std::vector<ExplorerResourceUIView*> m_ResourcesToShow;
-				ExplorerResourceUIView* m_SelectedResource = nullptr;
 				ExplorerResourceUIView m_AssetRoot;
 				ExplorerResourceUIView* m_FolderRoot = nullptr;
 				ExplorerResourceUIView* m_NewFolderRoot = nullptr;

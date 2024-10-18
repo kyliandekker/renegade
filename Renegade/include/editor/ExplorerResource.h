@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef __EDITOR__
+
 #include <vector>
 #include <string>
 #include <rapidjson/document.h>
@@ -7,8 +9,6 @@
 
 #include "assets/AssetType.h"
 #include "graphics/DescHandle.h"
-
-#ifdef __EDITOR__
 
 namespace renegade
 {
@@ -23,14 +23,15 @@ namespace renegade
 		// TODO: This is a monster class and needs to be split up asap. The explorer functionality should not be mixed with the imgui functionality in any sort of way.
 		class ExplorerResource
 		{
+			friend class AssetDatabase;
 		public:
 			virtual ~ExplorerResource();
 
-			std::vector<ExplorerResource*> m_Resources;
-			std::string m_Path;
-			ExplorerResourceType m_ResourceType = ExplorerResourceType::Folder;
+			std::string GetPath() const;
+			ExplorerResourceType GetResourceType() const;
+			ExplorerResource* GetParent() const;
 
-			ExplorerResource* m_Parent = nullptr;
+			std::vector<ExplorerResource*> m_Resources;
 
 			virtual bool Initialize() { return true; };
 
@@ -49,7 +50,10 @@ namespace renegade
 
 			static std::string GetUniqueName(const ExplorerResource& a_Resource, const std::string& a_Name);
 		protected:
+			std::string m_Path;
 			assets::AssetType m_AssetType;
+			ExplorerResourceType m_ResourceType = ExplorerResourceType::Folder;
+			ExplorerResource* m_Parent = nullptr;
 		};
 
 		class ConfigExplorerResource : public ExplorerResource

@@ -19,7 +19,7 @@ namespace renegade
 		{
 			if (Scan())
 			{
-				LOGF(LOGSEVERITY_SUCCESS, "Initialized AssetDatabase.");
+				LOGF(LOGSEVERITY_SUCCESS, "AssetDatabase initialized.");
 				return System::Initialize();
 			}
 			return false;
@@ -27,6 +27,7 @@ namespace renegade
 
 		bool AssetDatabase::Destroy()
 		{
+			LOGF(LOGSEVERITY_SUCCESS, "AssetDatabase destroyed.");
 			return System::Destroy();
 		}
 

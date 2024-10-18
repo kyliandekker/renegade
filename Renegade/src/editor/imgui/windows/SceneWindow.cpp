@@ -6,6 +6,7 @@
 
 #include "editor/imgui/ImGuiDefines.h"
 #include "editor/imgui/ImGuiWindow.h"
+#include "core/Engine.h"
 
 namespace renegade
 {
@@ -39,6 +40,12 @@ namespace renegade
 
 				if (ImGui::TransparentCheckboxButton(IMGUI_FORMAT_ID(ICON_FA_PAUSE, BUTTON_ID, "PAUSE_SCENE").c_str(), &b, ImVec2(toolbarSize.y, toolbarSize.y)))
 				{ }
+
+				ImGui::SameLine();
+				std::string fpsValue = std::to_string(core::ENGINE.GetFPS());
+
+				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - (ImGui::CalcTextSize(fpsValue.c_str()).x + m_Window.GetWindowPadding().x));
+				ImGui::Text(fpsValue.c_str());
 
 				ImGui::EndToolbar(m_Window.GetWindowPadding());
 			}

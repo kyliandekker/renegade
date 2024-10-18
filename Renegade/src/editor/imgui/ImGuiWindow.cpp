@@ -65,7 +65,7 @@ namespace renegade
 				ImGui_ImplWin32_Shutdown();
 				ImGui::DestroyContext();
 
-				LOGF(LOGSEVERITY_SUCCESS, "Uninitialized ImGui.");
+				LOGF(LOGSEVERITY_SUCCESS, "ImGui destroyed.");
 				return true;
 			}
 

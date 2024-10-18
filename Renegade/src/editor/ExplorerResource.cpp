@@ -70,6 +70,21 @@ namespace renegade
 			}
 		}
 
+        std::string ExplorerResource::GetPath() const
+        {
+            return m_Path;
+        }
+
+		ExplorerResourceType ExplorerResource::GetResourceType() const
+		{
+			return m_ResourceType;
+		}
+
+		ExplorerResource* ExplorerResource::GetParent() const
+		{
+			return m_Parent;
+		}
+
 		//imgui::StringTextInput EXPLORER_TEXT_INPUT;
 		//void ExplorerResource::RenderSelectable()
 		//{
@@ -303,7 +318,11 @@ namespace renegade
 
 		bool ExplorerResource::Rename(const std::string& a_Name)
 		{
-			std::string complete_name = a_Name + string_extensions::GetExtensionFromPath(m_Path, true);
+			std::string complete_name = a_Name;
+			if (m_ResourceType == ExplorerResourceType::File)
+			{
+				complete_name += string_extensions::GetExtensionFromPath(m_Path, true);
+			}
 			std::string new_path = string_extensions::GetPath(m_Path) + "/" + complete_name;
 			if (std::rename(m_Path.c_str(), new_path.c_str()) == 0)
 			{
@@ -396,55 +415,6 @@ namespace renegade
 				m_DescHandle->Release();
 			}
 		}
-
-		//void TextureExplorerResource::RenderInnerProperties()
-		//{
-		//	ImGui::DisplayHeader(core::ENGINE.GetEditor().GetImGuiWindow().Bold(), "Type");
-		//	ImGui::SameLine();
-		//	int items[3] = {
-		//		(int)assets::AssetType::Texture,
-		//		(int)assets::AssetType::Sprite,
-		//		(int)assets::AssetType::Font,
-		//	};
-		//	int current_item = 0;
-		//	{
-		//		if (m_AssetType == assets::AssetType::Sprite)
-		//		{
-		//			current_item = 1;
-		//		}
-		//		else if (m_AssetType == assets::AssetType::Font)
-		//		{
-		//			current_item = 2;
-		//		}
-		//	}
-		//	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 0));
-		//	if (ImGui::BeginCombo(imgui::IMGUI_FORMAT_ID("", COMBO_ID, "ASSETTYPE_INSPECTOR_EXPLORER").c_str(), assets::AssetTypeToString((assets::AssetType)items[current_item]).c_str()))
-		//	{
-		//		for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-		//		{
-		//			bool is_selected = (current_item == n);
-		//			if (ImGui::Selectable(assets::AssetTypeToString((assets::AssetType)items[n]).c_str(), is_selected))
-		//			{
-		//				m_AssetType = (assets::AssetType)items[n];
-		//				SaveMetadata();
-		//			}
-
-		//			if (is_selected)
-		//			{
-		//				ImGui::SetItemDefaultFocus();
-		//			}
-		//		}
-		//		ImGui::EndCombo();
-		//	}
-		//	ImGui::PopStyleVar();
-
-		//	if (!m_DescHandle->Invalid())
-		//	{
-		//		const float width_new = ImGui::GetContentRegionAvail().x;
-		//		const float height_new = (m_DescHandle->Height * (1.0f / m_DescHandle->Width * width_new));
-		//		ImGui::Image((void*)m_DescHandle->GpuHandle.ptr, ImVec2(width_new, height_new));
-		//	}
-		//}
 
 		bool ImageExplorerResource::Initialize()
 		{

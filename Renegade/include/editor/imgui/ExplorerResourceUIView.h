@@ -1,11 +1,15 @@
 #pragma once
 
+#ifdef __EDITOR__
+
 #include "editor/imgui/EditorSelectable.h"
 
 #include <vector>
 #include <string>
 
 #include "editor/imgui/StringTextInput.h"
+#include "editor/imgui/StringDropdown.h"
+#include "assets/AssetType.h"
 
 namespace renegade
 {
@@ -57,12 +61,15 @@ namespace renegade
 				bool HasFolders() const;
 
 				std::vector<ExplorerResourceUIView> m_Resources;
-				ExplorerResourceUIView* m_Parent;
+				ExplorerResourceUIView* m_Parent = nullptr;
 
 				// INSPECTOR.
 				void RenderSelectable() override;
 				StringTextInput m_NameInput;
+				StringDropdown<assets::AssetType> m_AssetTypeDropdown;
 			};
 		}
 	}
 }
+
+#endif // __EDITOR__

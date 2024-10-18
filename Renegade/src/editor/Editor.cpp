@@ -29,6 +29,7 @@ namespace renegade
 		bool Editor::Destroy()
 		{
 			bool success = m_Window.Destroy() && m_AssetDatabase.Destroy();
+			LOGF(LOGSEVERITY_SUCCESS, "Editor destroyed.");
 			return success && System::Destroy();
 		}
 

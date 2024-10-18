@@ -11,10 +11,32 @@
 
 #include "logger/Logger.h"
 
+using SecondsDuration = std::chrono::duration<float, std::ratio<1>>;
+
 namespace renegade
 {
 	namespace core
 	{
+#ifdef _DEBUG
+		float FPSCounter::GetFPS()
+		{
+			float fps = m_Frames / m_TimeAccumulation;
+			constexpr float STEPINTERVAL = 4.0f; // In seconds
+			constexpr float INTERVAL = 1.0f / STEPINTERVAL;
+			if ((m_TimeAccumulation * INTERVAL) > 1.0f)
+			{
+				m_Frames = 0, m_TimeAccumulation = 0;
+			}
+			return fps;
+		}
+
+		void FPSCounter::AddFrame()
+		{
+			m_TimeAccumulation += core::ENGINE.GetDeltaTime();
+			m_Frames++;
+		}
+#endif // _DEBUG
+
 		FILE* console = nullptr;
 		bool Engine::Initialize(int a_NumArgs, ...)
 		{
@@ -28,7 +50,7 @@ namespace renegade
 			GetConsoleMode(hOut, &dwMode);
 			dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
 			SetConsoleMode(hOut, dwMode);
-#endif
+#endif // _DEBUG
 
 			// Initialize logger.
 			InitializeSystem(&logger::LOGGER);
@@ -51,14 +73,21 @@ namespace renegade
 			// Initialize the window.
 			InitializeSystem(&m_Window, 4, hInst, width, height, name);
 
+			// Initialize the ECS.
+			InitializeSystem(&m_ECS);
+
 			LOGF(LOGSEVERITY_SUCCESS, "Engine initialized.");
 
 			// TODO: Start the audio thread.
-			// TODO: Initialize ECS
 			// TODO: Initialize other systems.
 
+			UpdateDeltaTime();
 			while (true)
-			{ }
+			{
+				UpdateDeltaTime();
+
+				m_ECS.Update(m_DeltaTime);
+			}
 
 			return System::Initialize();
 		}
@@ -81,6 +110,7 @@ namespace renegade
 #endif
 			m_Ready = false;
 
+			LOGF(LOGSEVERITY_SUCCESS, "Engine destroyed.");
 			return System::Destroy();
 		}
 
@@ -88,12 +118,37 @@ namespace renegade
 		{
 			return m_Window;
 		}
-		
+
+		gameplay::EntityComponentSystem& Engine::GetECS()
+		{
+			return m_ECS;
+		}
+
 #ifdef __EDITOR__
 		editor::Editor& Engine::GetEditor()
 		{
 			return m_Editor;
 		}
-#endif // __EDITOR__
+
+		float Engine::GetFPS()
+		{
+			return m_FpsCounter.GetFPS();
+		}
+
+		float Engine::GetDeltaTime() const
+		{
+			return m_DeltaTime;
+		}
+
+		void Engine::UpdateDeltaTime()
+		{
+			std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+			SecondsDuration elapsed = std::chrono::duration_cast<SecondsDuration>(now - m_LastFrame);
+
+			m_LastFrame = now;
+			m_DeltaTime = elapsed.count();
+			m_FpsCounter.AddFrame();
+		}
+#endif 
 	}
 }

@@ -14,19 +14,6 @@ namespace renegade
 	{
 		namespace imgui
 		{
-			std::vector<ExplorerResourceUIView*> GetParents(ExplorerResourceUIView* a_Resource)
-			{
-				std::vector<ExplorerResourceUIView*> parents;
-				ExplorerResourceUIView* parent = a_Resource;
-				while (parent)
-				{
-					parents.push_back(parent);
-					parent = parent->m_Parent;
-				}
-				std::reverse(parents.begin(), parents.end());
-				return parents;
-			}
-
 			std::vector<std::string> RESOURCE_ICONS =
 			{
 				ICON_FA_ASSET_CFG,
@@ -43,19 +30,14 @@ namespace renegade
 				ICON_FA_ASSET_MOD,
 			};
 
-			void CreateExplorerResourceUIViewChild(ExplorerResourceUIView& a_ResourceView, ExplorerResource* a_Resource, ImGuiWindow& a_Window, int i = 0)
+			void CreateExplorerResourceUIViewChild(ExplorerResourceUIView& a_ResourceView, ExplorerResource* a_Resource, ImGuiWindow& a_Window)
 			{
-				i++;
-				if (i == 3)
-				{
-					return;
-				}
 				for (ExplorerResource* resource : a_Resource->m_Resources)
 				{
 					ExplorerResourceUIView resourceToAdd = ExplorerResourceUIView(a_Window);
 					resourceToAdd.SetResource(resource);
 					resourceToAdd.m_Parent = &a_ResourceView;
-					CreateExplorerResourceUIViewChild(resourceToAdd, resource, a_Window, i);
+					CreateExplorerResourceUIViewChild(resourceToAdd, resource, a_Window);
 					a_ResourceView.m_Resources.push_back(resourceToAdd);
 				}
 			}
@@ -83,6 +65,39 @@ namespace renegade
 					case assets::AssetType::Font:
 					{
 						m_ImageResource = dynamic_cast<ImageExplorerResource*>(a_Resource);
+						m_AssetTypeDropdown = StringDropdown<assets::AssetType>(
+							m_Resource->GetAssetType(),
+							{
+								assets::AssetType::Texture,
+								assets::AssetType::Sprite,
+								assets::AssetType::Font,
+							},
+							{
+								assets::AssetTypeToString(assets::AssetType::Texture),
+								assets::AssetTypeToString(assets::AssetType::Sprite),
+								assets::AssetTypeToString(assets::AssetType::Font),
+							}
+						);
+						break;
+					}
+					case assets::AssetType::Sound:
+					case assets::AssetType::Song:
+					case assets::AssetType::VO:
+					{
+						//m_SoundResource = dynamic_cast<ImageExplorerResource*>(a_Resource);
+						m_AssetTypeDropdown = StringDropdown<assets::AssetType>(
+							m_Resource->GetAssetType(),
+							{
+								assets::AssetType::Sound,
+								assets::AssetType::Song,
+								assets::AssetType::VO,
+							},
+							{
+								assets::AssetTypeToString(assets::AssetType::Sound),
+								assets::AssetTypeToString(assets::AssetType::Song),
+								assets::AssetTypeToString(assets::AssetType::VO),
+							}
+						);
 						break;
 					}
 					default:
@@ -91,8 +106,10 @@ namespace renegade
 					}
 				}
 
-				m_Name = string_extensions::GetFileWithoutExtension(string_extensions::GetFileName(m_Resource->m_Path));
-				m_Icon = RESOURCE_ICONS[(int)m_Resource->GetAssetType()];
+				m_Name = string_extensions::GetFileWithoutExtension(string_extensions::GetFileName(m_Resource->GetPath()));
+				m_Icon = m_Resource->GetResourceType() == ExplorerResourceType::Folder ? ICON_FA_FOLDER : RESOURCE_ICONS[(int)m_Resource->GetAssetType()];
+
+				GetChildren();
 			}
 
 			void ExplorerResourceUIView::ClearChildren()
@@ -139,7 +156,7 @@ namespace renegade
 					}
 					default:
 					{
-						ImGui::Text(m_Resource->m_ResourceType == ExplorerResourceType::Folder ? ICON_FA_FOLDER : m_Icon.c_str());
+						ImGui::Text(m_Resource->GetResourceType() == ExplorerResourceType::Folder ? ICON_FA_FOLDER : m_Icon.c_str());
 						break;
 					}
 				}
@@ -168,7 +185,7 @@ namespace renegade
 				ImVec4 textColor = ImGui::GetStyleColorVec4(ImGuiCol_Text);
 				textColor.w = 0.5f;
 				ImGui::TextColored(textColor, 
-					m_Resource->m_ResourceType == ExplorerResourceType::Folder ? "" : assets::AssetTypeToString(m_Resource->GetAssetType()).c_str());
+					m_Resource->GetResourceType() == ExplorerResourceType::Folder ? "" : assets::AssetTypeToString(m_Resource->GetAssetType()).c_str());
 			}
 
 			bool ExplorerResourceUIView::HasFolders() const
@@ -180,7 +197,7 @@ namespace renegade
 
 				for (auto& resource : m_Resources)
 				{
-					if (resource.m_Resource->m_ResourceType == ExplorerResourceType::Folder)
+					if (resource.m_Resource->GetResourceType() == ExplorerResourceType::Folder)
 					{
 						return true;
 					}
@@ -217,6 +234,11 @@ namespace renegade
 					}
 				}
 
+				if (m_Resource->GetResourceType() == ExplorerResourceType::Folder)
+				{
+					return;
+				}
+
 				ImGui::SetCursorPosY(y + toolbarSize.y);
 				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x);
 
@@ -231,6 +253,54 @@ namespace renegade
 					ImGuiChildFlags_Borders
 				))
 				{
+					ImGui::DisplayHeader(core::ENGINE.GetEditor().GetImGuiWindow().Bold(), "Type");
+					ImGui::SameLine();
+
+					switch (m_Resource->GetAssetType())
+					{
+						case assets::AssetType::Sprite:
+						case assets::AssetType::Texture:
+						case assets::AssetType::Font:
+						case assets::AssetType::Sound:
+						case assets::AssetType::Song:
+						case assets::AssetType::VO:
+						{
+							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 0));
+							if (m_AssetTypeDropdown.Render(imgui::IMGUI_FORMAT_ID("", COMBO_ID, "ASSETTYPE_INSPECTOR").c_str()))
+							{
+								m_Resource->SetAssetType(m_AssetTypeDropdown.GetValue());
+								m_Resource->SaveMetadata();
+							}
+							ImGui::PopStyleVar();
+							break;
+						}
+						default:
+						{
+							ImGui::Text(assets::AssetTypeToString(m_Resource->GetAssetType()).c_str());
+							break;
+						}
+					}
+
+
+					switch (m_Resource->GetAssetType())
+					{
+						case assets::AssetType::Sprite:
+						case assets::AssetType::Texture:
+						case assets::AssetType::Font:
+						{
+							if (!m_ImageResource->m_DescHandle->Invalid())
+							{
+								const float width_new = ImGui::GetContentRegionAvail().x;
+								const float height_new = (m_ImageResource->m_DescHandle->Height * (1.0f / m_ImageResource->m_DescHandle->Width * width_new));
+								ImGui::Image((void*)m_ImageResource->m_DescHandle->GpuHandle.ptr, ImVec2(width_new, height_new));
+							}
+							break;
+						}
+						default:
+						{
+							break;
+						}
+					}
 				}
 				ImGui::PopStyleVar();
 				ImGui::EndChild();

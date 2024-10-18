@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef __EDITOR__
+
 #include <string>
 
 #include "editor/imgui/ImGuiUIView.h"
@@ -22,3 +24,5 @@ namespace renegade
 		}
 	}
 }
+
+#endif // __EDITOR__
