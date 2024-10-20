@@ -22,6 +22,7 @@ namespace ImGui
 	void BeginToolbar(const ImVec2& a_Size);
 	void EndToolbar(const ImVec2& a_Padding);
 	void DisplayHeader(ImFont* boldFont, const char* label);
+	void CheckboxText(const char* label, bool* p_value, const std::string& checked_text, const std::string& unchecked_text, const ImVec2& size_arg);
 
 	inline ImU32 ImColorConvertFloat4ToU32(const ImVec4& in)
 	{

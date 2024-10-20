@@ -75,9 +75,9 @@ namespace renegade
 					for (size_t i = 0; i < m_Messages.size(); i++)
 					{
 						auto& message = m_Messages[i];
-						if (filters[(int)message.a_Severity])
+						if (filters[(int)message.GetSeverity()])
 						{
-							if (searchString.empty() || (string_extensions::StringToLower(message.m_RawMessage).find(searchString) != std::string::npos))
+							if (searchString.empty() || (string_extensions::StringToLower(message.GetRawMessage()).find(searchString) != std::string::npos))
 							{
 								m_FilteredMessages.push_back(i);
 							}
@@ -159,8 +159,6 @@ namespace renegade
 					m_NeedsRefresh = true;
 				}
 
-				float posY = ImGui::GetCursorPosY();
-
 				ImGui::SameLine();
 				float searchbarWidth = 200;
 				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - (searchbarWidth + m_Window.GetWindowPadding().x));
@@ -173,11 +171,11 @@ namespace renegade
 
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(m_Window.GetFramePadding().x * 2, m_Window.GetFramePadding().y * 2));
 				if (ImGui::BeginChild(
-					IMGUI_FORMAT_ID("", CHILD_ID, "BOX_LOGGER").c_str(), 
+					IMGUI_FORMAT_ID("", CHILD_ID, "BOX_LOGGER").c_str(),
 					ImVec2(
-						ImGui::GetContentRegionAvail().x - m_Window.GetWindowPadding().x, 
-						ImGui::GetWindowSize().y - (m_Window.GetWindowPadding().y * 2 + posY)
-					), 
+						ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x,
+						ImGui::GetContentRegionAvail().y - ImGui::GetStyle().ItemSpacing.y
+					),
 					ImGuiChildFlags_Borders
 				))
 				{
@@ -189,12 +187,12 @@ namespace renegade
 					{
 						auto& message = m_Messages[m_FilteredMessages[i]];
 
-						ImVec4 color = colors_arr[(int)message.a_Severity];
-						ImGui::TextColored(color, std::string(logo_arr[(int)message.a_Severity]).c_str());
+						ImVec4 color = colors_arr[(int)message.GetSeverity()];
+						ImGui::TextColored(color, std::string(logo_arr[(int)message.GetSeverity()]).c_str());
 						ImGui::SameLine();
-						ImGui::TextUnformatted(message.m_RawMessage.c_str());
+						ImGui::TextUnformatted(message.GetRawMessage().c_str());
 
-						time_t time_t = std::chrono::system_clock::to_time_t(message.m_Time);
+						time_t time_t = std::chrono::system_clock::to_time_t(message.GetTime());
 						struct tm buf;
 
 						localtime_s(&buf, &time_t);
@@ -204,7 +202,7 @@ namespace renegade
 
 						ImGui::TextColored(ImVec4(1, 1, 1, 0.5f), s.c_str());
 						ImGui::SameLine(160);
-						ImGui::TextColored(ImVec4(1, 1, 1, 0.5f), message.m_Location.c_str());
+						ImGui::TextColored(ImVec4(1, 1, 1, 0.5f), message.GetLocation().c_str());
 
 						if (i < m_FilteredMessages.size() - 1)
 						{
@@ -219,9 +217,8 @@ namespace renegade
 
 					ImGui::PopTextWrapPos();
 				}
-				ImGui::PopStyleVar();
-
 				ImGui::EndChild();
+				ImGui::PopStyleVar();
 			}
 
             bool ConsoleWindow::Initialize()

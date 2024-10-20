@@ -5,7 +5,7 @@
 #include <string>
 #include <imgui/imgui.h>
 
-#include "editor/imgui/ImGuiUIView.h"
+#include "editor/imgui/views/ImGuiUIView.h"
 
 typedef int ImGuiWindowFlags;
 
@@ -31,11 +31,6 @@ namespace renegade
 
 				void SetSize(ImVec2 a_Size);
 				bool IsFullScreen() const;
-
-				void SetEnabled(bool a_Enabled);
-				void ToggleEnabled();
-				std::string GetName() const;
-				bool IsEnabled() const;
 			protected:
 				ImGuiWindowFlags m_Flags = 0;
 				ImVec2 m_Size = ImVec2(0, 0);

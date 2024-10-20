@@ -37,11 +37,6 @@ namespace renegade
 
 			void BaseWindow::Update()
 			{
-				if (!m_Enabled)
-				{
-					return;
-				}
-				
 				if (!core::ENGINE.GetEditor().Ready())
 				{
 					return;
@@ -78,26 +73,6 @@ namespace renegade
 			bool BaseWindow::IsFullScreen() const
 			{
 				return m_FullScreen;
-			}
-
-			void BaseWindow::SetEnabled(bool a_Enabled)
-			{
-				m_Enabled = a_Enabled;
-			}
-
-			void BaseWindow::ToggleEnabled()
-			{
-				m_Enabled = !m_Enabled;
-			}
-
-			std::string BaseWindow::GetName() const
-			{
-				return m_Name;
-			}
-
-			bool BaseWindow::IsEnabled() const
-			{
-				return m_Enabled;
 			}
 		}
 	}

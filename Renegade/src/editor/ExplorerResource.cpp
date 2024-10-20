@@ -70,7 +70,7 @@ namespace renegade
 			}
 		}
 
-        std::string ExplorerResource::GetPath() const
+		const std::string& ExplorerResource::GetPath() const
         {
             return m_Path;
         }

@@ -25,9 +25,9 @@ namespace renegade
 
 			void InspectorWindow::Render()
 			{
-				if (core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable)
+				if (core::ENGINE.GetEditor().GetSelectable())
 				{
-					core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable->RenderSelectable();
+					core::ENGINE.GetEditor().GetSelectable()->RenderSelectable();
 				}
 				//if (ImGui::Button("Info"))
 				//{

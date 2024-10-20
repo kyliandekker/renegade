@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "editor/imgui/ImGuiUIView.h"
+#include "editor/imgui/views/ImGuiUIView.h"
 
 namespace renegade
 {
@@ -19,7 +19,9 @@ namespace renegade
 			public:
 				EditorSelectable(ImGuiWindow& a_Window);
 
-				virtual void RenderSelectable() {};
+				virtual void RenderSelectable() { };
+				virtual void Select() {};
+				virtual void Deselect() {};
 			};
 		}
 	}

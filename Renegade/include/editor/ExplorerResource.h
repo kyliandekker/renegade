@@ -20,14 +20,13 @@ namespace renegade
 			File,
 		};
 
-		// TODO: This is a monster class and needs to be split up asap. The explorer functionality should not be mixed with the imgui functionality in any sort of way.
 		class ExplorerResource
 		{
 			friend class AssetDatabase;
 		public:
 			virtual ~ExplorerResource();
 
-			std::string GetPath() const;
+			const std::string& GetPath() const;
 			ExplorerResourceType GetResourceType() const;
 			ExplorerResource* GetParent() const;
 

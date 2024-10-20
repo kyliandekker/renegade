@@ -46,13 +46,16 @@
     <ClInclude Include="include\editor\Editor.h" />
     <ClInclude Include="include\editor\imgui\EditorSelectable.h" />
     <ClInclude Include="include\editor\EditorSettings.h" />
-    <ClInclude Include="include\editor\imgui\ExplorerResourceUIView.h" />
+    <ClInclude Include="include\editor\imgui\PopGuard.h" />
+    <ClInclude Include="include\editor\imgui\views\EntityUIView.h" />
+    <ClInclude Include="include\editor\imgui\views\ExplorerResourceUIView.h" />
     <ClInclude Include="include\editor\imgui\font_file.h" />
     <ClInclude Include="include\editor\imgui\ImGuiDefines.h" />
-    <ClInclude Include="include\editor\imgui\ImGuiUIView.h" />
+    <ClInclude Include="include\editor\imgui\views\ImGuiUIView.h" />
     <ClInclude Include="include\editor\imgui\ImGuiWindow.h" />
     <ClInclude Include="include\editor\imgui\StringDropdown.h" />
     <ClInclude Include="include\editor\imgui\StringTextInput.h" />
+    <ClInclude Include="include\editor\imgui\views\TransformComponentUIView.h" />
     <ClInclude Include="include\editor\imgui\windows\BaseWindow.h" />
     <ClInclude Include="include\editor\imgui\windows\ConsoleWindow.h" />
     <ClInclude Include="include\editor\imgui\windows\ExplorerWindow.h" />
@@ -63,8 +66,11 @@
     <ClInclude Include="include\editor\ExplorerResource.h" />
     <ClInclude Include="include\gameplay\ECSBaseSystem.h" />
     <ClInclude Include="include\gameplay\EnityComponentSystem.h" />
-    <ClInclude Include="include\gameplay\EnityID.h" />
+    <ClInclude Include="include\gameplay\EntityID.h" />
     <ClInclude Include="include\gameplay\EntityComponentSystem.h" />
+    <ClInclude Include="include\gameplay\systems\Component.h" />
+    <ClInclude Include="include\gameplay\systems\TransformComponent.h" />
+    <ClInclude Include="include\gameplay\systems\TransformSystem.h" />
     <ClInclude Include="include\graphics\DescHandle.h" />
     <ClInclude Include="include\graphics\DX12Window.h" />
     <ClInclude Include="include\graphics\Window.h" />
@@ -73,6 +79,7 @@
     <ClInclude Include="include\file\FileLoader.h" />
     <ClInclude Include="include\utils\string_extensions.h" />
     <ClInclude Include="include\utils\utils.h" />
+    <ClInclude Include="include\editor\imgui\views\ComponentUIView.h" />
     <ClInclude Include="src\gameplay\ECSBaseSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -85,7 +92,10 @@
     <ClCompile Include="external\imgui\imgui_stdlib.cpp" />
     <ClCompile Include="external\imgui\imgui_tables.cpp" />
     <ClCompile Include="external\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\editor\imgui\ExplorerResourceUIView.cpp" />
+    <ClCompile Include="include\editor\imgui\PopGuard.cpp" />
+    <ClCompile Include="src\editor\imgui\views\ComponentUIView.cpp" />
+    <ClCompile Include="src\editor\imgui\views\EntityUIView.cpp" />
+    <ClCompile Include="src\editor\imgui\views\ExplorerResourceUIView.cpp" />
     <ClCompile Include="src\core\datatypes\Data.cpp" />
     <ClCompile Include="src\core\datatypes\DataStream.cpp" />
     <ClCompile Include="src\core\datatypes\ReserveDataStream.cpp" />
@@ -96,10 +106,11 @@
     <ClCompile Include="src\editor\imgui\EditorSelectable.cpp" />
     <ClCompile Include="src\editor\EditorSettings.cpp" />
     <ClCompile Include="src\editor\imgui\ImGuiDefines.cpp" />
-    <ClCompile Include="src\editor\imgui\ImGuiUIView.cpp" />
+    <ClCompile Include="src\editor\imgui\views\ImGuiUIView.cpp" />
     <ClCompile Include="src\editor\imgui\ImGuiWindow.cpp" />
     <ClCompile Include="src\editor\imgui\StringDropdown.cpp" />
     <ClCompile Include="src\editor\imgui\StringTextInput.cpp" />
+    <ClCompile Include="src\editor\imgui\views\TransformComponentUIView.cpp" />
     <ClCompile Include="src\editor\imgui\windows\BaseWindow.cpp" />
     <ClCompile Include="src\editor\imgui\windows\ConsoleWindow.cpp" />
     <ClCompile Include="src\editor\imgui\windows\ExplorerWindow.cpp" />
@@ -109,6 +120,8 @@
     <ClCompile Include="src\editor\imgui\windows\SceneWindow.cpp" />
     <ClCompile Include="src\editor\ExplorerResource.cpp" />
     <ClCompile Include="src\gameplay\EntityComponentSystem.cpp" />
+    <ClCompile Include="src\gameplay\EntityID.cpp" />
+    <ClCompile Include="src\gameplay\systems\TransformComponent.cpp" />
     <ClCompile Include="src\graphics\DescHandle.cpp" />
     <ClCompile Include="src\graphics\DX12Window.cpp" />
     <ClCompile Include="src\graphics\Window.cpp" />

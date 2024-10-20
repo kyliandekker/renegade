@@ -102,6 +102,7 @@ namespace renegade
 #define FOLD_ID "###CHECKBOX_"
 #define DRAG_ITEM_ID "###DRAG_ITEM_"
 #define SELECTABLE_ID "###SELECTABLE_"
+#define FOLDOUT_ID "###FOLDOUT_"
 		}
 	}
 }

@@ -10,7 +10,6 @@
 #include "editor/Editor.h"
 #include "core/Engine.h"
 #include "editor/ExplorerResource.h"
-#include "editor/imgui/ExplorerResourceUIView.h"
 
 namespace renegade
 {
@@ -18,13 +17,17 @@ namespace renegade
 	{
 		namespace imgui
 		{
-			ExplorerWindow::ExplorerWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_EXPLORER) + " Explorer", "Explorer")
+			ExplorerWindow::ExplorerWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_EXPLORER) + " Explorer", "Explorer"), 
+				m_AssetRoot(ExplorerResourceUIView(m_Window, core::ENGINE.GetEditor().GetAssetDatabase().GetRoot()))
 			{ }
 
 			bool ExplorerWindow::Initialize()
 			{
-				m_AssetRoot.SetResource(&core::ENGINE.GetEditor().GetAssetDatabase().m_Root);
-				SetExplorerRoot(&m_AssetRoot);
+				OnScanCompleted();
+
+				core::ENGINE.GetEditor().GetAssetDatabase().m_OnBeforeScan += std::bind(&ExplorerWindow::OnBeforeScan, this);
+				core::ENGINE.GetEditor().GetAssetDatabase().m_OnScanCompleted += std::bind(&ExplorerWindow::OnScanCompleted, this);
+
 				return true;
 			}
 
@@ -41,29 +44,28 @@ namespace renegade
 
 			void ExplorerWindow::RenderFolder(ExplorerResourceUIView& a_Resource)
 			{
-				if (a_Resource.m_Name.empty() ||
-					a_Resource.m_Resource->GetPath().empty() ||
-					!a_Resource.m_Show)
+				if (a_Resource.GetName().empty() ||
+					a_Resource.GetResource().GetPath().empty())
 				{
 					return;
 				}
 
-				if (a_Resource.m_Resource->GetResourceType() != ExplorerResourceType::Folder)
+				if (a_Resource.GetResource().GetResourceType() != ExplorerResourceType::Folder)
 				{
 					return;
 				}
 
-				std::string name = a_Resource.m_Name;
+				std::string name = a_Resource.GetName();
 				std::string icon = ICON_FA_FOLDER_OPEN;
-				if (a_Resource.m_Resource->GetResourceType() == ExplorerResourceType::Folder && a_Resource.m_FoldedOut && a_Resource.HasFolders())
+				if (a_Resource.GetResource().GetResourceType() == ExplorerResourceType::Folder && a_Resource.IsFoldedOut() && a_Resource.HasFolders())
 				{
 					icon = ICON_FA_FOLDER_OPEN;
 				}
-				else if (a_Resource.m_Resource->GetResourceType() == ExplorerResourceType::Folder)
+				else if (a_Resource.GetResource().GetResourceType() == ExplorerResourceType::Folder)
 				{
 					icon = ICON_FA_FOLDER;
 				}
-				std::string id = IMGUI_FORMAT_ID("", TREE_NODE_ID, "TREE_NODE_" + string_extensions::StringToUpper(a_Resource.m_Resource->GetPath()) + "_EXPLORER");
+				std::string id = IMGUI_FORMAT_ID("", TREE_NODE_ID, "TREE_NODE_" + string_extensions::StringToUpper(a_Resource.GetResource().GetPath()) + "_EXPLORER");
 
 				bool clicked, right_clicked;
 
@@ -79,16 +81,16 @@ namespace renegade
 					m_NewFolderRoot = &a_Resource;
 				}
 
-				if (a_Resource.m_FoldedOut != fold)
+				if (a_Resource.IsFoldedOut() != fold)
 				{
-					a_Resource.m_FoldedOut = fold;
-					if (a_Resource.m_FoldedOut)
+					a_Resource.SetFoldedOut(fold);
+					if (a_Resource.IsFoldedOut())
 					{
 						a_Resource.GetChildren();
 					}
 				}
 
-				if (a_Resource.m_FoldedOut)
+				if (a_Resource.IsFoldedOut())
 				{
 					for (auto& resource : a_Resource.m_Resources)
 					{
@@ -116,9 +118,9 @@ namespace renegade
 				{
 					if (m_NewFolderRoot != m_FolderRoot)
 					{
-						if (ExplorerResourceUIView* derivedPtr = dynamic_cast<ExplorerResourceUIView*>(core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable))
+						if (ExplorerResourceUIView* derivedPtr = dynamic_cast<ExplorerResourceUIView*>(core::ENGINE.GetEditor().GetSelectable()))
 						{
-							core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable = nullptr;
+							core::ENGINE.GetEditor().SetSelectable(nullptr);
 						}
 
 						SetExplorerRoot(m_NewFolderRoot);
@@ -128,25 +130,10 @@ namespace renegade
 				}
 
 				// This needs to be done at the start of the frame to avoid errors.
-				// We rescan the database here.
-				if (m_NeedsRescan)
-				{
-					if (ExplorerResourceUIView* derivedPtr = dynamic_cast<ExplorerResourceUIView*>(core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable))
-					{
-						core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable = nullptr;
-					}
-
-					m_AssetRoot.SetResource(&core::ENGINE.GetEditor().GetAssetDatabase().m_Root);
-					SetExplorerRoot(&m_AssetRoot);
-					m_NeedsRefresh = true;
-					m_NeedsRescan = false;
-				}
-
-				// This needs to be done at the start of the frame to avoid errors.
 				// We refresh the assets that show up based on the searchbar and the root directory.
 				if (m_NeedsRefresh)
 				{
-					m_ResourcesToShow.clear();
+					m_FilteredResources.clear();
 
 					m_NeedsRefresh = false;
 
@@ -154,9 +141,9 @@ namespace renegade
 
 					for (auto& resource : m_FolderRoot->m_Resources)
 					{
-						if (isEmptyString || string_extensions::StringToLower(resource.m_Name).find(m_SearchBar.GetString()) != std::string::npos)
+						if (isEmptyString || string_extensions::StringToLower(resource.GetName()).find(m_SearchBar.GetString()) != std::string::npos)
 						{
-							m_ResourcesToShow.push_back(&resource);
+							m_FilteredResources.push_back(&resource);
 						}
 					}
 				}
@@ -171,7 +158,7 @@ namespace renegade
 				if (ImGui::TransparentButton(
 					IMGUI_FORMAT_ID(std::string(ICON_FA_REFRESH), BUTTON_ID, "RESCAN_EXPLORER").c_str(), ImVec2(0, toolbarSize.y)))
 				{
-					m_NeedsRescan = true;
+					core::ENGINE.GetEditor().GetAssetDatabase().Rescan();
 				}
 
 				ImGui::SameLine();
@@ -237,14 +224,13 @@ namespace renegade
 									false
 								);
 
-								// TODO: Get parent.
 								if (double_clicked)
 								{
 									m_NewFolderRoot = m_FolderRoot->m_Parent;
 								}
 							}
 
-							for (ExplorerResourceUIView* item : m_ResourcesToShow)
+							for (ExplorerResourceUIView* item : m_FilteredResources)
 							{
 								if (!item)
 								{
@@ -252,13 +238,13 @@ namespace renegade
 								}
 
 								bool clicked, right_clicked, double_clicked;
-								item->Render(clicked, right_clicked, double_clicked, item == core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable);
+								item->Render(clicked, right_clicked, double_clicked, item == core::ENGINE.GetEditor().GetSelectable());
 
 								if (clicked)
 								{
-									core::ENGINE.GetEditor().GetAssetDatabase().m_EditorSelectable = item;
+									core::ENGINE.GetEditor().SetSelectable(item);
 								}
-								if (double_clicked && item->m_Resource->GetResourceType() == ExplorerResourceType::Folder)
+								if (double_clicked && item->GetResource().GetResourceType() == ExplorerResourceType::Folder)
 								{
 									m_NewFolderRoot = item;
 								}
@@ -269,6 +255,22 @@ namespace renegade
 				}
 				ImGui::EndChild();
 				ImGui::PopStyleVar();
+			}
+
+			void ExplorerWindow::OnScanCompleted()
+			{
+				m_AssetRoot = ExplorerResourceUIView(m_Window, core::ENGINE.GetEditor().GetAssetDatabase().GetRoot());
+				SetExplorerRoot(&m_AssetRoot);
+				m_NeedsRefresh = true;
+			}
+
+			void ExplorerWindow::OnBeforeScan()
+			{
+				m_FilteredResources.clear();
+				if (ExplorerResourceUIView* derivedPtr = dynamic_cast<ExplorerResourceUIView*>(core::ENGINE.GetEditor().GetSelectable()))
+				{
+					core::ENGINE.GetEditor().SetSelectable(nullptr);
+				}
 			}
 		}
 	}

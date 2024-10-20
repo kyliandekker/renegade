@@ -6,7 +6,7 @@
 
 #include "editor/imgui/windows/BaseWindow.h"
 #include "editor/imgui/StringTextInput.h"
-#include "editor/imgui/ExplorerResourceUIView.h"
+#include "editor/imgui/views/ExplorerResourceUIView.h"
 
 namespace renegade
 {
@@ -27,12 +27,11 @@ namespace renegade
 
 				bool m_ShowExplorerInspector = false;
 				bool m_NeedsRefresh = true;
-				bool m_NeedsRescan = false;
 
 				char SEARCHSTRING_EXPLORER[256] = { '\0' };
 				char EXPLORER_INSPECTOR_RENAME_RESOURCE[256] = { '\0' };
 
-				std::vector<ExplorerResourceUIView*> m_ResourcesToShow;
+				std::vector<ExplorerResourceUIView*> m_FilteredResources;
 				ExplorerResourceUIView m_AssetRoot;
 				ExplorerResourceUIView* m_FolderRoot = nullptr;
 				ExplorerResourceUIView* m_NewFolderRoot = nullptr;
@@ -40,6 +39,9 @@ namespace renegade
 				void SetExplorerRoot(ExplorerResourceUIView* a_Resource);
 				void RenderFolder(ExplorerResourceUIView& a_Resource);
 				void Render() override;
+
+				void OnScanCompleted();
+				void OnBeforeScan();
 			private:
 				SearchBarInput m_SearchBar;
 			};

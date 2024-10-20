@@ -1,9 +1,5 @@
 #include "editor/EditorSettings.h"
 
-// TODO: Remove.
-#include <ShlObj_core.h>
-#include <filesystem>
-
 // # Rapidjson
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
@@ -14,8 +10,6 @@
 #include "core/datatypes/DataStream.h"
 #include "file/FileLoader.h"
 #include "editor/Editor.h"
-
-namespace fs = std::filesystem;
 
 #define SETTINGS_PATH "settings.json"
 
@@ -130,7 +124,7 @@ namespace renegade
 			Save();
 		}
 
-		glm::vec2 EditorSettings::Size() const
+		const glm::vec2& EditorSettings::Size() const
 		{
 			return m_Size;
 		}

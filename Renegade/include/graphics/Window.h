@@ -28,6 +28,7 @@ namespace renegade
 			void Show();
 			void Hide();
 			void ToggleFullscreen();
+			void SetTitle(const std::string& a_Title);
 
 			glm::vec2 GetRealSize() const;
 

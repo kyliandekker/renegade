@@ -20,7 +20,7 @@ namespace renegade
 			bool Save() const;
 
 			void SetSize(const glm::vec2& a_Size);
-			glm::vec2 Size() const;
+			const glm::vec2& Size() const;
 
 			void SetScrollToBottom(bool a_ScrollToBottom);
 			bool ScrollToBottom() const;

@@ -26,11 +26,19 @@ namespace renegade
 	{
 #define ASSERT_ON_ASSERT false
 
-		struct Message
+		class Message
 		{
+		public:
+			Message(const std::string& a_RawMessage, const std::string& a_Location, LogSeverity a_Severity, const std::chrono::system_clock::time_point& a_Time);
+
+			const std::string& GetRawMessage() const;
+			const std::string& GetLocation() const;
+			LogSeverity GetSeverity() const;
+			const std::chrono::system_clock::time_point& GetTime() const;
+		private:
 			std::string m_RawMessage;
 			std::string m_Location;
-			LogSeverity a_Severity;
+			LogSeverity m_Severity;
 			std::chrono::system_clock::time_point m_Time;
 		};
 

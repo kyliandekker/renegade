@@ -4,12 +4,16 @@
 
 #include "gameplay/ECSBaseSystem.h"
 
+#include <gameplay/systems/TransformSystem.h>
+
 namespace renegade
 {
 	namespace gameplay
 	{
 		bool EntityComponentSystem::Initialize(int, ...)
 		{
+			CreateSystem<TransformSystem>();
+
 			LOGF(LOGSEVERITY_SUCCESS, "ECS initialized.");
 			return System::Initialize();
 		}
@@ -48,9 +52,9 @@ namespace renegade
 			m_Paused = a_Paused;
 		}
 
-		EntityID& EntityComponentSystem::CreateEntity()
+		EntityID& EntityComponentSystem::CreateEntity(const std::string& a_Name)
 		{
-			EntityID id(++m_NextID);
+			EntityID id(++m_NextID, a_Name);
 			m_Entities.push_back(id);
 
 			return m_Entities[m_Entities.size() - 1];
@@ -62,6 +66,10 @@ namespace renegade
 			{
 				sys->DeleteComponent(a_ID);
 			}
+			m_Entities.erase(
+				std::remove_if(m_Entities.begin(), m_Entities.end(),
+					[&a_ID](const EntityID& entity) { return entity == a_ID; }),
+				m_Entities.end());
 		};
 
 		bool EntityComponentSystem::IsEntityValid(const EntityID& a_ID) const
@@ -69,26 +77,9 @@ namespace renegade
 			return a_ID.IsValid();
 		}
 
-		template <class T>
-		T& EntityComponentSystem::CreateSystem()
-		{
-			T* system = new T();
-			m_Systems.insert(system);
-			return *system;
-		}
-
-		template <class T>
-		T& EntityComponentSystem::GetSystem()
-		{
-			for (ECSBaseSystem* sys : m_Systems)
-			{
-				T* result = dynamic_cast<T*>(sys);
-				if (result)
-				{
-					return *result;
-				}
-			}
-			return CreateSystem<T>();
-		};
+        std::vector<EntityID>& EntityComponentSystem::GetEntities()
+        {
+			return m_Entities;
+        }
 	}
 }

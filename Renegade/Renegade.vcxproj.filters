@@ -81,7 +81,7 @@
     <ClInclude Include="include\editor\imgui\ImGuiDefines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\imgui\ImGuiUIView.h">
+    <ClInclude Include="include\editor\imgui\views\ImGuiUIView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\editor\imgui\ImGuiWindow.h">
@@ -108,13 +108,13 @@
     <ClInclude Include="include\editor\imgui\EditorSelectable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\imgui\ExplorerResourceUIView.h">
+    <ClInclude Include="include\editor\imgui\views\ExplorerResourceUIView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\editor\imgui\StringDropdown.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\gameplay\EnityID.h">
+    <ClInclude Include="include\gameplay\EntityID.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\gameplay\ECSBaseSystem.h">
@@ -127,6 +127,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\gameplay\EntityComponentSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gameplay\systems\TransformSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gameplay\systems\TransformComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gameplay\systems\Component.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\editor\imgui\views\EntityUIView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\editor\imgui\views\ComponentUIView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\editor\imgui\views\TransformComponentUIView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\editor\imgui\PopGuard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -188,7 +209,7 @@
     <ClCompile Include="src\editor\imgui\ImGuiDefines.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\editor\imgui\ImGuiUIView.cpp">
+    <ClCompile Include="src\editor\imgui\views\ImGuiUIView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\editor\imgui\ImGuiWindow.cpp">
@@ -239,13 +260,31 @@
     <ClCompile Include="src\editor\imgui\EditorSelectable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\editor\imgui\ExplorerResourceUIView.cpp">
+    <ClCompile Include="src\editor\imgui\views\ExplorerResourceUIView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\editor\imgui\StringDropdown.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\gameplay\EntityComponentSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gameplay\EntityID.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gameplay\systems\TransformComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\editor\imgui\views\EntityUIView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\editor\imgui\views\TransformComponentUIView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\editor\imgui\views\ComponentUIView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\editor\imgui\PopGuard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

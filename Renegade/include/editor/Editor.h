@@ -20,6 +20,11 @@ namespace renegade
 	}
 	namespace editor
 	{
+		namespace imgui
+		{
+			class EditorSelectable;
+		}
+
 		class Editor : public core::System
 		{
 		public:
@@ -36,10 +41,20 @@ namespace renegade
 			imgui::ImGuiWindow& GetImGuiWindow();
 			EditorSettings& GetEditorSettings();
 			AssetDatabase& GetAssetDatabase();
+
+			SceneExplorerResource* GetCurrentScene() const;
+			void SetCurrentScene(SceneExplorerResource* a_Scene);
+
+			imgui::EditorSelectable* GetSelectable() const;
+			void SetSelectable(imgui::EditorSelectable* a_Selectable);
 		private:
+			imgui::EditorSelectable* m_EditorSelectable;
+
 			imgui::ImGuiWindow m_Window;
 			EditorSettings m_EditorSettings;
 			AssetDatabase m_AssetDatabase;
+
+			SceneExplorerResource* m_CurrentScene = nullptr;
 		};
 	}
 }

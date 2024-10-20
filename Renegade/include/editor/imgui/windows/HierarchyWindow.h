@@ -6,12 +6,17 @@
 
 #include <vector>
 
+#include "editor/imgui/StringTextInput.h"
+#include "editor/imgui/views/EntityUIView.h"
+
 namespace renegade
 {
 	namespace editor
 	{
 		namespace imgui
 		{
+			class ImGuiWindow;
+
 			class HierarchyWindow : public BaseWindow
 			{
 			public:
@@ -20,16 +25,11 @@ namespace renegade
 				bool Initialize() override;
 
 				void Render() override;
-
-				void SetShowContextMenu(bool a_ShowContextMenu);
-				void SetIsRenaming(bool a_IsRenaming);
-
-				bool ShowContextMenu() const;
-				bool IsRenaming() const;
-			private:
-				bool m_ShowContextMenu = false;
-				bool m_IsRenaming = false;
 				bool m_NeedsRefresh = true;
+			private:
+				std::vector<EntityUIView> m_FilteredEntities;
+
+				SearchBarInput m_SearchBar;
 			};
 		}
 	}

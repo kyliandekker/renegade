@@ -60,6 +60,9 @@ namespace renegade
 				ImVec2 GetFramePadding() const;
 				ImVec2 GetWindowPadding() const;
 				ImVec2 HeaderSize() const;
+
+				ExplorerWindow& GetExplorerWindow();
+				HierarchyWindow& GetHierarchyWindow();
 			private:
 				void UpdateMouseCursor();
 

@@ -9,6 +9,7 @@ namespace renegade
 {
 	namespace graphics
 	{
+		// TODO: Make this safer with getters and setters.
 		class DescHandle
 		{
 		public:

@@ -16,7 +16,7 @@ namespace renegade
 			{
 			public:
 				ImGuiUIView(ImGuiWindow& a_Window);
-				virtual void Render() {};
+				virtual void Render() = 0;
 
 				ImGuiWindow& Window() const;
 			protected:

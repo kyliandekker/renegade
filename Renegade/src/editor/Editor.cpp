@@ -2,6 +2,9 @@
 
 #include "editor/Editor.h"
 
+#include "core/Engine.h"
+#include "editor/imgui/EditorSelectable.h"
+
 namespace renegade
 {
 	namespace editor
@@ -50,6 +53,7 @@ namespace renegade
 
 		void Editor::OnRender()
 		{
+			m_AssetDatabase.CheckAssetDatabase();
 			m_Window.Render();
 		}
 
@@ -71,6 +75,40 @@ namespace renegade
 		AssetDatabase& Editor::GetAssetDatabase()
 		{
 			return m_AssetDatabase;
+		}
+
+        SceneExplorerResource* Editor::GetCurrentScene() const
+        {
+            return m_CurrentScene;
+        }
+
+		void Editor::SetCurrentScene(SceneExplorerResource* a_Scene)
+		{
+			m_CurrentScene = a_Scene;
+
+			core::ENGINE.GetECS().ClearEntities();
+
+			// Load all entities.
+
+			core::ENGINE.GetWindow().SetTitle("Renegade Engine (" + a_Scene->GetPath() + ")");
+		}
+
+        imgui::EditorSelectable* Editor::GetSelectable() const
+        {
+            return m_EditorSelectable;
+        }
+
+		void Editor::SetSelectable(imgui::EditorSelectable* a_Selectable)
+		{
+			if (m_EditorSelectable)
+			{
+				m_EditorSelectable->Deselect();
+			}
+			m_EditorSelectable = a_Selectable;
+			if (m_EditorSelectable)
+			{
+				m_EditorSelectable->Select();
+			}
 		}
 	}
 }

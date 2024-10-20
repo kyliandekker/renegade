@@ -177,6 +177,11 @@ namespace renegade
 			}
 		}
 
+        void Window::SetTitle(const std::string& a_Title)
+        {
+			::SetWindowTextA(m_hWnd, a_Title.c_str());
+        }
+
 		glm::vec2 Window::GetRealSize() const
 		{
 			RECT rect;

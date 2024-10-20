@@ -27,8 +27,10 @@ namespace ImGui
         ImVec4 color = *p_value ? ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive) : ImVec4(0, 0, 0, 0);
 		ImGui::PushStyleColor(ImGuiCol_Button, color);
         bool b = ImGui::Button(label, size_arg);
-        if (b)
-            *p_value = !(*p_value);
+		if (b)
+		{
+			*p_value = !(*p_value);
+		}
         ImGui::PopStyleColor();
 
         return b;
@@ -63,37 +65,6 @@ namespace ImGui
 
 		return b;
 	}
-
-	//bool HierarchyItem(const char* label, const ImVec2& size_arg, bool selected, ImU32 button_color_hover)
-	//{
-	//	// Get the current draw list (this is where you'll draw your custom button)
-	//	ImDrawList* draw_list = ImGui::GetWindowDrawList();
-
-	//	// Define the position and size of your button
-	//	ImVec2 button_pos = ImGui::GetCursorScreenPos();
-
-	//	// Calculate the rectangle for the button
-	//	ImVec2 button_min = button_pos;
-	//	ImVec2 button_max = ImVec2(button_pos.x + size_arg.x, button_pos.y + size_arg.y);
-
-	//	// Detect if the mouse is hovering over the button rectangle
-	//	bool is_hovered = ImGui::IsMouseHoveringRect(button_min, button_max);
-
-	//	// Set button color based on hover or click state
-	//	ImU32 button_color = is_hovered ? button_color_hover : IM_COL32(150, 150, 150, 0);
-
-	//	if (selected)
-	//	{
-	//		ImVec4 color = ImGui::GetStyleColorVec4(ImGuiCol_Button);
-	//		color.w = 0.35f;
-	//		button_color = ImGui::ImColorConvertFloat4ToU32(color);
-	//	}
-
-	//	// Draw the button
-	//	draw_list->AddRectFilled(button_min, button_max, button_color, 0);  // 10.0f is the rounding radius
-
-	//	return InvisibleButton(label, size_arg);
-	//}
 
 	bool EngineTreeNodeExS(const char* id, const char* icon, const char* label, bool& clicked, bool& right_clicked, bool selected, const ImVec2& size, ImGuiTreeNodeFlags flags)
 	{
@@ -220,16 +191,10 @@ namespace ImGui
 		ImVec2 header_max = ImVec2(header_pos.x + header_size.x, header_pos.y + header_size.y);
 
 		draw_list->AddRectFilled(header_min, header_max, ImGui::ImColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_Button)), 0);
-
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
 	}
 
 	void EndToolbar(const ImVec2& a_Padding)
 	{
-		ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
-
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + a_Padding.y);
 		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + a_Padding.x);
 	}
@@ -241,6 +206,48 @@ namespace ImGui
 		ImGui::PopFont();
 		ImGui::SameLine();
 		ImGui::Text(":");
+	}
+
+	bool InvisButton(const char* label, const ImVec2& size_arg, ImU32 button_color_hover)
+	{
+		// Get the current draw list (this is where you'll draw your custom button)
+		ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+		// Define the position and size of your button
+		ImVec2 button_pos = ImGui::GetCursorScreenPos();
+		ImVec2 button_size = ImVec2(size_arg.x, size_arg.y); // Width, Height
+
+		// Calculate the rectangle for the button
+		ImVec2 button_min = button_pos;
+		ImVec2 button_max = ImVec2(button_pos.x + button_size.x, button_pos.y + button_size.y);
+
+		// Detect if the mouse is hovering over the button rectangle
+		bool is_hovered = ImGui::IsMouseHoveringRect(button_min, button_max);
+
+		// Detect if the mouse is clicked
+		bool is_clicked = ImGui::IsMouseClicked(ImGuiMouseButton_Left) && is_hovered;
+
+		// Set button color based on hover or click state
+		ImU32 button_color = is_hovered ? button_color_hover : IM_COL32(150, 150, 150, 0);
+
+		// Draw the button
+		draw_list->AddRectFilled(button_min, button_max, button_color, 0);  // 10.0f is the rounding radius
+
+		return is_clicked;
+	}
+
+	void CheckboxText(const char* label, bool* p_value, const std::string& checked_text, const std::string& unchecked_text, const ImVec2& size_arg)
+	{
+		ImVec4 color = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+		ImVec4 color_inactive = ImVec4(0, 0, 0, 0);
+		bool b = InvisButton(label, size_arg, IM_COL32(0, 0, 0, 0));
+		std::string test = (*p_value ? checked_text : unchecked_text);
+		bool temp = false;
+		ImGui::Text(test.c_str());
+		if (b)
+		{
+			*p_value = !(*p_value);
+		}
 	}
 }
 

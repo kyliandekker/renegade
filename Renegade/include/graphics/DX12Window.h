@@ -25,6 +25,7 @@ namespace renegade
 			unsigned __int64 FenceValue;
 		};
 
+		// TODO: Make this safer. Not every class should be able to access the device, etc.
 		class DX12Window : public core::System
 		{
 		public:

@@ -3,8 +3,9 @@
 #include "core/System.h"
 
 #include <vector>
+#include <string>
 
-#include "gameplay/EnityID.h"
+#include "gameplay/EntityID.h"
 
 namespace renegade
 {
@@ -23,15 +24,62 @@ namespace renegade
 			bool IsPaused() const;
 			void SetPaused(bool a_Paused);
 
-			EntityID& CreateEntity();
+			EntityID& CreateEntity(const std::string& a_Name);
 			void DeleteEntity(const EntityID& a_ID);
 			bool IsEntityValid(const EntityID& id) const;
+			void ClearEntities()
+			{
+				m_Entities.clear();
+			}
+
+			std::string GetUniqueName(const std::string& a_Name)
+			{
+				std::string name = a_Name;
+
+				bool found = true;
+				int i = 0;
+				while (found)
+				{
+					found = false;
+					for (EntityID& entity : m_Entities)
+					{
+						if (entity.GetName() == name)
+						{
+							i++;
+							if (i != 0)
+							{
+								name = a_Name + " (" + std::to_string(i) + ")";
+								found = true;
+							}
+						}
+					}
+				}
+				return name;
+			}
 
 			template <class T>
-			T& CreateSystem();
+			T& CreateSystem()
+			{
+				T* system = new T();
+				m_Systems.push_back(system);
+				return *system;
+			}
 
 			template <class T>
-			T& GetSystem();
+			T& GetSystem()
+			{
+				for (ECSSystem* sys : m_Systems)
+				{
+					T* result = dynamic_cast<T*>(sys);
+					if (result)
+					{
+						return *result;
+					}
+				}
+				return CreateSystem<T>();
+			};
+
+			std::vector<EntityID>& GetEntities();
 		private:
 			std::vector<ECSSystem*> m_Systems;
 			std::vector<EntityID> m_Entities;

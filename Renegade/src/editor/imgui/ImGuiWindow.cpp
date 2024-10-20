@@ -342,6 +342,16 @@ namespace renegade
 				return m_HeaderSize;
 			}
 
+            ExplorerWindow& ImGuiWindow::GetExplorerWindow()
+            {
+				return explorerWindow;
+            }
+
+			HierarchyWindow& ImGuiWindow::GetHierarchyWindow()
+			{
+				return hierarchyWindow;
+			}
+
 			void ImGuiWindow::UpdateMouseCursor()
 			{
 				if (ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup))

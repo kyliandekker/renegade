@@ -12,6 +12,33 @@ namespace renegade
 {
 	namespace logger
 	{
+		Message::Message(const std::string& a_RawMessage, const std::string& a_Location, LogSeverity a_Severity, const std::chrono::system_clock::time_point& a_Time) :
+			m_RawMessage(a_RawMessage),
+			m_Location(a_Location),
+			m_Severity(a_Severity),
+			m_Time(a_Time)
+		{ }
+
+		const std::string& Message::GetRawMessage() const
+		{
+			return m_RawMessage;
+		}
+
+		const std::string& Message::GetLocation() const
+		{
+			return m_Location;
+		}
+
+		LogSeverity Message::GetSeverity() const
+		{
+			return m_Severity;
+		}
+
+		const std::chrono::system_clock::time_point& Message::GetTime() const
+		{
+			return m_Time;
+		}
+
 		bool Logger::Initialize(int, ...)
 		{
 			bool success = System::Initialize();
@@ -70,7 +97,7 @@ namespace renegade
 				a_Line);
 
 			m_MessagesMutex.lock();
-			m_Messages.push({ a_Message, message, a_Severity, std::chrono::system_clock::now() });
+			m_Messages.push(Message(a_Message, message, a_Severity, std::chrono::system_clock::now()));
 			m_MessagesMutex.unlock();
 		}
 
@@ -115,12 +142,12 @@ namespace renegade
 					const Message lm = m_Messages.front();
 					m_Messages.pop();
 
-					std::cout << "[" << LOGGER_SEVERITY_COLOR[lm.a_Severity].c_str() << LOGGER_SEVERITY_TEXT[lm.a_Severity].c_str() << COLOR_WHITE << "]: " << lm.m_RawMessage.c_str() << lm.m_Location.c_str() << std::endl;
+					std::cout << "[" << LOGGER_SEVERITY_COLOR[lm.GetSeverity()].c_str() << LOGGER_SEVERITY_TEXT[lm.GetSeverity()].c_str() << COLOR_WHITE << "]: " << lm.GetRawMessage().c_str() << lm.GetLocation().c_str() << std::endl;
 
 					OnMessageLogged(lm);
 				}
 				m_MessagesMutex.unlock();
 			}
 		}
-	}
+}
 }

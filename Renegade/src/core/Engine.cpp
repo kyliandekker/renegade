@@ -80,7 +80,7 @@ namespace renegade
 
 			// TODO: Start the audio thread.
 			// TODO: Initialize other systems.
-
+			
 			UpdateDeltaTime();
 			while (true)
 			{

@@ -16,6 +16,7 @@ namespace renegade
 			bool m_Ready = false;
 		};
 
+		// TODO: Test if this really does anything. It seems to not do anything on the main thread.
 		template <typename... Args>
 		bool InitializeSystem(System* a_System, int a_NumArgs = 0, Args&&... a_Args)
 		{

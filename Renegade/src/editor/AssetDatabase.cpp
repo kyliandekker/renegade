@@ -31,14 +31,37 @@ namespace renegade
 			return System::Destroy();
 		}
 
+		void AssetDatabase::Rescan()
+		{
+			m_Rescan = true;
+		}
+
+		void AssetDatabase::CheckAssetDatabase()
+		{
+			if (m_Rescan)
+			{
+				m_Rescan = false;
+
+				Scan();
+			}
+		}
+
+		ExplorerResource& AssetDatabase::GetRoot()
+		{
+			return m_Root;
+		}
+
 		bool AssetDatabase::Scan()
 		{
+			m_OnBeforeScan();
+
 			m_Ready = false;
 			m_Root.m_Path = ExePath() + "/assets";
 			if (m_Root.Scan())
 			{
 				LOGF(LOGSEVERITY_SUCCESS, "Scanned asset database.");
 				m_Ready = true;
+				m_OnScanCompleted();
 			}
 			return m_Ready;
 		}
