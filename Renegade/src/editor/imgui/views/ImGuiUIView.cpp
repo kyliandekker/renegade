@@ -1,6 +1,6 @@
 #ifdef __EDITOR__
 
-#include "editor/imgui/ImGuiUIView.h"
+#include "editor/imgui/views/ImGuiUIView.h"
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_helpers.h>

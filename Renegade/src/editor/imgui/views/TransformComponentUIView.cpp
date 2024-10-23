@@ -21,9 +21,9 @@ namespace renegade
 
             void TransformComponentUIView::RenderInner()
 			{
-				const glm::vec3& position = m_TransformComponent.GetPosition();
-				const glm::vec3& rotation = m_TransformComponent.GetRotation();
-				const glm::vec3& scale = m_TransformComponent.GetScale();
+				glm::vec3 position = m_TransformComponent.GetPosition();
+				glm::vec3 rotation = m_TransformComponent.GetRotation();
+				glm::vec3 scale = m_TransformComponent.GetScale();
 				float fontSize = m_Window.FontSize();
 
 				ImGui::DisplayHeader(m_Window.Bold(), "Position");
@@ -35,27 +35,19 @@ namespace renegade
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("X");
 				ImGui::SameLine();
-
 				m_PosX.SetString(std::to_string(position.x));
-				if (m_PosX.Render(IMGUI_FORMAT_ID("", INPUT_ID, "POS_X_TRANSFORM_INSPECTOR").c_str(), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_AutoSelectAll))
-				{
-					m_TransformComponent.SetPosition(glm::vec3(std::stof(m_PosX.GetString()), position.y, position.z));
-				}
+				bool changedPos = ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "POS_X_TRANSFORM_INSPECTOR").c_str(), &position.x);
 				ImGui::SameLine();
 				ImGui::Text("Y");
 				ImGui::SameLine();
-				m_PosY.SetString(std::to_string(position.y));
-				if (m_PosY.Render(IMGUI_FORMAT_ID("", INPUT_ID, "POS_Y_TRANSFORM_INSPECTOR").c_str(), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_AutoSelectAll))
-				{
-					m_TransformComponent.SetPosition(glm::vec3(position.x, std::stof(m_PosY.GetString()), position.z));
-				}
+				changedPos |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "POS_Y_TRANSFORM_INSPECTOR").c_str(), &position.y);
 				ImGui::SameLine();
 				ImGui::Text("Z");
 				ImGui::SameLine();
-				m_PosZ.SetString(std::to_string(position.z));
-				if (m_PosZ.Render(IMGUI_FORMAT_ID("", INPUT_ID, "POS_Z_TRANSFORM_INSPECTOR").c_str(), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_AutoSelectAll))
+				changedPos |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "POS_Z_TRANSFORM_INSPECTOR").c_str(), &position.z);
+				if (changedPos)
 				{
-					m_TransformComponent.SetPosition(glm::vec3(position.x, position.y, std::stof(m_PosZ.GetString())));
+					m_TransformComponent.SetPosition(position);
 				}
 
 				ImGui::Unindent();
@@ -65,27 +57,18 @@ namespace renegade
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("X");
 				ImGui::SameLine();
-
-				m_RotX.SetString(std::to_string(rotation.x));
-				if (m_RotX.Render(IMGUI_FORMAT_ID("", INPUT_ID, "ROT_X_TRANSFORM_INSPECTOR").c_str(), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_AutoSelectAll))
-				{
-					m_TransformComponent.SetRotation(glm::vec3(std::stof(m_RotX.GetString()), rotation.y, rotation.z));
-				}
+				bool changedRotation = ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "ROT_X_TRANSFORM_INSPECTOR").c_str(), &rotation.x);
 				ImGui::SameLine();
 				ImGui::Text("Y");
 				ImGui::SameLine();
-				m_RotY.SetString(std::to_string(rotation.y));
-				if (m_RotY.Render(IMGUI_FORMAT_ID("", INPUT_ID, "ROT_Y_TRANSFORM_INSPECTOR").c_str(), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_AutoSelectAll))
-				{
-					m_TransformComponent.SetRotation(glm::vec3(rotation.x, std::stof(m_RotY.GetString()), rotation.z));
-				}
+				changedRotation |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "ROT_Y_TRANSFORM_INSPECTOR").c_str(), &rotation.y);
 				ImGui::SameLine();
 				ImGui::Text("Z");
 				ImGui::SameLine();
-				m_RotZ.SetString(std::to_string(rotation.z));
-				if (m_RotZ.Render(IMGUI_FORMAT_ID("", INPUT_ID, "ROT_Z_TRANSFORM_INSPECTOR").c_str(), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_AutoSelectAll))
+				changedRotation |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "ROT_Z_TRANSFORM_INSPECTOR").c_str(), &rotation.z);
+				if (changedRotation)
 				{
-					m_TransformComponent.SetRotation(glm::vec3(rotation.x, rotation.y, std::stof(m_RotZ.GetString())));
+					m_TransformComponent.SetRotation(rotation);
 				}
 
 				ImGui::Unindent();
@@ -95,27 +78,18 @@ namespace renegade
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("X");
 				ImGui::SameLine();
-
-				m_ScaleX.SetString(std::to_string(scale.x));
-				if (m_ScaleX.Render(IMGUI_FORMAT_ID("", INPUT_ID, "SCALE_X_TRANSFORM_INSPECTOR").c_str(), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_AutoSelectAll))
-				{
-					m_TransformComponent.SetScale(glm::vec3(std::stof(m_ScaleX.GetString()), scale.y, scale.z));
-				}
+				bool changedScale = ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "SCALE_X_TRANSFORM_INSPECTOR").c_str(), &scale.x);
 				ImGui::SameLine();
 				ImGui::Text("Y");
 				ImGui::SameLine();
-				m_ScaleY.SetString(std::to_string(scale.y));
-				if (m_ScaleY.Render(IMGUI_FORMAT_ID("", INPUT_ID, "SCALE_Y_TRANSFORM_INSPECTOR").c_str(), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_AutoSelectAll))
-				{
-					m_TransformComponent.SetScale(glm::vec3(scale.x, std::stof(m_ScaleY.GetString()), scale.z));
-				}
+				changedScale |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "SCALE_Y_TRANSFORM_INSPECTOR").c_str(), &scale.y);
 				ImGui::SameLine();
 				ImGui::Text("Z");
 				ImGui::SameLine();
-				m_ScaleZ.SetString(std::to_string(scale.z));
-				if (m_ScaleZ.Render(IMGUI_FORMAT_ID("", INPUT_ID, "SCALE_Z_TRANSFORM_INSPECTOR").c_str(), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_AutoSelectAll))
+				changedScale |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "SCALE_Z_TRANSFORM_INSPECTOR").c_str(), &scale.z);
+				if (changedScale)
 				{
-					m_TransformComponent.SetScale(glm::vec3(scale.x, scale.y, std::stof(m_ScaleZ.GetString())));
+					m_TransformComponent.SetScale(scale);
 				}
 
 				ImGui::PopItemWidth();

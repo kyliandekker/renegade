@@ -37,6 +37,7 @@ namespace renegade
 			{
 				LOGF(LOGSEVERITY_SUCCESS, "DX12 initialized.");
 			}
+
 			return success;
 		}
 

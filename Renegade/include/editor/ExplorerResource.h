@@ -94,17 +94,28 @@ namespace renegade
 		public:
 		};
 
-		class SoundExplorerResource : public ExplorerResource
+		class AudioExplorerResource : public ExplorerResource
+		{
+		public:
+			virtual ~AudioExplorerResource() override;
+
+			bool Initialize() override;
+			double* m_LeftSamples = nullptr;
+			double* m_RightSamples = nullptr;
+			size_t m_NumSamples = 0;
+		};
+
+		class SoundExplorerResource : public AudioExplorerResource
 		{
 		public:
 		};
 
-		class SongExplorerResource : public ExplorerResource
+		class SongExplorerResource : public AudioExplorerResource
 		{
 		public:
 		};
 
-		class VOExplorerResource : public ExplorerResource
+		class VOExplorerResource : public AudioExplorerResource
 		{
 		public:
 		};

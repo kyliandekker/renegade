@@ -10,7 +10,7 @@ namespace renegade
 
 		struct EntityID
 		{
-			EntityID(unsigned int a_ID, const std::string& a_Name) : m_ID(a_ID), m_Name(a_Name){};
+			EntityID(unsigned int a_ID) : m_ID(a_ID) {};
 			EntityID() {};
 			~EntityID() = default;
 
@@ -22,17 +22,7 @@ namespace renegade
 			bool operator==(const EntityID& a_Other) const;
 			bool operator!=(const EntityID& a_Other) const;
 			bool operator<(const EntityID& a_Other) const;
-
-			TransformComponent* transform() const;
-
-			const std::string GetName() const;
-			void SetName(const std::string& a_Name);
-
-			bool IsActive() const;
-			void SetActive(bool a_Active);
 		protected:
-			bool m_Active = true ;
-			std::string m_Name;
 			enum ID_State : unsigned int
 			{
 				INVALID = 0

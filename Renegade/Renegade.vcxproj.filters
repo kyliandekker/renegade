@@ -147,7 +147,25 @@
     <ClInclude Include="include\editor\imgui\views\TransformComponentUIView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\imgui\PopGuard.h">
+    <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\TextureExplorerResourceUIView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\DefaultExplorerResourceUIView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\AudioExplorerResourceUIView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\ExplorerResourceWithPreviewUIView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gameplay\systems\EntityDetailSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gameplay\systems\EntityDetailComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\SceneExplorerResourceUIView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -284,7 +302,28 @@
     <ClCompile Include="src\editor\imgui\views\ComponentUIView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\editor\imgui\PopGuard.cpp">
+    <ClCompile Include="src\editor\imgui\views\ExplorerResourceViews\TextureExplorerResourceUIView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\editor\imgui\views\ExplorerResourceViews\DefaultExplorerResourceUIView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\editor\imgui\views\ExplorerResourceViews\AudioExplorerResourceUIView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui\implot_items.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui\implot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\editor\imgui\views\ExplorerResourceViews\ExplorerResourceWithPreviewResourceUIView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gameplay\systems\EntityDetailComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\editor\imgui\views\ExplorerResourceViews\SceneExplorerResourceUIView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

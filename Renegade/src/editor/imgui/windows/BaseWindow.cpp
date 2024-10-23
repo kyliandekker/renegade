@@ -25,6 +25,11 @@ namespace renegade
                 return true;
             }
 
+            bool BaseWindow::Destroy()
+            {
+                return true;
+            }
+
 			bool BaseWindow::WindowBegin()
 			{
 				return ImGui::Begin(std::string(m_Name + "###WINDOW_" + string_extensions::StringToUpper(m_WindowID)).c_str(), &m_Enabled, m_Flags);

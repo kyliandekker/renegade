@@ -28,6 +28,7 @@ namespace renegade
 				void Render() override;
 
 				bool Initialize() override;
+				bool Destroy() override;
 
 				void Clear();
 				void AddMessage(const logger::Message& a_Message);

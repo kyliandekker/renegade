@@ -4,6 +4,7 @@
 
 #include "core/Engine.h"
 #include "editor/imgui/EditorSelectable.h"
+#include "utils/string_extensions.h"
 
 namespace renegade
 {
@@ -24,6 +25,7 @@ namespace renegade
 
         bool Editor::Initialize(int, ...)
 		{
+			m_EditorSettings.Load();
 			bool success = InitializeSystem(&m_AssetDatabase);
 			success |= InitializeSystem(&m_Window);
 			return success && System::Initialize();
@@ -86,11 +88,11 @@ namespace renegade
 		{
 			m_CurrentScene = a_Scene;
 
-			core::ENGINE.GetECS().ClearEntities();
+			core::ENGINE.GetECS().Clear();
 
-			// Load all entities.
+			// TODO: Load all entities.
 
-			core::ENGINE.GetWindow().SetTitle("Renegade Engine (" + a_Scene->GetPath() + ")");
+			core::ENGINE.GetWindow().SetTitle("Renegade Engine (" + string_extensions::GetFileName(a_Scene->GetPath()) + ")");
 		}
 
         imgui::EditorSelectable* Editor::GetSelectable() const

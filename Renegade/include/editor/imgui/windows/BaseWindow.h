@@ -24,6 +24,7 @@ namespace renegade
 				~BaseWindow();
 
 				virtual bool Initialize();
+				virtual bool Destroy();
 
 				virtual bool WindowBegin();
 				virtual void WindowEnd();

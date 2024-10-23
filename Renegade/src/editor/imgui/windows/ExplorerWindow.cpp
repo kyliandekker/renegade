@@ -17,8 +17,7 @@ namespace renegade
 	{
 		namespace imgui
 		{
-			ExplorerWindow::ExplorerWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_EXPLORER) + " Explorer", "Explorer"), 
-				m_AssetRoot(ExplorerResourceUIView(m_Window, core::ENGINE.GetEditor().GetAssetDatabase().GetRoot()))
+			ExplorerWindow::ExplorerWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_EXPLORER) + " Explorer", "Explorer")
 			{ }
 
 			bool ExplorerWindow::Initialize()
@@ -28,7 +27,15 @@ namespace renegade
 				core::ENGINE.GetEditor().GetAssetDatabase().m_OnBeforeScan += std::bind(&ExplorerWindow::OnBeforeScan, this);
 				core::ENGINE.GetEditor().GetAssetDatabase().m_OnScanCompleted += std::bind(&ExplorerWindow::OnScanCompleted, this);
 
-				return true;
+				return BaseWindow::Destroy();
+			}
+
+			bool ExplorerWindow::Destroy()
+			{
+				core::ENGINE.GetEditor().GetAssetDatabase().m_OnBeforeScan -= std::bind(&ExplorerWindow::OnBeforeScan, this);
+				core::ENGINE.GetEditor().GetAssetDatabase().m_OnScanCompleted -= std::bind(&ExplorerWindow::OnScanCompleted, this);
+
+				return BaseWindow::Destroy();
 			}
 
 			void ExplorerWindow::SetExplorerRoot(ExplorerResourceUIView* a_Resource)
@@ -39,60 +46,55 @@ namespace renegade
 				}
 
 				m_FolderRoot = a_Resource;
-				m_FolderRoot->GetChildren();
 			}
 
-			void ExplorerWindow::RenderFolder(ExplorerResourceUIView& a_Resource)
+			void ExplorerWindow::RenderFolder(ExplorerResourceUIView* a_Resource)
 			{
-				if (a_Resource.GetName().empty() ||
-					a_Resource.GetResource().GetPath().empty())
+				if (a_Resource->GetName().empty() ||
+					a_Resource->GetResource()->GetPath().empty())
 				{
 					return;
 				}
 
-				if (a_Resource.GetResource().GetResourceType() != ExplorerResourceType::Folder)
+				if (a_Resource->GetResource()->GetResourceType() != ExplorerResourceType::Folder)
 				{
 					return;
 				}
 
-				std::string name = a_Resource.GetName();
+				std::string name = a_Resource->GetName();
 				std::string icon = ICON_FA_FOLDER_OPEN;
-				if (a_Resource.GetResource().GetResourceType() == ExplorerResourceType::Folder && a_Resource.IsFoldedOut() && a_Resource.HasFolders())
+				if (a_Resource->GetResource()->GetResourceType() == ExplorerResourceType::Folder && a_Resource->IsFoldedOut() && a_Resource->HasFolders())
 				{
 					icon = ICON_FA_FOLDER_OPEN;
 				}
-				else if (a_Resource.GetResource().GetResourceType() == ExplorerResourceType::Folder)
+				else if (a_Resource->GetResource()->GetResourceType() == ExplorerResourceType::Folder)
 				{
 					icon = ICON_FA_FOLDER;
 				}
-				std::string id = IMGUI_FORMAT_ID("", TREE_NODE_ID, "TREE_NODE_" + string_extensions::StringToUpper(a_Resource.GetResource().GetPath()) + "_EXPLORER");
+				std::string id = IMGUI_FORMAT_ID("", TREE_NODE_ID, "TREE_NODE_" + string_extensions::StringToUpper(a_Resource->GetResource()->GetPath()) + "_EXPLORER");
 
 				bool clicked, right_clicked;
 
 				int flags = ImGuiTreeNodeFlags_OpenOnArrow;
-				if (!a_Resource.HasFolders())
+				if (!a_Resource->HasFolders())
 				{
 					flags = ImGuiTreeNodeFlags_Leaf;
 				}
-				const bool fold = ImGui::EngineTreeNodeExS(id.c_str(), icon.c_str(), name.c_str(), clicked, right_clicked, &a_Resource == m_FolderRoot, ImVec2(ImGui::GetContentRegionAvail().x, m_Window.FontSize()), flags);
+				const bool fold = ImGui::EngineTreeNodeExS(id.c_str(), icon.c_str(), name.c_str(), clicked, right_clicked, a_Resource == m_FolderRoot, ImVec2(ImGui::GetContentRegionAvail().x, m_Window.FontSize()), flags);
 
 				if (clicked)
 				{
-					m_NewFolderRoot = &a_Resource;
+					m_NewFolderRoot = a_Resource;
 				}
 
-				if (a_Resource.IsFoldedOut() != fold)
+				if (a_Resource->IsFoldedOut() != fold)
 				{
-					a_Resource.SetFoldedOut(fold);
-					if (a_Resource.IsFoldedOut())
-					{
-						a_Resource.GetChildren();
-					}
+					a_Resource->SetFoldedOut(fold);
 				}
 
-				if (a_Resource.IsFoldedOut())
+				if (a_Resource->IsFoldedOut())
 				{
-					for (auto& resource : a_Resource.m_Resources)
+					for (ExplorerResourceUIView* resource : a_Resource->m_Resources)
 					{
 						RenderFolder(resource);
 					}
@@ -141,9 +143,9 @@ namespace renegade
 
 					for (auto& resource : m_FolderRoot->m_Resources)
 					{
-						if (isEmptyString || string_extensions::StringToLower(resource.GetName()).find(m_SearchBar.GetString()) != std::string::npos)
+						if (isEmptyString || string_extensions::StringToLower(resource->GetName()).find(m_SearchBar.GetString()) != std::string::npos)
 						{
-							m_FilteredResources.push_back(&resource);
+							m_FilteredResources.push_back(resource);
 						}
 					}
 				}
@@ -170,16 +172,16 @@ namespace renegade
 					m_NeedsRefresh = true;
 				}
 
-				ImGui::EndToolbar(m_Window.GetWindowPadding());
-
+				ImGui::EndToolbar(ImVec2(ImGui::GetStyle().ItemSpacing.x, 0));
+			
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(m_Window.GetFramePadding().x, m_Window.GetFramePadding().y));
 				if (ImGui::BeginChild(
 					IMGUI_FORMAT_ID("", CHILD_ID, "DIRECTORIES_EXPLORER").c_str(),
 					ImVec2(
-						(ImGui::GetContentRegionAvail().x - m_Window.GetWindowPadding().x) * 0.15f,
+						0,
 						ImGui::GetContentRegionAvail().y - ImGui::GetStyle().ItemSpacing.y
 					),
-					ImGuiChildFlags_Borders
+					ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX
 				))
 				{
 					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
@@ -244,7 +246,7 @@ namespace renegade
 								{
 									core::ENGINE.GetEditor().SetSelectable(item);
 								}
-								if (double_clicked && item->GetResource().GetResourceType() == ExplorerResourceType::Folder)
+								if (double_clicked && item->GetResource()->GetResourceType() == ExplorerResourceType::Folder)
 								{
 									m_NewFolderRoot = item;
 								}
@@ -259,8 +261,12 @@ namespace renegade
 
 			void ExplorerWindow::OnScanCompleted()
 			{
-				m_AssetRoot = ExplorerResourceUIView(m_Window, core::ENGINE.GetEditor().GetAssetDatabase().GetRoot());
-				SetExplorerRoot(&m_AssetRoot);
+				if (m_AssetRoot)
+				{
+					delete m_AssetRoot;
+				}
+				m_AssetRoot = ExplorerResourceUIView::CreateViewFromExplorerResource(&core::ENGINE.GetEditor().GetAssetDatabase().GetRoot(), m_Window);
+				SetExplorerRoot(m_AssetRoot);
 				m_NeedsRefresh = true;
 			}
 

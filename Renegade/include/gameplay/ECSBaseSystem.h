@@ -74,9 +74,9 @@ namespace renegade
 				return m_Components.count(a_ID) == 1;
 			}
 
-			ComponentType* GetComponent(const EntityID& a_ID)
+			ComponentType& GetComponent(const EntityID& a_ID)
 			{
-				return IsIdHere(a_ID) ? &m_Components.at(a_ID) : nullptr;
+				return IsIdHere(a_ID) ? m_Components.at(a_ID) : CreateComponent(a_ID);
 			}
 
 			void DeleteComponent(const EntityID& a_ID)

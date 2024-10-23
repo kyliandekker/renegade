@@ -8,6 +8,8 @@
 #include "logger/Logger.h"
 #include "utils/string_extensions.h"
 #include "core/Engine.h"
+#include "gameplay/systems/EntityDetailComponent.h"
+#include "gameplay/systems/EntityDetailSystem.h"
 
 namespace renegade
 {
@@ -20,11 +22,20 @@ namespace renegade
 
             bool HierarchyWindow::Initialize()
             {
-                return true;
+				core::ENGINE.GetECS().m_OnEntitiesUpdated += std::bind(&HierarchyWindow::UpdateEntities, this);
+				return BaseWindow::Initialize();
             }
+
+			bool HierarchyWindow::Destroy()
+			{
+				core::ENGINE.GetECS().m_OnEntitiesUpdated -= std::bind(&HierarchyWindow::UpdateEntities, this);
+				return BaseWindow::Destroy();
+			}
 
 			void HierarchyWindow::Render()
 			{
+				std::lock_guard<std::mutex> lock(core::ENGINE.GetECS().m_EntityMutex);
+
 				ImVec2 toolbarSize = ImVec2(ImGui::GetContentRegionAvail().x, m_Window.HeaderSize().y);
 				ImGui::BeginToolbar(toolbarSize);
 
@@ -42,7 +53,7 @@ namespace renegade
 					m_NeedsRefresh = true;
 				}
 
-				ImGui::EndToolbar(m_Window.GetWindowPadding());
+				ImGui::EndToolbar(ImVec2(ImGui::GetStyle().ItemSpacing.x, 0));
 
 				if (m_NeedsRefresh)
 				{
@@ -59,7 +70,9 @@ namespace renegade
 
 					for (auto& entity : core::ENGINE.GetECS().GetEntities())
 					{
-						if (isEmptyString || string_extensions::StringToLower(entity.GetName()).find(m_SearchBar.GetString()) != std::string::npos)
+						gameplay::EntityDetailComponent& detailComponent = core::ENGINE.GetECS().GetSystem<gameplay::EntityDetailSystem>().GetComponent(entity);
+
+						if (isEmptyString || string_extensions::StringToLower(detailComponent.GetName()).find(m_SearchBar.GetString()) != std::string::npos)
 						{
 							m_FilteredEntities.emplace_back(EntityUIView(m_Window, entity));
 						}
@@ -91,6 +104,11 @@ namespace renegade
 				ImGui::EndChild();
 				ImGui::PopStyleVar();
 			}
+
+            void HierarchyWindow::UpdateEntities()
+            {
+				m_NeedsRefresh = true;
+            }
 		}
 	}
 }

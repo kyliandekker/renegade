@@ -236,8 +236,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>renegade.lib;dxgi.lib;d3d12.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;$(SolutionDir)Renegade/external/uaudio_wave_reader/$(PlatformShortname)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>renegade.lib;dxgi.lib;d3d12.lib;dxguid.lib;uaudio_wave_reader_$(PlatformShortname)_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Editor Debug|x64'">
@@ -252,8 +252,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>renegade.lib;dxgi.lib;d3d12.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;$(SolutionDir)Renegade/external/uaudio_wave_reader/$(PlatformShortname)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>renegade.lib;dxgi.lib;d3d12.lib;dxguid.lib;uaudio_wave_reader_$(PlatformShortname)_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -272,8 +272,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>renegade.lib;dxgi.lib;d3d12.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;$(SolutionDir)Renegade/external/uaudio_wave_reader/$(PlatformShortname)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>renegade.lib;dxgi.lib;d3d12.lib;dxguid.lib;uaudio_wave_reader_$(PlatformShortname)_$(Configuration).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Editor Release|x64'">
@@ -292,8 +292,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>renegade.lib;dxgi.lib;d3d12.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;$(SolutionDir)Renegade/external/uaudio_wave_reader/$(PlatformShortname)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>renegade.lib;dxgi.lib;d3d12.lib;dxguid.lib;uaudio_wave_reader_$(PlatformShortname)_$(Configuration).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

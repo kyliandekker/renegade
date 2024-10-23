@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <imgui/imgui.h>
+#include <imgui/implot.h>
 #include <imgui/backends/imgui_impl_win32.h>
 #include <imgui/backends/imgui_impl_dx12.h>
 // va_list, va_start, va_end
@@ -35,6 +36,7 @@ namespace renegade
 			{
 				IMGUI_CHECKVERSION();
 				ImGui::CreateContext();
+				ImPlot::CreateContext();
 
 				m_IniPath = std::string(file::FileLoader::GetAppDataPath() + SETTINGS_FOLDER + "imgui.ini");
 				ImGuiIO& io = ImGui::GetIO();
@@ -61,8 +63,16 @@ namespace renegade
 
 			bool ImGuiWindow::Destroy()
 			{
+				mainWindow.Destroy();
+				consoleWindow.Destroy();
+				sceneWindow.Destroy();
+				inspectorWindow.Destroy();
+				hierarchyWindow.Destroy();
+				explorerWindow.Destroy();
+
 				ImGui_ImplDX12_Shutdown();
 				ImGui_ImplWin32_Shutdown();
+				ImPlot::DestroyContext();
 				ImGui::DestroyContext();
 
 				LOGF(LOGSEVERITY_SUCCESS, "ImGui destroyed.");
@@ -283,6 +293,11 @@ namespace renegade
 				style.LogSliderDeadzone = 4;
 				style.FramePadding = m_FramePadding;
 				style.ItemSpacing = m_FramePadding;
+
+				ImPlotStyle& pStyle = ImPlot::GetStyle();
+
+				colors = pStyle.Colors;
+				colors[ImPlotCol_Line] = ImVec4(0.66f, 0.66f, 0.66f, 1.00f);
 
 				m_HeaderSize = ImVec2(0, FontSize() * 2);
 			}

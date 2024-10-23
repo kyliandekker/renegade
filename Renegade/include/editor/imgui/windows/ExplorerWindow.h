@@ -24,6 +24,9 @@ namespace renegade
 				ExplorerWindow(ImGuiWindow& a_Window);
 
 				bool Initialize() override;
+				bool Destroy() override;
+
+                void SetExplorerRoot(ExplorerResourceUIView* a_Resource);
 
 				bool m_ShowExplorerInspector = false;
 				bool m_NeedsRefresh = true;
@@ -32,12 +35,10 @@ namespace renegade
 				char EXPLORER_INSPECTOR_RENAME_RESOURCE[256] = { '\0' };
 
 				std::vector<ExplorerResourceUIView*> m_FilteredResources;
-				ExplorerResourceUIView m_AssetRoot;
+				ExplorerResourceUIView* m_AssetRoot = nullptr;
 				ExplorerResourceUIView* m_FolderRoot = nullptr;
 				ExplorerResourceUIView* m_NewFolderRoot = nullptr;
-
-				void SetExplorerRoot(ExplorerResourceUIView* a_Resource);
-				void RenderFolder(ExplorerResourceUIView& a_Resource);
+				void RenderFolder(ExplorerResourceUIView* a_Resource);
 				void Render() override;
 
 				void OnScanCompleted();

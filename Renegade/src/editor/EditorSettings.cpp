@@ -26,7 +26,8 @@
 #define JSON_WINDOW_SIZE_VAR "windowSize"
 #define JSON_WINDOW_SIZE_X_VAR "x"
 #define JSON_WINDOW_SIZE_Y_VAR "y"
-#define JSON_PREVIOUS_PROJECTS_VAR "previousProjects"
+
+#define JSON_EXPLORER_TAB_SIZE_VAR "explorerTabSize"
 
 namespace renegade
 {

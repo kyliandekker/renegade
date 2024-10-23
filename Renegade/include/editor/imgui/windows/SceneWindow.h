@@ -17,8 +17,6 @@ namespace renegade
 			public:
 				SceneWindow(ImGuiWindow& a_Window);
 
-				bool Initialize() override;
-
 				void Render() override;
 			};
 		}

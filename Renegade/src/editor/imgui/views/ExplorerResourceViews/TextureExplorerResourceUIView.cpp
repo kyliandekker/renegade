@@ -1,0 +1,103 @@
+#include "editor/imgui/views/ExplorerResourceViews/TextureExplorerResourceUIView.h"
+
+#include <imgui/imgui_helpers.h>
+
+#include "editor/ExplorerResource.h"
+#include "editor/imgui/ImGuiDefines.h"
+#include "editor/imgui/ImGuiWindow.h"
+
+namespace renegade
+{
+	namespace editor
+	{
+		namespace imgui
+		{
+			template <class T>
+			ExplorerResource* ImageExplorerResourceUIView<T>::GetResource()
+			{
+				return &m_Resource;
+			}
+
+			template <class T>
+			void ImageExplorerResourceUIView<T>::RenderSelectable()
+			{
+				RenderBaseSelectable(&m_Resource);
+
+				ImGui::DisplayHeader(m_Window.Bold(), "Type");
+				ImGui::SameLine();
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(m_Window.GetFramePadding().x, 0));
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				if (m_AssetTypeDropdown.Render(IMGUI_FORMAT_ID("", COMBO_ID, "ASSETTYPE_INSPECTOR").c_str()))
+				{
+					m_Resource.SetAssetType(m_AssetTypeDropdown.GetValue());
+					m_Resource.SaveMetadata();
+
+					SetData(&m_Resource);
+				}
+				ImGui::PopStyleVar();
+
+				EndBaseSelectable();
+
+				RenderPreviewWindow();
+
+				if (!m_Resource.m_DescHandle->Invalid())
+				{
+					const float height_new = ImGui::GetContentRegionAvail().y;
+					const float width = (m_Resource.m_DescHandle->Width * (1.0f / m_Resource.m_DescHandle->Height * height_new));
+
+					float offset = (ImGui::GetContentRegionAvail().x - width) / 2;
+					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
+					ImGui::Image((void*)m_Resource.m_DescHandle->GpuHandle.ptr, ImVec2(width, height_new));
+				}
+
+				EndPreviewWindow();
+			}
+
+			template <class T>
+			void ImageExplorerResourceUIView<T>::SetData(ExplorerResource* a_Resource)
+			{
+				ExplorerResourceWithPreviewUIView::SetData(a_Resource);
+				m_AssetTypeDropdown = StringDropdown<assets::AssetType>(
+					m_Resource.GetAssetType(),
+					{
+						assets::AssetType::Texture,
+						assets::AssetType::Sprite,
+						assets::AssetType::Font,
+					},
+				{
+					assets::AssetTypeToString(assets::AssetType::Texture),
+					assets::AssetTypeToString(assets::AssetType::Sprite),
+					assets::AssetTypeToString(assets::AssetType::Font),
+				}
+				);
+			}
+
+			template<class T>
+			ImageExplorerResourceUIView<T>::ImageExplorerResourceUIView(ImGuiWindow& a_Window, T* a_Resource) : ExplorerResourceWithPreviewUIView(a_Window), m_Resource(*a_Resource)
+			{
+			}
+
+			template <class T>
+			ImageExplorerResourceUIView<T>::ImageExplorerResourceUIView<T>(const ImageExplorerResourceUIView& a_Other) : ExplorerResourceWithPreviewUIView(a_Other), m_Resource(a_Other.m_Resource)
+			{ }
+
+			TextureExplorerResourceUIView::TextureExplorerResourceUIView(ImGuiWindow& a_Window, TextureExplorerResource* a_Resource) : ImageExplorerResourceUIView(a_Window, a_Resource)
+			{ }
+
+			TextureExplorerResourceUIView::TextureExplorerResourceUIView(const TextureExplorerResourceUIView& a_Other) : ImageExplorerResourceUIView(a_Other)
+			{ }
+
+			SpriteExplorerResourceUIView::SpriteExplorerResourceUIView(ImGuiWindow& a_Window, SpriteExplorerResource* a_Resource) : ImageExplorerResourceUIView(a_Window, a_Resource)
+			{ }
+
+			SpriteExplorerResourceUIView::SpriteExplorerResourceUIView(const SpriteExplorerResourceUIView& a_Other) : ImageExplorerResourceUIView(a_Other)
+			{ }
+
+			FontExplorerResourceUIView::FontExplorerResourceUIView(ImGuiWindow& a_Window, FontExplorerResource* a_Resource) : ImageExplorerResourceUIView(a_Window, a_Resource)
+			{ }
+
+			FontExplorerResourceUIView::FontExplorerResourceUIView(const FontExplorerResourceUIView& a_Other) : ImageExplorerResourceUIView(a_Other)
+			{ }
+		}
+	}
+}

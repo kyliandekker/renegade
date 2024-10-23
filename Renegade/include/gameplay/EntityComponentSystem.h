@@ -4,8 +4,10 @@
 
 #include <vector>
 #include <string>
+#include <mutex>
 
 #include "gameplay/EntityID.h"
+#include "core/datatypes/Event.h"
 
 namespace renegade
 {
@@ -16,6 +18,9 @@ namespace renegade
 		class EntityComponentSystem : public core::System
 		{
 		public:
+			SimpleEvent<> m_OnEntitiesUpdated;
+			std::mutex m_EntityMutex;
+
 			bool Initialize(int a_NumArgs = 0, ...) override;
 			bool Destroy() override;
 
@@ -25,37 +30,11 @@ namespace renegade
 			void SetPaused(bool a_Paused);
 
 			EntityID& CreateEntity(const std::string& a_Name);
-			void DeleteEntity(const EntityID& a_ID);
+			void Delete(const EntityID& a_ID);
 			bool IsEntityValid(const EntityID& id) const;
-			void ClearEntities()
-			{
-				m_Entities.clear();
-			}
+			void Clear();
 
-			std::string GetUniqueName(const std::string& a_Name)
-			{
-				std::string name = a_Name;
-
-				bool found = true;
-				int i = 0;
-				while (found)
-				{
-					found = false;
-					for (EntityID& entity : m_Entities)
-					{
-						if (entity.GetName() == name)
-						{
-							i++;
-							if (i != 0)
-							{
-								name = a_Name + " (" + std::to_string(i) + ")";
-								found = true;
-							}
-						}
-					}
-				}
-				return name;
-			}
+			std::string GetUniqueName(const std::string& a_Name);
 
 			template <class T>
 			T& CreateSystem()
@@ -81,8 +60,13 @@ namespace renegade
 
 			std::vector<EntityID>& GetEntities();
 		private:
+			void DeleteEntity(const EntityID& a_ID);
+			void ClearEntities();
+
+			bool m_Clear = false;
 			std::vector<ECSSystem*> m_Systems;
 			std::vector<EntityID> m_Entities;
+			std::vector<EntityID> m_EntitiesToDelete;
 			unsigned int m_NextID = 0;
 #ifdef __EDITOR__
 			bool m_Paused = true;

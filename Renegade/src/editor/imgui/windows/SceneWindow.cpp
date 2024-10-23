@@ -17,11 +17,6 @@ namespace renegade
 			SceneWindow::SceneWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_SCENE) + " Scene", "Scene")
 			{ }
 
-            bool SceneWindow::Initialize()
-            {
-                return true;
-            }
-
 			bool f = false, b = false;
 			void SceneWindow::Render()
 			{
@@ -47,7 +42,11 @@ namespace renegade
 				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - (ImGui::CalcTextSize(fpsValue.c_str()).x + m_Window.GetWindowPadding().x));
 				ImGui::Text(fpsValue.c_str());
 
-				ImGui::EndToolbar(m_Window.GetWindowPadding());
+				ImGui::EndToolbar(ImVec2(ImGui::GetStyle().ItemSpacing.x, 0));
+
+				
+
+				ImGui::Image((ImTextureID)core::ENGINE.GetWindow().GetDX12Window().m_SrvDescriptorHandles[1].GpuHandle.ptr, ImGui::GetContentRegionAvail());
 			}
 		}
 	}

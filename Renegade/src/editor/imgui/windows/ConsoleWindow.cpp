@@ -167,7 +167,7 @@ namespace renegade
 					m_NeedsRefresh = true;
 				}
 
-				ImGui::EndToolbar(m_Window.GetWindowPadding());
+				ImGui::EndToolbar(ImVec2(ImGui::GetStyle().ItemSpacing.x, 0));
 
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(m_Window.GetFramePadding().x * 2, m_Window.GetFramePadding().y * 2));
 				if (ImGui::BeginChild(
@@ -223,8 +223,14 @@ namespace renegade
 
             bool ConsoleWindow::Initialize()
             {
-                return true;
+				return BaseWindow::Initialize();
             }
+
+			bool ConsoleWindow::Destroy()
+			{
+				logger::LOGGER.OnMessageLogged -= std::bind(&ConsoleWindow::LoggerCallback, this, std::placeholders::_1);
+				return BaseWindow::Destroy();
+			}
 
 			void ConsoleWindow::Clear()
 			{

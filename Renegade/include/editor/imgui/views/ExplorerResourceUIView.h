@@ -8,7 +8,6 @@
 #include <string>
 
 #include "editor/imgui/StringTextInput.h"
-#include "editor/imgui/StringDropdown.h"
 #include "assets/AssetType.h"
 
 namespace renegade
@@ -16,8 +15,7 @@ namespace renegade
 	namespace editor
 	{
 		class ExplorerResource;
-		class ImageExplorerResource;
-		class SceneExplorerResource;
+		enum class ExplorerResourceType;
 
 		namespace imgui
 		{
@@ -26,56 +24,48 @@ namespace renegade
 			class ExplorerResourceUIView : public EditorSelectable
 			{
 			public:
-				ExplorerResourceUIView(ImGuiWindow& a_Window, ExplorerResource& a_Resource);
-				ExplorerResourceUIView(const ExplorerResourceUIView& a_Other);
+				virtual ~ExplorerResourceUIView();
 
-				ExplorerResourceUIView& operator=(const ExplorerResourceUIView& a_Other);
+				static ExplorerResourceUIView* CreateViewFromExplorerResource(ExplorerResource* a_Resource, ImGuiWindow& a_Window);
 
+				// EXPLORER.
 				const std::string& GetName() const;
 				const std::string& GetIcon() const;
 
 				bool IsFoldedOut() const;
 				void SetFoldedOut(bool a_FoldedOut);
 
-				const ExplorerResource& GetResource() const;
-
-				void ClearChildren();
-				void GetChildren();
-				void RenderIcon();
 				void Render(bool& clicked, bool& right_clicked, bool& double_clicked, bool selected);
-				void DoubleClicked();
+				virtual void RenderIcon();
+				virtual void DoubleClicked() {};
 				void Render() override {};
 
-				bool HasFolders() const;
+				// INSPECTOR.
+				virtual void RenderBaseSelectable(ExplorerResource* a_Resource);
+				virtual void EndBaseSelectable();
 
-				std::vector<ExplorerResourceUIView> m_Resources;
+				virtual bool HasFolders() const;
+				virtual ExplorerResource* GetResource() { return nullptr; }
+
+				std::vector<ExplorerResourceUIView*> m_Resources;
 				ExplorerResourceUIView* m_Parent = nullptr;
 
-				// INSPECTOR.
-				void RenderSelectable() override;
-			private:
-				void ReadResourceData();
+				void ClearChildren();
+			protected:
+				virtual void SetData(ExplorerResource* a_Resource);
+
+				ExplorerResourceUIView(ImGuiWindow& a_Window);
 
 				std::string m_Name;
 				std::string m_Icon;
-
-				// We must ensure there is always a resource. The other resource types are optional.
-				ExplorerResource& m_Resource;
-
-				union ResourceData
-				{
-					SceneExplorerResource* scene;
-					ImageExplorerResource* image;
-				};
-
-				ResourceData m_ResourceData;
+				std::string m_StrResourceType;
+				ExplorerResourceType m_ResourceType;
 
 				// Whether the node is folded out.
 				bool m_FoldedOut = false;
 
 				// INSPECTOR.
 				StringTextInput m_NameInput;
-				StringDropdown<assets::AssetType> m_AssetTypeDropdown;
 			};
 		}
 	}

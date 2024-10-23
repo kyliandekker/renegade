@@ -11,6 +11,8 @@
 #include "editor/imgui/ImGuiWindow.h"
 #include "gameplay/systems/TransformSystem.h"
 #include "editor/imgui/views/TransformComponentUIView.h"
+#include "gameplay/systems/EntityDetailComponent.h"
+#include "gameplay/systems/EntityDetailSystem.h"
 
 namespace renegade
 {
@@ -18,10 +20,8 @@ namespace renegade
 	{
 		namespace imgui
 		{
-			EntityUIView::EntityUIView(ImGuiWindow& a_Window, gameplay::EntityID& a_EntityID) : EditorSelectable(a_Window)
-			{
-				m_EntityID = &a_EntityID;
-			}
+			EntityUIView::EntityUIView(ImGuiWindow& a_Window, gameplay::EntityID& a_EntityID) : EditorSelectable(a_Window), m_EntityID(a_EntityID)
+			{ }
 
 			std::string EntityUIView::GetIcon() const
 			{
@@ -30,6 +30,8 @@ namespace renegade
 
 			void EntityUIView::Render(bool& clicked, bool selected)
 			{
+				gameplay::EntityDetailComponent& detailComponent = core::ENGINE.GetECS().GetSystem<gameplay::EntityDetailSystem>().GetComponent(m_EntityID);
+
 				ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
 				ImVec2 pos = ImGui::GetCursorScreenPos();
@@ -48,25 +50,25 @@ namespace renegade
 
 				pos = ImGui::GetCursorPos();
 
-				bool active = m_EntityID->IsActive();
+				bool active = detailComponent.IsActive();
 				if (!active)
 				{
 					ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.25f);
 				}
 
-				bool temp = m_EntityID->IsActive();
+				bool temp = detailComponent.IsActive();
 				ImGui::SetNextItemAllowOverlap();
 				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-				if (ImGui::Checkbox(IMGUI_FORMAT_ID("", CHECKBOX_ID, string_extensions::StringToUpper(m_EntityID->GetName()) + "_HIERARCHY").c_str(), &temp))
+				if (ImGui::Checkbox(IMGUI_FORMAT_ID("", CHECKBOX_ID, string_extensions::StringToUpper(detailComponent.GetName()) + "_HIERARCHY").c_str(), &temp))
 				{
-					m_EntityID->SetActive(temp);
+					detailComponent.SetActive(temp);
 				}
 				ImGui::PopStyleVar();
 
 				ImGui::SetCursorPos(ImVec2(pos.x + 30, pos.y));
 				ImGui::Text(GetIcon().c_str());
 				ImGui::SetCursorPos(ImVec2(pos.x + 65, pos.y));
-				ImGui::Text(m_EntityID->GetName().c_str());
+				ImGui::Text(detailComponent.GetName().c_str());
 
 				clicked = ImGui::IsMouseClicked(ImGuiMouseButton_Left) && is_hovered;
 
@@ -78,6 +80,8 @@ namespace renegade
 
 			void EntityUIView::RenderSelectable()
 			{
+				gameplay::EntityDetailComponent& detailComponent = core::ENGINE.GetECS().GetSystem<gameplay::EntityDetailSystem>().GetComponent(m_EntityID);
+
 				ImVec2 toolbarSize = ImVec2(ImGui::GetContentRegionAvail().x, core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y * 2.5f);
 				ImGui::BeginToolbar(toolbarSize);
 
@@ -95,57 +99,100 @@ namespace renegade
 				ImGui::SetCursorPosY(y + (fontSize / 2));
 				ImGui::SetCursorPosX(x + (fontSize * 3));
 
-				m_NameInput.SetString(m_EntityID->GetName());
+				m_NameInput.SetString(detailComponent.GetName());
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x);
 				if (m_NameInput.Render(imgui::IMGUI_FORMAT_ID("", INPUT_ID, "NAME_INSPECTOR").c_str(), ImGuiInputTextFlags_EnterReturnsTrue))
 				{
-					m_EntityID->SetName(m_NameInput.GetString());
+					detailComponent.SetName(m_NameInput.GetString());
 				}
 
 				ImGui::SetCursorPosY(y + (core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y * 1.5f));
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x);
 
-				bool temp = m_EntityID->IsActive();
-				if (ImGui::TransparentCheckboxButton(IMGUI_FORMAT_ID(temp ? ICON_FA_CHECKMARK_CHECKED : ICON_FA_CHECKMARK, CHECKBOX_ID, string_extensions::StringToUpper(m_EntityID->GetName()) + "_INSPECTOR").c_str(), &temp, ImVec2(0, core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y)))
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+
+				bool temp = detailComponent.IsActive();
+				if (ImGui::TransparentCheckboxButton(IMGUI_FORMAT_ID(temp ? ICON_FA_CHECKMARK_CHECKED : ICON_FA_CHECKMARK, CHECKBOX_ID, string_extensions::StringToUpper(detailComponent.GetName()) + "_INSPECTOR").c_str(), &temp, ImVec2(core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y, core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y)))
 				{
-					m_EntityID->SetActive(temp);
+					detailComponent.SetActive(temp);
 				}
 				ImGui::SameLine();
-				if (ImGui::TransparentButton(IMGUI_FORMAT_ID(std::string(ICON_FA_DELETE), BUTTON_ID, "DELETE_INSPECTOR").c_str(), ImVec2(0, core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y)))
+				if (ImGui::TransparentButton(IMGUI_FORMAT_ID(std::string(ICON_FA_DELETE), BUTTON_ID, "DELETE_INSPECTOR").c_str(), ImVec2(core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y, core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y)))
 				{
-					// TODO: This is still filthy af. Think of a better way.
-					core::ENGINE.GetECS().DeleteEntity(*m_EntityID);
-					core::ENGINE.GetEditor().GetImGuiWindow().GetHierarchyWindow().m_NeedsRefresh = true;
-					m_EntityID = nullptr;
-				}
-				ImGui::SameLine();
-				gameplay::EntityComponentSystem& ecs = core::ENGINE.GetECS();
-				gameplay::TransformSystem& transformSys = ecs.GetSystem<gameplay::TransformSystem>();
-				if (ImGui::TransparentButton(IMGUI_FORMAT_ID(std::string(ICON_FA_DELETE), BUTTON_ID, "TEST_INSPECTOR").c_str(), ImVec2(0, core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y)))
-				{
-					transformSys.CreateComponent(*m_EntityID);
-					core::ENGINE.GetEditor().SetSelectable(this);
+					core::ENGINE.GetECS().Delete(m_EntityID);
 				}
 
-				ImGui::EndToolbar(padding);
+				ImGui::EndToolbar(ImVec2(ImGui::GetStyle().ItemSpacing.x, 0));
 
-				if (!m_EntityID)
+				ImGui::PopStyleVar();
+				ImGui::PopStyleVar();
+
+				if (!m_EntityID.IsValid())
 				{
 					return;
 				}
 
-				for (ComponentUIView* component : m_Components)
+				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x);
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ImGui::GetStyle().ItemSpacing.y);
+
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(m_Window.GetFramePadding().x * 2, m_Window.GetFramePadding().y * 2));
+				if (ImGui::BeginChild(
+					IMGUI_FORMAT_ID("", CHILD_ID, "COMPONENTS_INSPECTOR").c_str(),
+					ImVec2(
+						ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x,
+						ImGui::GetContentRegionAvail().y - ImGui::GetStyle().ItemSpacing.y
+					),
+					ImGuiChildFlags_Borders
+				))
 				{
-					component->Render();
+					for (ComponentUIView* component : m_Components)
+					{
+						component->Render();
+					}
+
+					ImGui::Separator();
+					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x);
+
+					float width = ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x;
+					if (ImGui::Button(IMGUI_FORMAT_ID("Add Component", BUTTON_ID, "ADD_COMPONENT_INSPECTOR").c_str(), ImVec2(width, 0)))
+					{
+						ImVec2 buttonPos = ImGui::GetItemRectMin();
+
+						// Set the popup window position just below the button
+						ImGui::SetNextWindowPos(ImVec2(buttonPos.x, buttonPos.y + ImGui::GetItemRectSize().y));
+
+						ImGui::OpenPopup(IMGUI_FORMAT_ID("", POPUP_WINDOW_ID, "ADD_COMPONENT_MENU_INSPECTOR").c_str());
+					}
+
+					gameplay::EntityComponentSystem& ecs = core::ENGINE.GetECS();
+					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, m_Window.GetFramePadding());
+					if (ImGui::BeginPopup(IMGUI_FORMAT_ID("", POPUP_WINDOW_ID, "ADD_COMPONENT_MENU_INSPECTOR").c_str()))
+					{
+						gameplay::TransformSystem& transformSys = ecs.GetSystem<gameplay::TransformSystem>();
+
+						ImVec4 textColor = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+						textColor.w = 0.5f;
+						ImGui::TextColored(textColor, "Add a Component");
+						if (!transformSys.HasComponent(m_EntityID) && ImGui::MenuItem(IMGUI_FORMAT_ID(std::string(ICON_FA_SCENE) + " Transform", MENU_ITEM_ID, "ADD_TRANSFORM_COMPONENT_MENU_INSPECTOR").c_str()))
+						{
+							transformSys.CreateComponent(m_EntityID);
+							core::ENGINE.GetEditor().SetSelectable(this);
+						}
+						ImGui::EndPopup();
+					}
+					ImGui::PopStyleVar();
 				}
+				ImGui::PopStyleVar();
+				ImGui::EndChild();
 			}
 
 			void EntityUIView::Select()
 			{
 				gameplay::EntityComponentSystem& ecs = core::ENGINE.GetECS();
 				gameplay::TransformSystem& transformSys = ecs.GetSystem<gameplay::TransformSystem>();
-				if (ecs.GetSystem<gameplay::TransformSystem>().IsIdHere(*m_EntityID))
+				if (ecs.GetSystem<gameplay::TransformSystem>().IsIdHere(m_EntityID))
 				{
-					m_Components.push_back(new TransformComponentUIView(m_Window, *m_EntityID->transform()));
+					m_Components.push_back(new TransformComponentUIView(m_Window, core::ENGINE.GetECS().GetSystem<gameplay::TransformSystem>().GetComponent(m_EntityID)));
 				}
 			}
 

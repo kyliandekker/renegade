@@ -23,10 +23,13 @@ namespace renegade
 				HierarchyWindow(ImGuiWindow& a_Window);
 
 				bool Initialize() override;
+				bool Destroy() override;
 
 				void Render() override;
-				bool m_NeedsRefresh = true;
+
+				void UpdateEntities();
 			private:
+				bool m_NeedsRefresh = true;
 				std::vector<EntityUIView> m_FilteredEntities;
 
 				SearchBarInput m_SearchBar;

@@ -8,6 +8,7 @@
 
 #include "gameplay/EntityID.h"
 #include "editor/imgui/StringTextInput.h"
+#include "editor/imgui/StringDropdown.h"
 
 namespace renegade
 {
@@ -33,7 +34,7 @@ namespace renegade
 				void Select() override;
 				void Deselect() override;
 			private:
-				gameplay::EntityID* m_EntityID;
+				gameplay::EntityID& m_EntityID;
 				std::vector<ComponentUIView*> m_Components;
 
 				// INSPECTOR.
