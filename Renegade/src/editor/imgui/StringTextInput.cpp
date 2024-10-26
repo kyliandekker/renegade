@@ -1,3 +1,5 @@
+#ifdef __EDITOR__
+
 #include "editor/imgui/StringTextInput.h"
 
 #include <imgui/imgui.h>
@@ -43,3 +45,5 @@ namespace renegade
 		}
 	}
 }
+
+#endif // __EDITOR__

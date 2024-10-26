@@ -33,6 +33,8 @@ namespace renegade
 				void RenderSelectable() override;
 				void Select() override;
 				void Deselect() override;
+
+				gameplay::EntityID& GetEntityID() const;
 			private:
 				gameplay::EntityID& m_EntityID;
 				std::vector<ComponentUIView*> m_Components;

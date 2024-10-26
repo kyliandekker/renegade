@@ -1,3 +1,5 @@
+#ifdef __EDITOR__
+
 #include "editor/explorer_resources/SceneExplorerResource.h"
 
 #include <rapidjson/utils.h>
@@ -115,3 +117,5 @@ namespace renegade
 		}
 	}
 }
+
+#endif // __EDITOR__

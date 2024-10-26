@@ -111,7 +111,7 @@ namespace renegade
 						m_Components.erase(id);
 					}
 					m_ComponentsToDelete.clear();
-					core::ENGINE.GetECS().m_OnEntitiesUpdated();
+					core::ENGINE.GetECS().m_OnEntityComponentsUpdated();
 				}
 			}
 

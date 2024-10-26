@@ -3,6 +3,7 @@
 #ifdef __EDITOR__
 
 #include <vector>
+#include <string>
 
 #include "editor/imgui/windows/BaseWindow.h"
 #include "editor/imgui/StringTextInput.h"

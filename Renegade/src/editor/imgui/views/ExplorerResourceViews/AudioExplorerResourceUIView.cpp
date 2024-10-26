@@ -1,3 +1,5 @@
+#ifdef __EDITOR__
+
 #include "editor/imgui/views/ExplorerResourceViews/AudioExplorerResourceUIView.h"
 
 #include <imgui/imgui_helpers.h>
@@ -142,3 +144,5 @@ namespace renegade
 		}
 	}
 }
+
+#endif // __EDITOR__

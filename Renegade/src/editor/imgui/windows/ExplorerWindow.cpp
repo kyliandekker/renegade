@@ -127,8 +127,8 @@ namespace renegade
 
 						SetExplorerRoot(m_NewFolderRoot);
 						m_NeedsRefresh = true;
-						m_NewFolderRoot = nullptr;
 					}
+					m_NewFolderRoot = nullptr;
 				}
 
 				// This needs to be done at the start of the frame to avoid errors.
@@ -272,8 +272,7 @@ namespace renegade
 					delete m_AssetRoot;
 				}
 				m_AssetRoot = ExplorerResourceUIView::CreateViewFromExplorerResource(&core::ENGINE.GetEditor().GetAssetDatabase().GetRoot(), m_Window);
-				SetExplorerRoot(m_AssetRoot);
-				m_NeedsRefresh = true;
+				m_NewFolderRoot = m_AssetRoot;
 			}
 
 			void ExplorerWindow::OnBeforeScan()

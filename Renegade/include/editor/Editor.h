@@ -51,7 +51,7 @@ namespace renegade
 			bool GetDirty();
 
 			imgui::EditorSelectable* GetSelectable() const;
-			virtual void SetSelectable(imgui::EditorSelectable* a_Selectable);
+			void SetSelectable(imgui::EditorSelectable* a_Selectable);
 		private:
 			imgui::EditorSelectable* m_EditorSelectable;
 

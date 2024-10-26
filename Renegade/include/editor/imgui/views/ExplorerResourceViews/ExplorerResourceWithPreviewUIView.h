@@ -1,3 +1,5 @@
+#ifdef __EDITOR__
+
 #pragma once
 
 #include "editor/imgui/views/ExplorerResourceUIView.h"
@@ -41,3 +43,5 @@ namespace renegade
 		}
 	}
 }
+
+#endif // __EDITOR__

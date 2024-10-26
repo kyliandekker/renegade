@@ -20,6 +20,7 @@ namespace renegade
 		{
 		public:
 			SimpleEvent<> m_OnEntitiesUpdated;
+			SimpleEvent<> m_OnEntityComponentsUpdated;
 
 			bool Initialize(int a_NumArgs = 0, ...) override;
 			bool Destroy() override;
@@ -77,7 +78,7 @@ namespace renegade
 			bool m_Started = false;
 #ifdef __EDITOR__
 			bool m_Paused = true;
-#elif
+#else
 			bool m_Paused = false;
 #endif // __EDITOR__
 		};

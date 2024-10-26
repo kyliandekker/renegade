@@ -217,6 +217,11 @@ namespace renegade
 				}
 				m_Components.clear();
 			}
+
+            gameplay::EntityID& EntityUIView::GetEntityID() const
+            {
+				return m_EntityID;
+            }
 		}
 	}
 }

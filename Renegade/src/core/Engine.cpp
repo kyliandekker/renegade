@@ -129,7 +129,8 @@ namespace renegade
 		{
 			return m_Editor;
 		}
-
+#endif // __EDITOR__
+#ifdef _DEBUG
 		float Engine::GetFPS()
 		{
 			return m_FpsCounter.GetFPS();

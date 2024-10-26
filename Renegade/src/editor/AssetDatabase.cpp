@@ -1,3 +1,5 @@
+#ifdef __EDITOR__
+
 #include "editor/AssetDatabase.h"
 
 #include "logger/Logger.h"
@@ -67,3 +69,5 @@ namespace renegade
 		}
 	}
 }
+
+#endif // __EDITOR__

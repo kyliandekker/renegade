@@ -1,3 +1,5 @@
+#ifdef __EDITOR__
+
 #include "editor/imgui/EditorSelectable.h"
 
 namespace renegade
@@ -11,3 +13,5 @@ namespace renegade
 		}
 	}
 }
+
+#endif // __EDITOR__

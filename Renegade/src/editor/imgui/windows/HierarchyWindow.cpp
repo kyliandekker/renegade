@@ -27,12 +27,14 @@ namespace renegade
             bool HierarchyWindow::Initialize()
             {
 				core::ENGINE.GetECS().m_OnEntitiesUpdated += std::bind(&HierarchyWindow::UpdateEntities, this);
+				core::ENGINE.GetECS().m_OnEntityComponentsUpdated += std::bind(&HierarchyWindow::UpdateEntityComponents, this);
 				return BaseWindow::Initialize();
             }
 
 			bool HierarchyWindow::Destroy()
 			{
 				core::ENGINE.GetECS().m_OnEntitiesUpdated -= std::bind(&HierarchyWindow::UpdateEntities, this);
+				core::ENGINE.GetECS().m_OnEntityComponentsUpdated -= std::bind(&HierarchyWindow::UpdateEntityComponents, this);
 				return BaseWindow::Destroy();
 			}
 
@@ -95,7 +97,8 @@ namespace renegade
 
 				if (m_NeedsRefresh)
 				{
-					if (EntityUIView* derivedPtr = dynamic_cast<EntityUIView*>(core::ENGINE.GetEditor().GetSelectable()))
+					bool wasEntity = dynamic_cast<EntityUIView*>(core::ENGINE.GetEditor().GetSelectable());
+					if (wasEntity)
 					{
 						core::ENGINE.GetEditor().SetSelectable(nullptr);
 					}
@@ -113,6 +116,13 @@ namespace renegade
 						if (isEmptyString || string_extensions::StringToLower(detailComponent.GetName()).find(m_SearchBar.GetString()) != std::string::npos)
 						{
 							m_FilteredEntities.emplace_back(EntityUIView(m_Window, entity));
+						}
+					}
+					for (EntityUIView& entityView : m_FilteredEntities)
+					{
+						if (m_LastID == entityView.GetEntityID())
+						{
+							core::ENGINE.GetEditor().SetSelectable(&entityView);
 						}
 					}
 				}
@@ -134,6 +144,7 @@ namespace renegade
 						entity.Render(clicked, &entity == core::ENGINE.GetEditor().GetSelectable());
 						if (clicked)
 						{
+							m_LastID = entity.GetEntityID();
 							core::ENGINE.GetEditor().SetSelectable(&entity);
 						}
 					}
@@ -146,6 +157,15 @@ namespace renegade
             void HierarchyWindow::UpdateEntities()
             {
 				m_NeedsRefresh = true;
+            }
+
+            void HierarchyWindow::UpdateEntityComponents()
+            {
+				if (EntityUIView* derivedPtr = dynamic_cast<EntityUIView*>(core::ENGINE.GetEditor().GetSelectable()))
+				{
+					core::ENGINE.GetEditor().GetSelectable()->Deselect();
+					core::ENGINE.GetEditor().GetSelectable()->Select();
+				}
             }
 		}
 	}

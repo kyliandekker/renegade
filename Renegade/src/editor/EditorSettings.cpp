@@ -1,3 +1,5 @@
+#ifdef __EDITOR__
+
 #include "editor/EditorSettings.h"
 
 // # Rapidjson
@@ -227,3 +229,5 @@ namespace renegade
 		}
 	}
 }
+
+#endif // __EDITOR__

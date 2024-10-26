@@ -1,3 +1,5 @@
+#ifdef __EDITOR__
+
 #pragma once
 
 #include "editor/ExplorerResource.h"
@@ -17,3 +19,5 @@ namespace renegade
 		};
 	}
 }
+
+#endif // __EDITOR__

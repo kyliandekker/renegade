@@ -28,7 +28,9 @@ namespace renegade
 				void Render() override;
 
 				void UpdateEntities();
+				void UpdateEntityComponents();
 			private:
+				gameplay::EntityID m_LastID;
 				bool m_NeedsRefresh = true;
 				std::vector<EntityUIView> m_FilteredEntities;
 

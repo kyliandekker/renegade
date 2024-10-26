@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mutex>
+#include "core/datatypes/Event.h"
 
 namespace renegade
 {
