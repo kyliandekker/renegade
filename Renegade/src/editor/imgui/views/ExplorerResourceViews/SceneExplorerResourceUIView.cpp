@@ -3,8 +3,10 @@
 #include <imgui/imgui_helpers.h>
 
 #include "editor/ExplorerResource.h"
+#include "editor/explorer_resources/SceneExplorerResource.h"
 #include "editor/imgui/ImGuiWindow.h"
 #include "core/Engine.h"
+#include "utils/string_extensions.h"
 
 namespace renegade
 {
@@ -31,6 +33,7 @@ namespace renegade
 			void SceneExplorerResourceUIView::DoubleClicked()
 			{
 				core::ENGINE.GetEditor().SetCurrentScene(&m_Resource);
+				m_Resource.ResetDirty();
 			}
 
 			SceneExplorerResourceUIView::SceneExplorerResourceUIView(ImGuiWindow& a_Window, SceneExplorerResource* a_Resource) : ExplorerResourceWithoutPreviewUIView(a_Window), m_Resource(*a_Resource)

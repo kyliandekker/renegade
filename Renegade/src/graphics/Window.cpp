@@ -205,6 +205,20 @@ namespace renegade
 			return m_DX12Window;
 		}
 
+		std::string ConvertLPCWSTRToString(LPCWSTR wideStr)
+		{
+			// Get the required size of the buffer for the converted string
+			int size_needed = WideCharToMultiByte(CP_UTF8, 0, wideStr, -1, NULL, 0, NULL, NULL);
+
+			// Create a string of the required size
+			std::string result(size_needed, 0);
+
+			// Perform the actual conversion
+			WideCharToMultiByte(CP_UTF8, 0, wideStr, -1, &result[0], size_needed, NULL, NULL);
+
+			return result;
+		}
+
 		bool Window::CreateWindow(HINSTANCE a_hInstance, uint32_t a_Width, uint32_t a_Height, LPCWSTR a_WindowTitle)
 		{
 			glm::vec2 size(a_Width, a_Height);
@@ -249,6 +263,8 @@ namespace renegade
 				WS_MINIMIZEBOX | WS_SYSMENU | WS_SIZEBOX,
 				CW_USEDEFAULT, CW_USEDEFAULT, static_cast<int>(size.x), static_cast<int>(size.y),
 				NULL, NULL, a_hInstance, this);
+
+			m_BaseWindowTitle = ConvertLPCWSTRToString(a_WindowTitle);
 
 			if (!m_hWnd)
 			{

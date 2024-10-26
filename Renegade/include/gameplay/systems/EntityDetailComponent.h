@@ -20,9 +20,8 @@ namespace renegade
 			EntityID* GetParent() const;
 			void SetParent(EntityID& a_EntityID);
 
-			std::string GetPropertyName() const override;
-			void Serialize(rapidjson::Document& a_Document) const override;
-			void Deserialize(const rapidjson::Document& a_Document) override;
+			void Serialize(rapidjson::Value& a_Document, rapidjson::Document::AllocatorType& a_Allocator) const override;
+			void Deserialize(const rapidjson::Value& a_Document, rapidjson::Document::AllocatorType& a_Allocator) override;
 		private:
 			bool m_Active = true;
 			std::string m_Name;

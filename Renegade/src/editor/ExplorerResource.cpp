@@ -14,6 +14,7 @@
 #include <uaudio_wave_reader/WaveChunks.h>
 #include <uaudio_wave_reader/ChunkCollection.h>
 
+#include "editor/explorer_resources/SceneExplorerResource.h"
 #include "utils/string_extensions.h"
 #include "core/datatypes/DataStream.h"
 #include "file/FileLoader.h"
@@ -407,7 +408,7 @@ namespace renegade
 		{
 			int assetType = 0;
 			rapidjson::GetInt(a_JsonFile, JSON_ASSETTYPE_VAR, assetType);
-			m_AssetType = (assets::AssetType)assetType;
+			m_AssetType = (assets::AssetType)assetType;	
 
 			return true;
 		}
@@ -453,6 +454,21 @@ namespace renegade
 				}
 			}
 			return name;
+		}
+
+		void ExplorerResource::SetDirty()
+		{
+			m_IsDirty = true;
+		}
+
+		void ExplorerResource::ResetDirty()
+		{
+			m_IsDirty = false;
+		}
+
+		bool ExplorerResource::IsDirty() const
+		{
+			return m_IsDirty;
 		}
 
 		ImageExplorerResource::~ImageExplorerResource()
@@ -532,7 +548,7 @@ namespace renegade
 			free(allocated_space);
 			return true;
 		}
-}
+	}
 }
 
 #endif // __EDITOR__

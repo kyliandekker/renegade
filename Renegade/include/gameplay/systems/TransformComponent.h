@@ -33,9 +33,8 @@ namespace renegade
 			void Translate(const glm::vec3& a_Translation);
 			void Rotate(const glm::vec3& a_Degrees);
 
-			std::string GetPropertyName() const override;
-			void Serialize(rapidjson::Document& a_Document) const override;
-			void Deserialize(const rapidjson::Document& a_Document) override;
+			void Serialize(rapidjson::Value& a_Document, rapidjson::Document::AllocatorType& a_Allocator) const override;
+			void Deserialize(const rapidjson::Value& a_Document, rapidjson::Document::AllocatorType& a_Allocator) override;
 		private:
 			glm::vec3 m_Position{ 0.0f };
 			glm::vec3 m_Rotation{ 0.0f };

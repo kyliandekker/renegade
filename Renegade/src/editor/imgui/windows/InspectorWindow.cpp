@@ -8,6 +8,7 @@
 #include "logger/Logger.h"
 #include "editor/imgui/ImGuiWindow.h"
 #include "core/Engine.h"
+#include "core/Header.h"
 
 namespace renegade
 {
@@ -27,6 +28,7 @@ namespace renegade
 			{
 				if (core::ENGINE.GetEditor().GetSelectable())
 				{
+					std::lock_guard<std::mutex> lock(core::m_EntityMutex);
 					core::ENGINE.GetEditor().GetSelectable()->RenderSelectable();
 				}
 				//if (ImGui::Button("Info"))

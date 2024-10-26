@@ -42,8 +42,10 @@
     <ClInclude Include="include\core\datatypes\Event.h" />
     <ClInclude Include="include\core\datatypes\ReserveDataStream.h" />
     <ClInclude Include="include\core\Engine.h" />
+    <ClInclude Include="include\core\Header.h" />
     <ClInclude Include="include\editor\AssetDatabase.h" />
     <ClInclude Include="include\editor\Editor.h" />
+    <ClInclude Include="include\editor\explorer_resources\SceneExplorerResource.h" />
     <ClInclude Include="include\editor\imgui\EditorSelectable.h" />
     <ClInclude Include="include\editor\EditorSettings.h" />
     <ClInclude Include="include\editor\imgui\views\EntityUIView.h" />
@@ -86,7 +88,6 @@
     <ClInclude Include="include\utils\string_extensions.h" />
     <ClInclude Include="include\utils\utils.h" />
     <ClInclude Include="include\editor\imgui\views\ComponentUIView.h" />
-    <ClInclude Include="src\gameplay\ECSBaseSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="external\imgui\backends\imgui_impl_dx12.cpp" />
@@ -100,6 +101,11 @@
     <ClCompile Include="external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="external\imgui\implot.cpp" />
     <ClCompile Include="external\imgui\implot_items.cpp" />
+    <ClCompile Include="src\gameplay\ECSSystem.cpp" />
+    <ClCompile Include="src\gameplay\systems\Component.cpp" />
+    <ClCompile Include="src\gameplay\systems\EntityDetailSystem.cpp" />
+    <ClCompile Include="src\gameplay\systems\TransformSystem.cpp" />
+    <ClCompile Include="src\editor\explorer_resources\SceneExplorerResource.cpp" />
     <ClCompile Include="src\editor\imgui\views\ComponentUIView.cpp" />
     <ClCompile Include="src\editor\imgui\views\EntityUIView.cpp" />
     <ClCompile Include="src\editor\imgui\views\ExplorerResourceUIView.cpp" />

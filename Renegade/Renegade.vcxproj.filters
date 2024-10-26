@@ -120,9 +120,6 @@
     <ClInclude Include="include\gameplay\ECSBaseSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\gameplay\ECSBaseSystem.cpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\gameplay\EnityComponentSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -166,6 +163,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\SceneExplorerResourceUIView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\editor\explorer_resources\SceneExplorerResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\Header.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -324,6 +327,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\editor\imgui\views\ExplorerResourceViews\SceneExplorerResourceUIView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\editor\explorer_resources\SceneExplorerResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gameplay\systems\TransformSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gameplay\systems\EntityDetailSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gameplay\systems\Component.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gameplay\ECSSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

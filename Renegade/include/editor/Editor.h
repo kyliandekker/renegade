@@ -20,6 +20,8 @@ namespace renegade
 	}
 	namespace editor
 	{
+		class SceneExplorerResource;
+
 		namespace imgui
 		{
 			class EditorSelectable;
@@ -45,8 +47,11 @@ namespace renegade
 			SceneExplorerResource* GetCurrentScene() const;
 			void SetCurrentScene(SceneExplorerResource* a_Scene);
 
+			void SetDirty();
+			bool GetDirty();
+
 			imgui::EditorSelectable* GetSelectable() const;
-			void SetSelectable(imgui::EditorSelectable* a_Selectable);
+			virtual void SetSelectable(imgui::EditorSelectable* a_Selectable);
 		private:
 			imgui::EditorSelectable* m_EditorSelectable;
 

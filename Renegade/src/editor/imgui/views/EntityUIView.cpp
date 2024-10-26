@@ -4,6 +4,7 @@
 
 #include <imgui/imgui_helpers.h>
 
+#include "editor/explorer_resources/SceneExplorerResource.h"
 #include "editor/imgui/EditorSelectable.h"
 #include "core/Engine.h"
 #include "editor/imgui/ImGuiDefines.h"
@@ -80,6 +81,8 @@ namespace renegade
 
 			void EntityUIView::RenderSelectable()
 			{
+				bool dirty = false;
+
 				gameplay::EntityDetailComponent& detailComponent = core::ENGINE.GetECS().GetSystem<gameplay::EntityDetailSystem>().GetComponent(m_EntityID);
 
 				ImVec2 toolbarSize = ImVec2(ImGui::GetContentRegionAvail().x, core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y * 2.5f);
@@ -115,11 +118,13 @@ namespace renegade
 				if (ImGui::TransparentCheckboxButton(IMGUI_FORMAT_ID(temp ? ICON_FA_CHECKMARK_CHECKED : ICON_FA_CHECKMARK, CHECKBOX_ID, string_extensions::StringToUpper(detailComponent.GetName()) + "_INSPECTOR").c_str(), &temp, ImVec2(core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y, core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y)))
 				{
 					detailComponent.SetActive(temp);
+					dirty = true;
 				}
 				ImGui::SameLine();
 				if (ImGui::TransparentButton(IMGUI_FORMAT_ID(std::string(ICON_FA_DELETE), BUTTON_ID, "DELETE_INSPECTOR").c_str(), ImVec2(core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y, core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y)))
 				{
 					core::ENGINE.GetECS().Delete(m_EntityID);
+					dirty = true;
 				}
 
 				ImGui::EndToolbar(ImVec2(ImGui::GetStyle().ItemSpacing.x, 0));
@@ -177,10 +182,18 @@ namespace renegade
 						{
 							transformSys.CreateComponent(m_EntityID);
 							core::ENGINE.GetEditor().SetSelectable(this);
+							dirty = true;
 						}
 						ImGui::EndPopup();
 					}
 					ImGui::PopStyleVar();
+					if (dirty)
+					{
+						if (core::ENGINE.GetEditor().GetCurrentScene() && !core::ENGINE.GetECS().HasStarted())
+						{
+							core::ENGINE.GetEditor().SetDirty();
+						}
+					}
 				}
 				ImGui::PopStyleVar();
 				ImGui::EndChild();
@@ -190,9 +203,9 @@ namespace renegade
 			{
 				gameplay::EntityComponentSystem& ecs = core::ENGINE.GetECS();
 				gameplay::TransformSystem& transformSys = ecs.GetSystem<gameplay::TransformSystem>();
-				if (ecs.GetSystem<gameplay::TransformSystem>().IsIdHere(m_EntityID))
+				if (ecs.GetSystem<gameplay::TransformSystem>().ContainsID(m_EntityID))
 				{
-					m_Components.push_back(new TransformComponentUIView(m_Window, core::ENGINE.GetECS().GetSystem<gameplay::TransformSystem>().GetComponent(m_EntityID)));
+					m_Components.push_back(new TransformComponentUIView(m_Window, m_EntityID, core::ENGINE.GetECS().GetSystem<gameplay::TransformSystem>().GetComponent(m_EntityID)));
 				}
 			}
 

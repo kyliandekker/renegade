@@ -5,6 +5,7 @@
 #include "core/Engine.h"
 #include "editor/imgui/EditorSelectable.h"
 #include "utils/string_extensions.h"
+#include "editor/explorer_resources/SceneExplorerResource.h"
 
 namespace renegade
 {
@@ -87,12 +88,20 @@ namespace renegade
 		void Editor::SetCurrentScene(SceneExplorerResource* a_Scene)
 		{
 			m_CurrentScene = a_Scene;
+			m_CurrentScene->Load();
+		}
 
-			core::ENGINE.GetECS().Clear();
+        void Editor::SetDirty()
+        {
+			if (m_CurrentScene)
+			{
+				m_CurrentScene->SetDirty();
+			}
+        }
 
-			// TODO: Load all entities.
-
-			core::ENGINE.GetWindow().SetTitle("Renegade Engine (" + string_extensions::GetFileName(a_Scene->GetPath()) + ")");
+		bool Editor::GetDirty()
+		{
+			return m_CurrentScene ? m_CurrentScene->IsDirty() : false;
 		}
 
         imgui::EditorSelectable* Editor::GetSelectable() const

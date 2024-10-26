@@ -88,6 +88,9 @@ namespace renegade
 				ImVec2 toolbarSize = ImVec2(ImGui::GetContentRegionAvail().x, m_Window.HeaderSize().y);
 				ImGui::BeginToolbar(toolbarSize);
 
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+
 				if (ImGui::TransparentButton(
 					IMGUI_FORMAT_ID(std::string(ICON_FA_ERASE) + " Clear", BUTTON_ID, "CLEAR_CONSOLE").c_str(), ImVec2(0, toolbarSize.y)))
 				{
@@ -166,6 +169,9 @@ namespace renegade
 				{
 					m_NeedsRefresh = true;
 				}
+
+				ImGui::PopStyleVar();
+				ImGui::PopStyleVar();
 
 				ImGui::EndToolbar(ImVec2(ImGui::GetStyle().ItemSpacing.x, 0));
 

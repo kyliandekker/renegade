@@ -3,6 +3,7 @@
 #include <glm/vec2.hpp>
 #include <Windows.h>
 #include <thread>
+#include <string>
 
 #include "core/System.h"
 #include "graphics/DX12Window.h"
@@ -42,6 +43,7 @@ namespace renegade
 
 			bool IsRunning() const;
 		private:
+			std::string m_BaseWindowTitle;
 			bool m_Running = false;
 
 			bool StartThread(HINSTANCE a_hInstance, uint32_t a_Width, uint32_t a_Height, LPCWSTR a_WindowName);

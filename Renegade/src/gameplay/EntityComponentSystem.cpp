@@ -4,8 +4,9 @@
 
 #include "gameplay/ECSBaseSystem.h"
 
-#include <gameplay/systems/EntityDetailSystem.h>
-#include <gameplay/systems/TransformSystem.h>
+#include "gameplay/systems/EntityDetailSystem.h"
+#include "gameplay/systems/TransformSystem.h"
+#include "core/Header.h"
 
 namespace renegade
 {
@@ -32,9 +33,9 @@ namespace renegade
 
 		void EntityComponentSystem::Update(const float& a_DeltaTime)
 		{
-			std::lock_guard<std::mutex> lock(m_EntityMutex);
+			std::lock_guard<std::mutex> lock(core::m_EntityMutex);
 
-			bool changed = (!m_EntitiesToDelete.empty()) || m_Clear;
+			bool changed = (!m_EntitiesToDelete.empty()) || m_Clear || (!m_EntitiesToAdd.empty());
 
 			if (!m_EntitiesToDelete.empty())
 			{
@@ -48,6 +49,7 @@ namespace renegade
 			if (m_Clear)
 			{
 				ClearEntities();
+				m_Clear = false;
 			}
 
 			if (changed)
@@ -55,14 +57,19 @@ namespace renegade
 				m_OnEntitiesUpdated();
 			}
 
-			if (m_Paused)
+			for (auto& sys : m_Systems)
+			{
+				sys->Update(a_DeltaTime);
+			}
+
+			if (!m_Started)
 			{
 				return;
 			}
 
-			for (auto& sys : m_Systems)
+			if (m_Paused)
 			{
-				sys->Update(a_DeltaTime);
+				return;
 			}
 		}
 
@@ -77,7 +84,17 @@ namespace renegade
 			m_Paused = a_Paused;
 		}
 
-		EntityID& EntityComponentSystem::CreateEntity(const std::string& a_Name)
+		bool EntityComponentSystem::HasStarted() const
+		{
+			return m_Started;
+		}
+
+		void EntityComponentSystem::SetStarted(bool a_Started)
+		{
+			m_Started = a_Started;
+		}
+
+		EntityID EntityComponentSystem::CreateEntity(const std::string& a_Name)
 		{
 			EntityID id(++m_NextID);
 			m_Entities.push_back(id);
@@ -148,5 +165,23 @@ namespace renegade
         {
 			return m_Entities;
         }
+
+        std::vector<ECSSystem*> EntityComponentSystem::GetSystemsContainingEntity(const EntityID& a_ID)
+        {
+			std::vector<ECSSystem*> systems;
+			for (ECSSystem* system : m_Systems)
+			{
+				if (system->ContainsID(a_ID))
+				{
+					systems.push_back(system);
+				}
+			}
+            return systems;
+        }
+
+		std::vector<ECSSystem*> EntityComponentSystem::GetSystems()
+		{
+			return m_Systems;
+		}
 	}
 }

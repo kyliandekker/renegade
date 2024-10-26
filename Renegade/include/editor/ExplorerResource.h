@@ -48,7 +48,12 @@ namespace renegade
 			virtual rapidjson::Document PrepareMetadata() const;
 
 			static std::string GetUniqueName(const ExplorerResource& a_Resource, const std::string& a_Name);
+
+			virtual void SetDirty();
+			virtual void ResetDirty();
+			bool IsDirty() const;
 		protected:
+			bool m_IsDirty = false;
 			std::string m_Path;
 			assets::AssetType m_AssetType;
 			ExplorerResourceType m_ResourceType = ExplorerResourceType::Folder;
@@ -56,11 +61,6 @@ namespace renegade
 		};
 
 		class ConfigExplorerResource : public ExplorerResource
-		{
-		public:
-		};
-
-		class SceneExplorerResource : public ExplorerResource
 		{
 		public:
 		};

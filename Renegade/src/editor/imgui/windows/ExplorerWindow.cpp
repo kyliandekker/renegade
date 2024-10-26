@@ -157,11 +157,17 @@ namespace renegade
 				ImVec2 toolbarSize = ImVec2(ImGui::GetContentRegionAvail().x, m_Window.HeaderSize().y);
 				ImGui::BeginToolbar(toolbarSize);
 
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+
 				if (ImGui::TransparentButton(
 					IMGUI_FORMAT_ID(std::string(ICON_FA_REFRESH), BUTTON_ID, "RESCAN_EXPLORER").c_str(), ImVec2(0, toolbarSize.y)))
 				{
 					core::ENGINE.GetEditor().GetAssetDatabase().Rescan();
 				}
+
+				ImGui::PopStyleVar();
+				ImGui::PopStyleVar();
 
 				ImGui::SameLine();
 

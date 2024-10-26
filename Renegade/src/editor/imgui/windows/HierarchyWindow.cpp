@@ -2,14 +2,18 @@
 
 #include "editor/imgui/windows/HierarchyWindow.h"
 
+#include <imgui/imgui_internal.h>
+#include <imgui/imgui_helpers.h>
+
 #include "editor/imgui/ImGuiWindow.h"
 #include "editor/imgui/ImGuiDefines.h"
-#include "imgui/imgui_helpers.h"
 #include "logger/Logger.h"
 #include "utils/string_extensions.h"
 #include "core/Engine.h"
 #include "gameplay/systems/EntityDetailComponent.h"
 #include "gameplay/systems/EntityDetailSystem.h"
+#include "editor/explorer_resources/SceneExplorerResource.h"
+#include "core/Header.h"
 
 namespace renegade
 {
@@ -34,16 +38,50 @@ namespace renegade
 
 			void HierarchyWindow::Render()
 			{
-				std::lock_guard<std::mutex> lock(core::ENGINE.GetECS().m_EntityMutex);
+				std::lock_guard<std::mutex> lock(core::m_EntityMutex);
+
+				if (ImGui::IsKeyDown(ImGuiMod_Ctrl) && ImGui::IsKeyPressed(ImGuiKey_S) && core::ENGINE.GetEditor().GetCurrentScene() && core::ENGINE.GetEditor().GetCurrentScene()->IsDirty())
+				{
+					core::ENGINE.GetEditor().GetCurrentScene()->Save();
+				}
 
 				ImVec2 toolbarSize = ImVec2(ImGui::GetContentRegionAvail().x, m_Window.HeaderSize().y);
 				ImGui::BeginToolbar(toolbarSize);
+
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
 
 				if (ImGui::TransparentButton(IMGUI_FORMAT_ID(std::string(ICON_FA_CUBE), BUTTON_ID, "SPAWN_ENTITY_HIERARCHY").c_str(), ImVec2(toolbarSize.y, toolbarSize.y)))
 				{
 					core::ENGINE.GetECS().CreateEntity(core::ENGINE.GetECS().GetUniqueName("New GameObject"));
 					m_NeedsRefresh = true;
+					if (core::ENGINE.GetEditor().GetCurrentScene() && !core::ENGINE.GetECS().HasStarted())
+					{
+						core::ENGINE.GetEditor().SetDirty();
+					}
 				}
+				ImGui::SameLine();
+
+				bool wasDirty = !core::ENGINE.GetEditor().GetCurrentScene() || !core::ENGINE.GetEditor().GetCurrentScene()->IsDirty();
+				if (wasDirty)
+				{
+					ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+					ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+				}
+				
+				if (ImGui::TransparentButton(IMGUI_FORMAT_ID(std::string(ICON_FA_SAVE), BUTTON_ID, "SAVE_HIERARCHY").c_str(), ImVec2(toolbarSize.y, toolbarSize.y)))
+				{
+					core::ENGINE.GetEditor().GetCurrentScene()->Save();
+				}
+
+				if (wasDirty)
+				{
+					ImGui::PopItemFlag();
+					ImGui::PopStyleVar();
+				}
+
+				ImGui::PopStyleVar();
+				ImGui::PopStyleVar();
 
 				ImGui::SameLine();
 				float searchbarWidth = 200;

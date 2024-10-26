@@ -13,7 +13,7 @@ namespace renegade
 			EntityDetailSystem() {}
 			~EntityDetailSystem() = default;
 
-			virtual void Update(float a_DeltaTime) override {};
+			std::string GetPropertyName() const override;
 		};
 	}
 }

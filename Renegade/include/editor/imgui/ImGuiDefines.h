@@ -48,6 +48,7 @@ namespace renegade
 #define ICON_FA_ARROW_RIGHT "\xEF\x81\xA1"
 #define ICON_FA_CROSS "\xEF\x80\x8D"
 #define ICON_FA_REFRESH "\xEF\x80\xA1"
+#define ICON_FA_SAVE "\xEF\x83\x87"
 
 /* WINDOW ICONS */
 #define ICON_FA_SCENE "\xEF\x80\x8A"

@@ -7,6 +7,9 @@
 #include "editor/imgui/ImGuiDefines.h"
 #include "editor/imgui/ImGuiWindow.h"
 #include "gameplay/systems/TransformComponent.h"
+#include "gameplay/systems/TransformSystem.h"
+#include "core/Engine.h"
+#include "editor/explorer_resources/SceneExplorerResource.h"
 
 namespace renegade
 {
@@ -48,6 +51,7 @@ namespace renegade
 				if (changedPos)
 				{
 					m_TransformComponent.SetPosition(position);
+					core::ENGINE.GetEditor().SetDirty();
 				}
 
 				ImGui::Unindent();
@@ -69,6 +73,7 @@ namespace renegade
 				if (changedRotation)
 				{
 					m_TransformComponent.SetRotation(rotation);
+					core::ENGINE.GetEditor().SetDirty();
 				}
 
 				ImGui::Unindent();
@@ -90,12 +95,19 @@ namespace renegade
 				if (changedScale)
 				{
 					m_TransformComponent.SetScale(scale);
+					core::ENGINE.GetEditor().SetDirty();
 				}
 
 				ImGui::PopItemWidth();
 				ImGui::PopStyleVar();
 				ImGui::PopStyleVar();
 				ImGui::Unindent();
+			}
+
+			void TransformComponentUIView::DeleteComponent()
+			{
+				core::ENGINE.GetECS().GetSystem<gameplay::TransformSystem>().DeleteComponent(m_EntityID);
+				ComponentUIView::DeleteComponent();
 			}
 		}
 	}

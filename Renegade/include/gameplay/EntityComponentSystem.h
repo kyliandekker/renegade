@@ -8,6 +8,7 @@
 
 #include "gameplay/EntityID.h"
 #include "core/datatypes/Event.h"
+#include "core/Header.h"
 
 namespace renegade
 {
@@ -19,7 +20,6 @@ namespace renegade
 		{
 		public:
 			SimpleEvent<> m_OnEntitiesUpdated;
-			std::mutex m_EntityMutex;
 
 			bool Initialize(int a_NumArgs = 0, ...) override;
 			bool Destroy() override;
@@ -29,9 +29,12 @@ namespace renegade
 			bool IsPaused() const;
 			void SetPaused(bool a_Paused);
 
-			EntityID& CreateEntity(const std::string& a_Name);
+			bool HasStarted() const;
+			void SetStarted(bool a_Started);
+
+			EntityID CreateEntity(const std::string& a_Name);
 			void Delete(const EntityID& a_ID);
-			bool IsEntityValid(const EntityID& id) const;
+			bool IsEntityValid(const EntityID& a_ID) const;
 			void Clear();
 
 			std::string GetUniqueName(const std::string& a_Name);
@@ -59,6 +62,8 @@ namespace renegade
 			};
 
 			std::vector<EntityID>& GetEntities();
+			std::vector<ECSSystem*> GetSystemsContainingEntity(const EntityID& a_ID);
+			std::vector<ECSSystem*> GetSystems();
 		private:
 			void DeleteEntity(const EntityID& a_ID);
 			void ClearEntities();
@@ -67,7 +72,9 @@ namespace renegade
 			std::vector<ECSSystem*> m_Systems;
 			std::vector<EntityID> m_Entities;
 			std::vector<EntityID> m_EntitiesToDelete;
+			std::vector<EntityID> m_EntitiesToAdd;
 			unsigned int m_NextID = 0;
+			bool m_Started = false;
 #ifdef __EDITOR__
 			bool m_Paused = true;
 #elif

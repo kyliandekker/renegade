@@ -19,10 +19,11 @@ namespace renegade
 			class TransformComponentUIView : public ComponentUIView
 			{
 			public:
-				TransformComponentUIView(ImGuiWindow& a_Window, gameplay::TransformComponent& a_TransformComponent) : ComponentUIView(a_Window), m_TransformComponent(a_TransformComponent) {};
+				TransformComponentUIView(ImGuiWindow& a_Window, gameplay::EntityID& a_EntityID, gameplay::TransformComponent& a_TransformComponent) : ComponentUIView(a_Window, a_EntityID), m_TransformComponent(a_TransformComponent) {};
 			private:
 				std::string GetName() const override;
 				void RenderInner() override;
+				void DeleteComponent() override;
 
 				gameplay::TransformComponent& m_TransformComponent;
 

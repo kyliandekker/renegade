@@ -8,6 +8,7 @@
 #include "utils/string_extensions.h"
 #include "assets/AssetType.h"
 #include "editor/ExplorerResource.h"
+#include "editor/explorer_resources/SceneExplorerResource.h"
 #include "core/Engine.h"
 #include "file/FileLoader.h"
 

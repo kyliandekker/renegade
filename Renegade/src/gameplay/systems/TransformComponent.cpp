@@ -2,19 +2,18 @@
 
 #include <rapidjson/utils.h>
 
-#define JSON_TRANSFORM_COMPONENT_VAR "transformComponent"
-#define JSON_TRANSFORM_COMPONENT_POSITION_VAR "position"
-#define JSON_TRANSFORM_COMPONENT_ROTATION_VAR "rotation"
-#define JSON_TRANSFORM_COMPONENT_SCALE_VAR "scale"
-#define JSON_TRANSFORM_COMPONENT_X_VAR "x"
-#define JSON_TRANSFORM_COMPONENT_Y_VAR "y"
-#define JSON_TRANSFORM_COMPONENT_Z_VAR "z"
+#define JSON_ENTITY_TRANSFORM_COMPONENT_POSITION_VAR "position"
+#define JSON_ENTITY_TRANSFORM_COMPONENT_ROTATION_VAR "rotation"
+#define JSON_ENTITY_TRANSFORM_COMPONENT_SCALE_VAR "scale"
+#define JSON_ENTITY_TRANSFORM_COMPONENT_X_VAR "x"
+#define JSON_ENTITY_TRANSFORM_COMPONENT_Y_VAR "y"
+#define JSON_ENTITY_TRANSFORM_COMPONENT_Z_VAR "z"
 
 namespace renegade
 {
 	namespace gameplay
 	{
-		const glm::vec3& TransformComponent::GetPosition() const
+        const glm::vec3& TransformComponent::GetPosition() const
 		{
 			return m_Position;
 		}
@@ -42,6 +41,13 @@ namespace renegade
 		void TransformComponent::SetScale(const glm::vec3& a_Scale)
 		{
 			m_Scale = a_Scale;
+
+			// Clamp so it cannot be less than 0.
+			m_Scale = glm::vec3(
+				m_Scale.x < 0 ? 0 : m_Scale.x,
+				m_Scale.y < 0 ? 0 : m_Scale.y,
+				m_Scale.z < 0 ? 0 : m_Scale.z
+			);
 		}
 
 		glm::vec3 TransformComponent::Forward() const
@@ -88,71 +94,58 @@ namespace renegade
 			m_Rotation += a_Degrees;
 		}
 
-        std::string TransformComponent::GetPropertyName() const
-        {
-            return JSON_TRANSFORM_COMPONENT_VAR;
-        }
-
-		void TransformComponent::Serialize(rapidjson::Document& a_Document) const
+		void TransformComponent::Serialize(rapidjson::Value& a_Document, rapidjson::Document::AllocatorType& a_Allocator) const
 		{
 			if (!a_Document.IsObject())
 			{
 				return;
 			}
 
-			rapidjson::Document::AllocatorType& allocator = a_Document.GetAllocator();
+			a_Document.AddMember(JSON_ENTITY_TRANSFORM_COMPONENT_POSITION_VAR, rapidjson::Value().SetObject(), a_Allocator);
 
-			a_Document.AddMember(JSON_TRANSFORM_COMPONENT_VAR, rapidjson::Value().SetObject(), allocator);
+			a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_POSITION_VAR].AddMember(JSON_ENTITY_TRANSFORM_COMPONENT_X_VAR, m_Position.x, a_Allocator);
+			a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_POSITION_VAR].AddMember(JSON_ENTITY_TRANSFORM_COMPONENT_Y_VAR, m_Position.y, a_Allocator);
+			a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_POSITION_VAR].AddMember(JSON_ENTITY_TRANSFORM_COMPONENT_Z_VAR, m_Position.z, a_Allocator);
 
+			a_Document.AddMember(JSON_ENTITY_TRANSFORM_COMPONENT_ROTATION_VAR, rapidjson::Value().SetObject(), a_Allocator);
 
-			a_Document[JSON_TRANSFORM_COMPONENT_VAR].AddMember(JSON_TRANSFORM_COMPONENT_POSITION_VAR, rapidjson::Value().SetObject(), allocator);
+			a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_ROTATION_VAR].AddMember(JSON_ENTITY_TRANSFORM_COMPONENT_X_VAR, m_Rotation.x, a_Allocator);
+			a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_ROTATION_VAR].AddMember(JSON_ENTITY_TRANSFORM_COMPONENT_Y_VAR, m_Rotation.y, a_Allocator);
+			a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_ROTATION_VAR].AddMember(JSON_ENTITY_TRANSFORM_COMPONENT_Z_VAR, m_Rotation.z, a_Allocator);
 
-			a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_POSITION_VAR].AddMember(JSON_TRANSFORM_COMPONENT_X_VAR, m_Position.x, allocator);
-			a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_POSITION_VAR].AddMember(JSON_TRANSFORM_COMPONENT_Y_VAR, m_Position.y, allocator);
-			a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_POSITION_VAR].AddMember(JSON_TRANSFORM_COMPONENT_Z_VAR, m_Position.z, allocator);
+			a_Document.AddMember(JSON_ENTITY_TRANSFORM_COMPONENT_SCALE_VAR, rapidjson::Value().SetObject(), a_Allocator);
 
-			a_Document[JSON_TRANSFORM_COMPONENT_VAR].AddMember(JSON_TRANSFORM_COMPONENT_ROTATION_VAR, rapidjson::Value().SetObject(), allocator);
-
-			a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_ROTATION_VAR].AddMember(JSON_TRANSFORM_COMPONENT_X_VAR, m_Rotation.x, allocator);
-			a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_ROTATION_VAR].AddMember(JSON_TRANSFORM_COMPONENT_Y_VAR, m_Rotation.y, allocator);
-			a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_ROTATION_VAR].AddMember(JSON_TRANSFORM_COMPONENT_Z_VAR, m_Rotation.z, allocator);
-
-			a_Document[JSON_TRANSFORM_COMPONENT_VAR].AddMember(JSON_TRANSFORM_COMPONENT_SCALE_VAR, rapidjson::Value().SetObject(), allocator);
-
-			a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_SCALE_VAR].AddMember(JSON_TRANSFORM_COMPONENT_X_VAR, m_Scale.x, allocator);
-			a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_SCALE_VAR].AddMember(JSON_TRANSFORM_COMPONENT_Y_VAR, m_Scale.y, allocator);
-			a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_SCALE_VAR].AddMember(JSON_TRANSFORM_COMPONENT_Z_VAR, m_Scale.z, allocator);
+			a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_SCALE_VAR].AddMember(JSON_ENTITY_TRANSFORM_COMPONENT_X_VAR, m_Scale.x, a_Allocator);
+			a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_SCALE_VAR].AddMember(JSON_ENTITY_TRANSFORM_COMPONENT_Y_VAR, m_Scale.y, a_Allocator);
+			a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_SCALE_VAR].AddMember(JSON_ENTITY_TRANSFORM_COMPONENT_Z_VAR, m_Scale.z, a_Allocator);
 		}
 
-		void TransformComponent::Deserialize(const rapidjson::Document& a_Document)
+		void TransformComponent::Deserialize(const rapidjson::Value& a_Document, rapidjson::Document::AllocatorType& a_Allocator)
 		{
 			if (!a_Document.IsObject())
 			{
 				return;
 			}
 
-			if (a_Document.HasMember(JSON_TRANSFORM_COMPONENT_VAR) && a_Document[JSON_TRANSFORM_COMPONENT_VAR].IsObject())
+			if (a_Document.HasMember(JSON_ENTITY_TRANSFORM_COMPONENT_POSITION_VAR) && a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_POSITION_VAR].IsObject())
 			{
-				if (a_Document[JSON_TRANSFORM_COMPONENT_VAR].HasMember(JSON_TRANSFORM_COMPONENT_POSITION_VAR) && a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_POSITION_VAR].IsObject())
-				{
-					rapidjson::GetFloat(a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_POSITION_VAR], JSON_TRANSFORM_COMPONENT_X_VAR, m_Position.x);
-					rapidjson::GetFloat(a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_POSITION_VAR], JSON_TRANSFORM_COMPONENT_Y_VAR, m_Position.y);
-					rapidjson::GetFloat(a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_POSITION_VAR], JSON_TRANSFORM_COMPONENT_Z_VAR, m_Position.z);
-				}
+				rapidjson::GetFloat(a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_POSITION_VAR], JSON_ENTITY_TRANSFORM_COMPONENT_X_VAR, m_Position.x);
+				rapidjson::GetFloat(a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_POSITION_VAR], JSON_ENTITY_TRANSFORM_COMPONENT_Y_VAR, m_Position.y);
+				rapidjson::GetFloat(a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_POSITION_VAR], JSON_ENTITY_TRANSFORM_COMPONENT_Z_VAR, m_Position.z);
+			}
 
-				if (a_Document[JSON_TRANSFORM_COMPONENT_VAR].HasMember(JSON_TRANSFORM_COMPONENT_ROTATION_VAR) && a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_ROTATION_VAR].IsObject())
-				{
-					rapidjson::GetFloat(a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_ROTATION_VAR], JSON_TRANSFORM_COMPONENT_X_VAR, m_Rotation.x);
-					rapidjson::GetFloat(a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_ROTATION_VAR], JSON_TRANSFORM_COMPONENT_Y_VAR, m_Rotation.y);
-					rapidjson::GetFloat(a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_ROTATION_VAR], JSON_TRANSFORM_COMPONENT_Z_VAR, m_Rotation.z);
-				}
+			if (a_Document.HasMember(JSON_ENTITY_TRANSFORM_COMPONENT_ROTATION_VAR) && a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_ROTATION_VAR].IsObject())
+			{
+				rapidjson::GetFloat(a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_ROTATION_VAR], JSON_ENTITY_TRANSFORM_COMPONENT_X_VAR, m_Rotation.x);
+				rapidjson::GetFloat(a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_ROTATION_VAR], JSON_ENTITY_TRANSFORM_COMPONENT_Y_VAR, m_Rotation.y);
+				rapidjson::GetFloat(a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_ROTATION_VAR], JSON_ENTITY_TRANSFORM_COMPONENT_Z_VAR, m_Rotation.z);
+			}
 
-				if (a_Document[JSON_TRANSFORM_COMPONENT_VAR].HasMember(JSON_TRANSFORM_COMPONENT_SCALE_VAR) && a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_SCALE_VAR].IsObject())
-				{
-					rapidjson::GetFloat(a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_SCALE_VAR], JSON_TRANSFORM_COMPONENT_X_VAR, m_Scale.x);
-					rapidjson::GetFloat(a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_SCALE_VAR], JSON_TRANSFORM_COMPONENT_Y_VAR, m_Scale.y);
-					rapidjson::GetFloat(a_Document[JSON_TRANSFORM_COMPONENT_VAR][JSON_TRANSFORM_COMPONENT_SCALE_VAR], JSON_TRANSFORM_COMPONENT_Z_VAR, m_Scale.z);
-				}
+			if (a_Document.HasMember(JSON_ENTITY_TRANSFORM_COMPONENT_SCALE_VAR) && a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_SCALE_VAR].IsObject())
+			{
+				rapidjson::GetFloat(a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_SCALE_VAR], JSON_ENTITY_TRANSFORM_COMPONENT_X_VAR, m_Scale.x);
+				rapidjson::GetFloat(a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_SCALE_VAR], JSON_ENTITY_TRANSFORM_COMPONENT_Y_VAR, m_Scale.y);
+				rapidjson::GetFloat(a_Document[JSON_ENTITY_TRANSFORM_COMPONENT_SCALE_VAR], JSON_ENTITY_TRANSFORM_COMPONENT_Z_VAR, m_Scale.z);
 			}
 		}
 	}
