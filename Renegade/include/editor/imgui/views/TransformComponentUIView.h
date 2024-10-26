@@ -24,6 +24,8 @@ namespace renegade
 				std::string GetName() const override;
 				void RenderInner() override;
 				void DeleteComponent() override;
+				void CopyComponentData() override;
+				void PasteComponentData() override;
 
 				gameplay::TransformComponent& m_TransformComponent;
 

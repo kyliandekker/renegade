@@ -7,6 +7,7 @@
 #include "editor/imgui/ImGuiWindow.h"
 #include "editor/EditorSettings.h"
 #include "editor/AssetDatabase.h"
+#include "core/datatypes/Data.h"
 
 #define SETTINGS_FOLDER "/renegade/"
 
@@ -52,7 +53,11 @@ namespace renegade
 
 			imgui::EditorSelectable* GetSelectable() const;
 			void SetSelectable(imgui::EditorSelectable* a_Selectable);
+
+			core::Data& GetClipboard();
+			void SetClipboard(core::Data& a_Data);
 		private:
+			core::Data m_Clipboard;
 			imgui::EditorSelectable* m_EditorSelectable;
 
 			imgui::ImGuiWindow m_Window;

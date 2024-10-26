@@ -27,10 +27,12 @@ namespace renegade
 					ImVec2 size = ImVec2(30, 30);
 					if (ImGui::TransparentButton(IMGUI_FORMAT_ID(std::string(ICON_FA_COPY), BUTTON_ID, string_extensions::StringToUpper(GetName()) + "_COPY_HIERARCHY").c_str(), size))
 					{
+						CopyComponentData();
 					}
 					ImGui::SameLine();
 					if (ImGui::TransparentButton(IMGUI_FORMAT_ID(std::string(ICON_FA_PASTE), BUTTON_ID, string_extensions::StringToUpper(GetName()) + "_PASTE_HIERARCHY").c_str(), size))
 					{
+						PasteComponentData();
 					}
 					ImGui::SameLine();
 					if (ImGui::TransparentButton(IMGUI_FORMAT_ID(std::string(ICON_FA_DELETE), BUTTON_ID, string_extensions::StringToUpper(GetName()) + "_DELETE_HIERARCHY").c_str(), size))
@@ -51,6 +53,14 @@ namespace renegade
 			}
 
 			void ComponentUIView::DeleteComponent()
+			{
+			}
+
+			void ComponentUIView::CopyComponentData()
+			{
+			}
+
+			void ComponentUIView::PasteComponentData()
 			{
 			}
 		}

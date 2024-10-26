@@ -3,6 +3,10 @@
 #include "editor/imgui/views/TransformComponentUIView.h"
 
 #include <imgui/imgui_helpers.h>
+#include <rapidjson/document.h>
+#include <rapidjson/utils.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/prettywriter.h>
 
 #include "editor/imgui/ImGuiDefines.h"
 #include "editor/imgui/ImGuiWindow.h"
@@ -108,6 +112,29 @@ namespace renegade
 			{
 				core::ENGINE.GetECS().GetSystem<gameplay::TransformSystem>().DeleteComponent(m_EntityID);
 				ComponentUIView::DeleteComponent();
+			}
+
+            void TransformComponentUIView::CopyComponentData()
+            {
+				rapidjson::Document document;
+				document.SetObject();
+				m_TransformComponent.Serialize(document, document.GetAllocator());
+
+				rapidjson::StringBuffer buffer;
+				rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
+				document.Accept(writer);
+
+				core::Data data(buffer.GetString(), buffer.GetSize());
+				core::ENGINE.GetEditor().SetClipboard(data);
+            }
+
+			void TransformComponentUIView::PasteComponentData()
+			{
+				rapidjson::Document document;
+				document.SetObject();
+				core::Data data = core::ENGINE.GetEditor().GetClipboard();
+				document.Parse(reinterpret_cast<char*>(data.data()), data.size());
+				m_TransformComponent.Deserialize(document, document.GetAllocator());
 			}
 		}
 	}

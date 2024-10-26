@@ -30,6 +30,8 @@ namespace renegade
 
 				virtual void RenderInner() = 0;
 				virtual void DeleteComponent();
+				virtual void CopyComponentData();
+				virtual void PasteComponentData();
 				virtual std::string GetName() const = 0;
 				bool m_FoldedOut = true;
 			};

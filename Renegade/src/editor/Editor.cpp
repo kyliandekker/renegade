@@ -121,6 +121,16 @@ namespace renegade
 				m_EditorSelectable->Select();
 			}
 		}
+
+        core::Data& Editor::GetClipboard()
+        {
+			return m_Clipboard;
+        }
+
+		void Editor::SetClipboard(core::Data& a_Data)
+		{
+			m_Clipboard = a_Data;
+		}
 	}
 }
 
