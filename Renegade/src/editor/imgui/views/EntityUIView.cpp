@@ -63,6 +63,10 @@ namespace renegade
 				if (ImGui::Checkbox(IMGUI_FORMAT_ID("", CHECKBOX_ID, string_extensions::StringToUpper(detailComponent.GetName()) + "_HIERARCHY").c_str(), &temp))
 				{
 					detailComponent.SetActive(temp);
+					if (core::ENGINE.GetEditor().GetCurrentScene() && !core::ENGINE.GetECS().HasStarted())
+					{
+						core::ENGINE.GetEditor().SetDirty();
+					}
 				}
 				ImGui::PopStyleVar();
 
