@@ -154,9 +154,10 @@ namespace renegade
 					ImGuiChildFlags_Borders
 				))
 				{
-					for (ComponentUIView* component : m_Components)
+					for (ComponentBaseUIView* component : m_Components)
 					{
 						component->Render();
+						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ImGui::GetStyle().ItemSpacing.y);
 					}
 
 					ImGui::Separator();
@@ -175,6 +176,7 @@ namespace renegade
 
 					gameplay::EntityComponentSystem& ecs = core::ENGINE.GetECS();
 					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, m_Window.GetFramePadding());
+					ImGui::SetNextWindowSize(ImVec2(width, 0));
 					if (ImGui::BeginPopup(IMGUI_FORMAT_ID("", POPUP_WINDOW_ID, "ADD_COMPONENT_MENU_INSPECTOR").c_str()))
 					{
 						gameplay::TransformSystem& transformSys = ecs.GetSystem<gameplay::TransformSystem>();
@@ -209,13 +211,13 @@ namespace renegade
 				gameplay::TransformSystem& transformSys = ecs.GetSystem<gameplay::TransformSystem>();
 				if (ecs.GetSystem<gameplay::TransformSystem>().ContainsID(m_EntityID))
 				{
-					m_Components.push_back(new TransformComponentUIView(m_Window, m_EntityID, core::ENGINE.GetECS().GetSystem<gameplay::TransformSystem>().GetComponent(m_EntityID)));
+					m_Components.push_back(new TransformComponentUIView(m_Window, m_EntityID, core::ENGINE.GetECS().GetSystem<gameplay::TransformSystem>().GetComponent(m_EntityID), core::ENGINE.GetECS().GetSystem<gameplay::TransformSystem>()));
 				}
 			}
 
 			void EntityUIView::Deselect()
 			{
-				for (ComponentUIView* component : m_Components)
+				for (ComponentBaseUIView* component : m_Components)
 				{
 					delete component;
 				}

@@ -16,7 +16,7 @@ namespace renegade
 	{
 		namespace imgui
 		{
-			class ComponentUIView;
+			class ComponentBaseUIView;
 			class ImGuiWindow;
 
 			class EntityUIView : public EditorSelectable
@@ -37,7 +37,7 @@ namespace renegade
 				gameplay::EntityID& GetEntityID() const;
 			private:
 				gameplay::EntityID& m_EntityID;
-				std::vector<ComponentUIView*> m_Components;
+				std::vector<ComponentBaseUIView*> m_Components;
 
 				// INSPECTOR.
 				StringTextInput m_NameInput;

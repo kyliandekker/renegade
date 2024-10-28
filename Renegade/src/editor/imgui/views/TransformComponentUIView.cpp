@@ -28,9 +28,9 @@ namespace renegade
 
             void TransformComponentUIView::RenderInner()
 			{
-				glm::vec3 position = m_TransformComponent.GetPosition();
-				glm::vec3 rotation = m_TransformComponent.GetRotation();
-				glm::vec3 scale = m_TransformComponent.GetScale();
+				glm::vec3 position = m_Component.GetPosition();
+				glm::vec3 rotation = m_Component.GetRotation();
+				glm::vec3 scale = m_Component.GetScale();
 				float fontSize = m_Window.FontSize();
 
 				ImGui::DisplayHeader(m_Window.Bold(), "Position");
@@ -54,7 +54,7 @@ namespace renegade
 				changedPos |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "POS_Z_TRANSFORM_INSPECTOR").c_str(), &position.z);
 				if (changedPos)
 				{
-					m_TransformComponent.SetPosition(position);
+					m_Component.SetPosition(position);
 					core::ENGINE.GetEditor().SetDirty();
 				}
 
@@ -76,7 +76,7 @@ namespace renegade
 				changedRotation |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "ROT_Z_TRANSFORM_INSPECTOR").c_str(), &rotation.z);
 				if (changedRotation)
 				{
-					m_TransformComponent.SetRotation(rotation);
+					m_Component.SetRotation(rotation);
 					core::ENGINE.GetEditor().SetDirty();
 				}
 
@@ -98,7 +98,7 @@ namespace renegade
 				changedScale |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "SCALE_Z_TRANSFORM_INSPECTOR").c_str(), &scale.z);
 				if (changedScale)
 				{
-					m_TransformComponent.SetScale(scale);
+					m_Component.SetScale(scale);
 					core::ENGINE.GetEditor().SetDirty();
 				}
 
@@ -106,35 +106,6 @@ namespace renegade
 				ImGui::PopStyleVar();
 				ImGui::PopStyleVar();
 				ImGui::Unindent();
-			}
-
-			void TransformComponentUIView::DeleteComponent()
-			{
-				core::ENGINE.GetECS().GetSystem<gameplay::TransformSystem>().DeleteComponent(m_EntityID);
-				ComponentUIView::DeleteComponent();
-			}
-
-            void TransformComponentUIView::CopyComponentData()
-            {
-				rapidjson::Document document;
-				document.SetObject();
-				m_TransformComponent.Serialize(document, document.GetAllocator());
-
-				rapidjson::StringBuffer buffer;
-				rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
-				document.Accept(writer);
-
-				core::Data data(buffer.GetString(), buffer.GetSize());
-				core::ENGINE.GetEditor().SetClipboard(data);
-            }
-
-			void TransformComponentUIView::PasteComponentData()
-			{
-				rapidjson::Document document;
-				document.SetObject();
-				core::Data data = core::ENGINE.GetEditor().GetClipboard();
-				document.Parse(reinterpret_cast<char*>(data.data()), data.size());
-				m_TransformComponent.Deserialize(document, document.GetAllocator());
 			}
 		}
 	}

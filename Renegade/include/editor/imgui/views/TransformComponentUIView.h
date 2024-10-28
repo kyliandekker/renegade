@@ -5,29 +5,22 @@
 #include "editor/imgui/views/ComponentUIView.h"
 
 #include "editor/imgui/StringTextInput.h"
+#include "gameplay/systems/TransformComponent.h"
+#include "gameplay/systems/TransformSystem.h"
 
 namespace renegade
 {
-	namespace gameplay
-	{
-		class TransformComponent;
-	}
 	namespace editor
 	{
 		namespace imgui
 		{
-			class TransformComponentUIView : public ComponentUIView
+			class TransformComponentUIView : public ComponentUIView<gameplay::TransformComponent, gameplay::TransformSystem>
 			{
 			public:
-				TransformComponentUIView(ImGuiWindow& a_Window, gameplay::EntityID& a_EntityID, gameplay::TransformComponent& a_TransformComponent) : ComponentUIView(a_Window, a_EntityID), m_TransformComponent(a_TransformComponent) {};
+				TransformComponentUIView(ImGuiWindow& a_Window, gameplay::EntityID& a_EntityID, gameplay::TransformComponent& a_TransformComponent, gameplay::TransformSystem& a_System) : ComponentUIView(a_Window, a_EntityID, a_TransformComponent, a_System) {};
 			private:
 				std::string GetName() const override;
 				void RenderInner() override;
-				void DeleteComponent() override;
-				void CopyComponentData() override;
-				void PasteComponentData() override;
-
-				gameplay::TransformComponent& m_TransformComponent;
 
 				StringTextInput m_PosX;
 				StringTextInput m_PosY;

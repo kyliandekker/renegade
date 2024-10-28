@@ -29,16 +29,6 @@ namespace renegade
 			m_Active = a_Active;
 		}
 
-		EntityID* EntityDetailComponent::GetParent() const
-		{
-			return m_Parent;
-		}
-
-		void EntityDetailComponent::SetParent(EntityID& a_EntityID)
-		{
-			m_Parent = &a_EntityID;
-		}
-
 		void EntityDetailComponent::Serialize(rapidjson::Value& a_Document, rapidjson::Document::AllocatorType& a_Allocator) const
 		{
 			if (!a_Document.IsObject())
