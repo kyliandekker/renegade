@@ -142,7 +142,7 @@ namespace renegade
 					const Message lm = m_Messages.front();
 					m_Messages.pop();
 
-					std::cout << "[" << LOGGER_SEVERITY_COLOR[lm.GetSeverity()].c_str() << LOGGER_SEVERITY_TEXT[lm.GetSeverity()].c_str() << COLOR_WHITE << "]: " << lm.GetRawMessage().c_str() << lm.GetLocation().c_str() << std::endl;
+					std::cout << "[" << LOGGER_SEVERITY_COLOR[lm.GetSeverity()].c_str() << LOGGER_SEVERITY_TEXT[lm.GetSeverity()].c_str() << COLOR_WHITE << "]: " << lm.GetRawMessage().c_str() << " " << lm.GetLocation().c_str() << std::endl;
 
 					OnMessageLogged(lm);
 				}

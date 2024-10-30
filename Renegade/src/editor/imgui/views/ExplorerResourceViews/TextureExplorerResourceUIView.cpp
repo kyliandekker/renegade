@@ -42,15 +42,15 @@ namespace renegade
 
 				RenderPreviewWindow();
 
-				if (!m_Resource.m_DescHandle->Invalid())
-				{
-					const float height_new = ImGui::GetContentRegionAvail().y;
-					const float width = (m_Resource.m_DescHandle->Width * (1.0f / m_Resource.m_DescHandle->Height * height_new));
+				//if (!m_Resource.m_DescHandle->Invalid())
+				//{
+				//	const float height_new = ImGui::GetContentRegionAvail().y;
+				//	const float width = (m_Resource.m_DescHandle->Width * (1.0f / m_Resource.m_DescHandle->Height * height_new));
 
-					float offset = (ImGui::GetContentRegionAvail().x - width) / 2;
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
-					ImGui::Image((void*)m_Resource.m_DescHandle->GpuHandle.ptr, ImVec2(width, height_new));
-				}
+				//	float offset = (ImGui::GetContentRegionAvail().x - width) / 2;
+				//	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
+				//	ImGui::Image((void*)m_Resource.m_DescHandle->GpuHandle.ptr, ImVec2(width, height_new));
+				//}
 
 				EndPreviewWindow();
 			}

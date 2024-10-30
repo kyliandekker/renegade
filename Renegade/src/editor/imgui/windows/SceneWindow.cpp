@@ -36,17 +36,14 @@ namespace renegade
 				if (ImGui::TransparentCheckboxButton(IMGUI_FORMAT_ID(ICON_FA_PAUSE, BUTTON_ID, "PAUSE_SCENE").c_str(), &b, ImVec2(toolbarSize.y, toolbarSize.y)))
 				{ }
 
-				ImGui::SameLine();
-				std::string fpsValue = std::to_string(core::ENGINE.GetFPS());
-
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - (ImGui::CalcTextSize(fpsValue.c_str()).x + m_Window.GetWindowPadding().x));
-				ImGui::Text(fpsValue.c_str());
-
 				ImGui::EndToolbar(ImVec2(ImGui::GetStyle().ItemSpacing.x, 0));
 
-				
+				std::string fpsValue = std::to_string(static_cast<uint64_t>(std::round(core::ENGINE.GetWindow().GetDX12Window().GetFPS().GetFPS()))) + "fps";
 
-				ImGui::Image((ImTextureID)core::ENGINE.GetWindow().GetDX12Window().m_SrvDescriptorHandles[1].GpuHandle.ptr, ImGui::GetContentRegionAvail());
+				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - (ImGui::CalcTextSize(fpsValue.c_str()).x + m_Window.GetWindowPadding().x));
+				ImGui::TextColored(ImVec4(1, 1, 0, 1), fpsValue.c_str());
+
+				//ImGui::Image((ImTextureID)core::ENGINE.GetWindow().GetDX12Window().m_SrvDescriptorHandles[1].GpuHandle.ptr, ImGui::GetContentRegionAvail());
 			}
 		}
 	}

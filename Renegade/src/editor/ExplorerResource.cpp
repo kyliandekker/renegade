@@ -473,20 +473,20 @@ namespace renegade
 
 		ImageExplorerResource::~ImageExplorerResource()
 		{
-			if (m_DescHandle)
-			{
-				m_DescHandle->Release();
-			}
+			//if (m_DescHandle)
+			//{
+			//	m_DescHandle->Release();
+			//}
 		}
 
 		bool ImageExplorerResource::Initialize()
 		{
-			if (!core::ENGINE.GetWindow().GetDX12Window().LoadTexture(m_Path, m_DescHandle))
-			{
-				return false;
-			}
+			//if (core::ENGINE.GetWindow().GetDX12Window().LoadTexture(m_Path, m_DescHandle))
+			//{
+			//	return true;
+			//}
 
-			return true;
+			return false;
 		}
 
         AudioExplorerResource::~AudioExplorerResource()

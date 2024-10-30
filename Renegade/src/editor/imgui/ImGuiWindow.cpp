@@ -142,10 +142,10 @@ namespace renegade
 			bool ImGuiWindow::CreateContextDX12()
 			{
 				graphics::DX12Window& dx12window = core::ENGINE.GetWindow().GetDX12Window();
-				if (!ImGui_ImplDX12_Init(dx12window.g_pd3dDevice, dx12window.NUM_FRAMES_IN_FLIGHT,
-					DXGI_FORMAT_R8G8B8A8_UNORM, dx12window.g_pd3dSrvDescHeap,
-					dx12window.g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
-					dx12window.g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart()))
+				if (!ImGui_ImplDX12_Init(dx12window.GetDevice().Get(), graphics::g_NumFrames,
+					DXGI_FORMAT_R8G8B8A8_UNORM, dx12window.GetSRVDescriptorHeap().Get(),
+					dx12window.GetSRVDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
+					dx12window.GetSRVDescriptorHeap()->GetGPUDescriptorHandleForHeapStart()))
 				{
 					LOGF(LOGSEVERITY_ERROR, "Could not create a DX12 context for ImGui.");
 					return false;
@@ -273,7 +273,7 @@ namespace renegade
 				colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
 
 				style.WindowBorderSize = 1;
-				style.WindowRounding = 8;
+				style.WindowRounding = 0;
 				style.WindowPadding = ImVec2(0, 0);
 				style.ItemInnerSpacing = ImVec2(0, 0);
 				style.TouchExtraPadding = ImVec2(0.00f, 0.00f);

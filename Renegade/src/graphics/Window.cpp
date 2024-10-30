@@ -26,11 +26,12 @@ namespace renegade
 		{
 			CreateWindow(a_hInstance, a_Width, a_Height, a_WindowName);
 
+			glm::vec2 realSize = GetRealSize();
+
 			// Initialize DX12.
-			if (!m_DX12Window.Initialize(1, m_hWnd))
+			if (!m_DX12Window.Initialize(3, m_hWnd, realSize.x, realSize.y))
 			{
-				LOGF(LOGSEVERITY_ASSERT, "Creating DX12 Window failed.");
-				m_DX12Window.CleanupDeviceD3D();
+				LOGF(LOGSEVERITY_ASSERT, "Failed creating DX12 Window.");
 				return false;
 			}
 
@@ -84,20 +85,25 @@ namespace renegade
 				case WM_SETFOCUS:
 				case WM_EXITSIZEMOVE:
 				{
+					if (!m_Ready || !m_DX12Window.Ready())
+					{
+						return msg;
+					}
 					m_Ready = false;
 
-					glm::vec2 size(GetRealSize().x, GetRealSize().y);
-
-					m_DX12Window.CleanupRenderTarget();
-					DXGI_SWAP_CHAIN_DESC1 sd;
-					m_DX12Window.g_pSwapChain->GetDesc1(&sd);
-					sd.Width = static_cast<UINT>(GetRealSize().x);
-					sd.Height = static_cast<UINT>(GetRealSize().y);
-
-					m_DX12Window.g_pSwapChain->ResizeBuffers(sd.BufferCount, sd.Width, sd.Height, sd.Format, sd.Flags);
-					m_DX12Window.CreateRenderTarget();
+					m_DX12Window.Resize(GetRealSize());
 
 					m_Ready = true;
+					break;
+				}
+				case WM_PAINT:
+				{
+					if (!m_Ready)
+					{
+						return msg;
+					}
+					m_OnRender();
+					m_DX12Window.Render();
 					break;
 				}
 				default:
@@ -116,13 +122,6 @@ namespace renegade
 			{
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
-
-				if (!m_Ready)
-				{
-					return;
-				}
-				m_OnRender();
-				m_DX12Window.Render();
 			}
 		}
 
@@ -268,7 +267,7 @@ namespace renegade
 
 			if (!m_hWnd)
 			{
-				LOGF(LOGSEVERITY_ASSERT, "Failed to create window.");
+				LOGF(LOGSEVERITY_ASSERT, "Failed creating window.");
 				return false;
 			}
 
