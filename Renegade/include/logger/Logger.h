@@ -70,7 +70,7 @@ do{\
 	logger::LOGGER.LogF(a_Severity, a_Message, __FILE__, __LINE__, __VA_ARGS__);\
 } while (0)
 
-#define LOG(a_Message, ...)\
+#define LOG(a_Severity, a_Message)\
 do{\
-	logger::LOGGER.LogF(logger::LOGSEVERITY_INFO, a_Message, __FILE__, __LINE__, __VA_ARGS__);\
+	logger::LOGGER.Log(a_Severity, a_Message, __FILE__, __LINE__);\
 } while (0)

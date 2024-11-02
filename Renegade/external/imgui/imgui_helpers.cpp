@@ -139,6 +139,12 @@ namespace ImGui
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
 
+		if (ImGui::IsItemHovered())
+		{
+			// Set the cursor to a text input
+			ImGui::SetMouseCursor(ImGuiMouseCursor_TextInput);
+		}
+
 		ImGui::SetCursorPosX(x + (fontSize / 2));
 		ImGui::SetCursorPosY(y + (padding * 2));
 		ImGui::Text(ICON_FA_SEARCH);
@@ -158,6 +164,11 @@ namespace ImGui
 
 		bool is_button_clicked = ImGui::IsMouseClicked(0) && is_button_hovered;
 
+		if (is_button_hovered)
+		{
+			// Set the cursor to a text input
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		}
 		if (is_button_clicked)
 		{
 			ImGui::ClearActiveID();
@@ -168,9 +179,9 @@ namespace ImGui
 
 		ImGui::SetCursorPosX((x + size.x) - (fontSize + padding));
 		ImGui::SetCursorPosY(y + (padding * 2));
-		ImVec4 text_hovered = ImGui::GetStyleColorVec4(ImGuiCol_Button);
-		text_hovered.z = 0.5f;
-		ImGui::TextColored(is_button_hovered ? text_hovered : ImGui::GetStyleColorVec4(ImGuiCol_Text),ICON_FA_CROSS);
+		ImVec4 text_hovered = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+		text_hovered.w = 0.5f;
+		ImGui::TextColored(is_button_hovered ? text_hovered : ImGui::GetStyleColorVec4(ImGuiCol_Text), ICON_FA_CROSS);
 
 		ImGui::SetCursorPosX((x + size.x) - (fontSize + padding));
 		ImGui::SetCursorPosY(y);

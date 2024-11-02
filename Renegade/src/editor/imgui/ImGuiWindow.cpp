@@ -7,6 +7,7 @@
 #include <imgui/implot.h>
 #include <imgui/backends/imgui_impl_win32.h>
 #include <imgui/backends/imgui_impl_dx12.h>
+#include <imgui/imgui_internal.h>
 // va_list, va_start, va_end
 #include <cstdarg>
 
@@ -49,7 +50,7 @@ namespace renegade
 
 				CreateImGui();
 
-				LOGF(LOGSEVERITY_SUCCESS, "Created ImGui.");
+				LOG(LOGSEVERITY_SUCCESS, "Created ImGui.");
 
 				mainWindow.Initialize();
 				consoleWindow.Initialize();
@@ -75,7 +76,7 @@ namespace renegade
 				ImPlot::DestroyContext();
 				ImGui::DestroyContext();
 
-				LOGF(LOGSEVERITY_SUCCESS, "ImGui destroyed.");
+				LOG(LOGSEVERITY_SUCCESS, "ImGui destroyed.");
 				return true;
 			}
 
@@ -131,27 +132,27 @@ namespace renegade
 			{
 				if (!ImGui_ImplWin32_Init(core::ENGINE.GetWindow().GetHWnd()))
 				{
-					LOGF(LOGSEVERITY_ERROR, "Could not create a Win32 context for ImGui.");
+					LOG(LOGSEVERITY_ERROR, "Could not create a Win32 context for ImGui.");
 					return false;
 				}
 
-				LOGF(LOGSEVERITY_SUCCESS, "Created a Win32 context for ImGui.");
+				LOG(LOGSEVERITY_SUCCESS, "Created a Win32 context for ImGui.");
 				return true;
 			}
 
 			bool ImGuiWindow::CreateContextDX12()
 			{
 				graphics::DX12Window& dx12window = core::ENGINE.GetWindow().GetDX12Window();
-				if (!ImGui_ImplDX12_Init(dx12window.GetDevice().Get(), graphics::g_NumFrames,
+				if (!ImGui_ImplDX12_Init(dx12window.GetDevice().Get(), graphics::g_NumSwapChainBuffers,
 					DXGI_FORMAT_R8G8B8A8_UNORM, dx12window.GetSRVDescriptorHeap().Get(),
 					dx12window.GetSRVDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
 					dx12window.GetSRVDescriptorHeap()->GetGPUDescriptorHandleForHeapStart()))
 				{
-					LOGF(LOGSEVERITY_ERROR, "Could not create a DX12 context for ImGui.");
+					LOG(LOGSEVERITY_ERROR, "Could not create a DX12 context for ImGui.");
 					return false;
 				}
 
-				LOGF(LOGSEVERITY_SUCCESS, "Created a DX12 context for ImGui.");
+				LOG(LOGSEVERITY_SUCCESS, "Created a DX12 context for ImGui.");
 				return true;
 			}
 
@@ -369,43 +370,41 @@ namespace renegade
 
 			void ImGuiWindow::UpdateMouseCursor()
 			{
-				if (ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup))
+				if (ImGui::IsAnyItemHovered())
 				{
 					// Set the cursor to a hand pointer
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				}
-				else
-				{
-					// Restore the default arrow cursor when not hovering over any item
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Arrow);
-				}
-
-				ImGuiIO& io = ImGui::GetIO();
-				ImGuiMouseCursor imgui_cursor = ImGui::GetMouseCursor();
-				if (io.MouseDrawCursor || imgui_cursor == ImGuiMouseCursor_None)
-				{
-					::SetCursor(NULL);
-				}
-				else
-				{
-					// Map ImGui cursor types to Win32 system cursors
-					LPTSTR win32_cursor = IDC_ARROW; // Default arrow
-
-					switch (imgui_cursor)
+					if (ImGui::GetMouseCursor() == ImGuiMouseCursor_Arrow)
 					{
-						case ImGuiMouseCursor_TextInput:    win32_cursor = IDC_IBEAM; break;
-						case ImGuiMouseCursor_ResizeAll:    win32_cursor = IDC_SIZEALL; break;
-						case ImGuiMouseCursor_ResizeNS:     win32_cursor = IDC_SIZENS; break;
-						case ImGuiMouseCursor_ResizeEW:     win32_cursor = IDC_SIZEWE; break;
-						case ImGuiMouseCursor_ResizeNESW:   win32_cursor = IDC_SIZENESW; break;
-						case ImGuiMouseCursor_ResizeNWSE:   win32_cursor = IDC_SIZENWSE; break;
-						case ImGuiMouseCursor_Hand:         win32_cursor = IDC_HAND; break;
-						case ImGuiMouseCursor_NotAllowed:   win32_cursor = IDC_NO; break;
-						default:                            win32_cursor = IDC_ARROW; break;
+						ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 					}
 
-					// Set the system cursor using Win32 API
-					::SetCursor(LoadCursor(NULL, win32_cursor));
+					ImGuiIO& io = ImGui::GetIO();
+					ImGuiMouseCursor imgui_cursor = ImGui::GetMouseCursor();
+					if (io.MouseDrawCursor || imgui_cursor == ImGuiMouseCursor_None)
+					{
+						::SetCursor(NULL);
+					}
+					else
+					{
+						// Map ImGui cursor types to Win32 system cursors
+						LPTSTR win32_cursor = IDC_ARROW; // Default arrow
+
+						switch (imgui_cursor)
+						{
+							case ImGuiMouseCursor_TextInput:    win32_cursor = IDC_IBEAM; break;
+							case ImGuiMouseCursor_ResizeAll:    win32_cursor = IDC_SIZEALL; break;
+							case ImGuiMouseCursor_ResizeNS:     win32_cursor = IDC_SIZENS; break;
+							case ImGuiMouseCursor_ResizeEW:     win32_cursor = IDC_SIZEWE; break;
+							case ImGuiMouseCursor_ResizeNESW:   win32_cursor = IDC_SIZENESW; break;
+							case ImGuiMouseCursor_ResizeNWSE:   win32_cursor = IDC_SIZENWSE; break;
+							case ImGuiMouseCursor_Hand:         win32_cursor = IDC_HAND; break;
+							case ImGuiMouseCursor_NotAllowed:   win32_cursor = IDC_NO; break;
+							default:                            win32_cursor = IDC_ARROW; break;
+						}
+
+						// Set the system cursor using Win32 API
+						::SetCursor(LoadCursor(NULL, win32_cursor));
+					}
 				}
 			}
 

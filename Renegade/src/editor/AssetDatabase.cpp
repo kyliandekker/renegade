@@ -21,7 +21,7 @@ namespace renegade
 		{
 			if (Scan())
 			{
-				LOGF(LOGSEVERITY_SUCCESS, "AssetDatabase initialized.");
+				LOG(LOGSEVERITY_SUCCESS, "AssetDatabase initialized.");
 				return System::Initialize();
 			}
 			return false;
@@ -29,7 +29,7 @@ namespace renegade
 
 		bool AssetDatabase::Destroy()
 		{
-			LOGF(LOGSEVERITY_SUCCESS, "AssetDatabase destroyed.");
+			LOG(LOGSEVERITY_SUCCESS, "AssetDatabase destroyed.");
 			return System::Destroy();
 		}
 
@@ -61,7 +61,7 @@ namespace renegade
 			m_Root.m_Path = ExePath() + "/assets";
 			if (m_Root.Scan())
 			{
-				LOGF(LOGSEVERITY_SUCCESS, "Scanned asset database.");
+				LOG(LOGSEVERITY_SUCCESS, "Scanned asset database.");
 				m_Ready = true;
 				m_OnScanCompleted();
 			}

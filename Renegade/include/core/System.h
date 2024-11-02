@@ -15,25 +15,5 @@ namespace renegade
 		protected:
 			bool m_Ready = false;
 		};
-
-		// TODO: Test if this really does anything. It seems to not do anything on the main thread.
-		template <typename... Args>
-		bool InitializeSystem(System* a_System, int a_NumArgs = 0, Args&&... a_Args)
-		{
-			// Initialize system.
-			if (!a_System->Initialize(a_NumArgs, std::forward<Args>(a_Args)...))
-			{
-				return false;
-			}
-
-			// Wait until the system is ready.
-			while (!a_System->Ready())
-			{
-				// Wait...
-				std::this_thread::yield();
-			}
-			return true;
-		}
-
 	}
 }

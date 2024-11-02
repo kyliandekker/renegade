@@ -32,7 +32,7 @@ namespace renegade
 		{
 		public:
 			void SetCallbacks(graphics::Window& a_Window);
-			bool Initialize(int a_NumArgs, ...) override;
+			bool Initialize(int a_NumArgs = 0, ...) override;
 			bool Destroy() override;
 
 			LRESULT CALLBACK WndProcHandler(HWND a_hWnd, UINT a_Msg, WPARAM a_wParam, LPARAM a_lParam);

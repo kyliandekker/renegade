@@ -17,7 +17,7 @@ namespace renegade
 			CreateSystem<EntityDetailSystem>();
 			CreateSystem<TransformSystem>();
 
-			LOGF(LOGSEVERITY_SUCCESS, "ECS initialized.");
+			LOG(LOGSEVERITY_SUCCESS, "ECS initialized.");
 			return System::Initialize();
 		}
 		
@@ -27,7 +27,7 @@ namespace renegade
 			{
 				delete system;
 			}
-			LOGF(LOGSEVERITY_SUCCESS, "ECS destroyed.");
+			LOG(LOGSEVERITY_SUCCESS, "ECS destroyed.");
 			return System::Destroy();
 		}
 
@@ -59,7 +59,7 @@ namespace renegade
 
 			for (auto& sys : m_Systems)
 			{
-				sys->Update(a_DeltaTime);
+				sys->UpdateComponents(a_DeltaTime);
 			}
 
 			if (!m_Started)
@@ -70,6 +70,11 @@ namespace renegade
 			if (m_Paused)
 			{
 				return;
+			}
+
+			for (auto& sys : m_Systems)
+			{
+				sys->Update(a_DeltaTime);
 			}
 		}
 

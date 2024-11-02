@@ -20,22 +20,40 @@ namespace renegade
 			a_Window.GetDX12Window().m_OnDrawRenderData += std::bind(&editor::Editor::OnDrawRenderData, this, std::placeholders::_1);
 			a_Window.m_OnWindowCreated += [this]()
 				{
-					InitializeSystem(this);
+					this->Initialize();
+					// Wait until the system is ready.
+					while (!m_Ready)
+					{
+						// Wait...
+						std::this_thread::yield();
+					}
 				};
         }
 
         bool Editor::Initialize(int, ...)
 		{
 			m_EditorSettings.Load();
-			bool success = InitializeSystem(&m_AssetDatabase);
-			success |= InitializeSystem(&m_Window);
+			bool success = m_AssetDatabase.Initialize();
+			// Wait until the system is ready.
+			while (!m_AssetDatabase.Ready())
+			{
+				// Wait...
+				std::this_thread::yield();
+			}
+			success |= m_Window.Initialize();
+			// Wait until the system is ready.
+			while (!m_Window.Ready())
+			{
+				// Wait...
+				std::this_thread::yield();
+			}
 			return success && System::Initialize();
 		}
 
 		bool Editor::Destroy()
 		{
 			bool success = m_Window.Destroy() && m_AssetDatabase.Destroy();
-			LOGF(LOGSEVERITY_SUCCESS, "Editor destroyed.");
+			LOG(LOGSEVERITY_SUCCESS, "Editor destroyed.");
 			return success && System::Destroy();
 		}
 
@@ -93,6 +111,11 @@ namespace renegade
 
         void Editor::SetDirty()
         {
+			if (!m_CurrentScene)
+			{
+				return;
+			}
+
 			if (m_CurrentScene)
 			{
 				m_CurrentScene->SetDirty();

@@ -22,9 +22,12 @@ namespace renegade
 			{
 				RenderBaseSelectable(&m_Resource);
 
-				ImGui::DisplayHeader(m_Window.Bold(), "Type");
-				ImGui::SameLine();
-				ImGui::Text(assets::AssetTypeToString(m_Resource.GetAssetType()).c_str());
+				if (m_Resource.GetResourceType() != ExplorerResourceType::Folder)
+				{
+					ImGui::DisplayHeader(m_Window.Bold(), "Type");
+					ImGui::SameLine();
+					ImGui::Text(assets::AssetTypeToString(m_Resource.GetAssetType()).c_str());
+				}
 
 				EndBaseSelectable();
 			}

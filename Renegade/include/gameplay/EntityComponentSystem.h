@@ -75,11 +75,11 @@ namespace renegade
 			std::vector<EntityID> m_EntitiesToDelete;
 			std::vector<EntityID> m_EntitiesToAdd;
 			unsigned int m_NextID = 0;
-			bool m_Started = false;
-#ifdef __EDITOR__
-			bool m_Paused = true;
-#else
 			bool m_Paused = false;
+#ifdef __EDITOR__
+			bool m_Started = false;
+#else
+			bool m_Started = true;
 #endif // __EDITOR__
 		};
 	}

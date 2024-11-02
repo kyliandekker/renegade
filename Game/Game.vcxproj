@@ -237,7 +237,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;$(SolutionDir)Renegade/external/uaudio_wave_reader/$(PlatformShortname)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>renegade.lib;dxgi.lib;d3d12.lib;dxguid.lib;uaudio_wave_reader_$(PlatformShortname)_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>renegade.lib;dxgi.lib;d3d12.lib;dxguid.lib;D3DCompiler.lib;uaudio_wave_reader_$(PlatformShortname)_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Editor Debug|x64'">

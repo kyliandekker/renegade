@@ -32,6 +32,12 @@ namespace renegade
 			bool StringTextInput::Render(const char* a_Label, ImGuiInputTextFlags flags)
 			{
 				bool success = ImGui::InputText(a_Label, reinterpret_cast<char*>(m_Data.data()), m_Data.size(), flags);
+
+				if (ImGui::IsItemHovered())
+				{
+					// Set the cursor to a text input
+					ImGui::SetMouseCursor(ImGuiMouseCursor_TextInput);
+				}
 				return success;
 			}
 

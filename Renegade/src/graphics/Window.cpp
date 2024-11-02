@@ -28,14 +28,13 @@ namespace renegade
 
 			glm::vec2 realSize = GetRealSize();
 
-			// Initialize DX12.
-			if (!m_DX12Window.Initialize(3, m_hWnd, realSize.x, realSize.y))
+			m_DX12Window.Initialize(3, m_hWnd, realSize.x, realSize.y);
+			// Wait until the system is ready.
+			while (!m_DX12Window.Ready())
 			{
-				LOGF(LOGSEVERITY_ASSERT, "Failed creating DX12 Window.");
-				return false;
+				// Wait...
+				std::this_thread::yield();
 			}
-
-			Show();
 
 			// Call event.
 			m_OnWindowCreated();
@@ -73,27 +72,67 @@ namespace renegade
 			::DestroyWindow(m_hWnd);
 			::UnregisterClassW(m_Wc.lpszClassName, m_Wc.hInstance);
 
-			LOGF(LOGSEVERITY_SUCCESS, "Destroyed window.");
+			LOG(LOGSEVERITY_SUCCESS, "Destroyed window.");
 			return true;
 		}
 
+		bool resizing = false;
+		bool moving = false;
 		LRESULT Window::WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 			m_OnMsg(hwnd, msg, wParam, lParam);
+			if (resizing)
+			{
+				m_DX12Window.Resize(GetRealSize());
+			}
 			switch (msg)
 			{
+				case WM_MOVING:
+				{
+					if (!moving)
+					{
+						moving = true;
+					}
+					break;
+				}
+				case WM_SIZING:
+				{
+					if (!resizing)
+					{
+						resizing = true;
+					}
+					break;
+				}
 				case WM_SETFOCUS:
-				case WM_EXITSIZEMOVE:
 				{
 					if (!m_Ready || !m_DX12Window.Ready())
 					{
 						return msg;
 					}
-					m_Ready = false;
 
-					m_DX12Window.Resize(GetRealSize());
+					m_DX12Window.Reset();
+					break;
+				}
+				case WM_EXITSIZEMOVE:
+				{
+					if (!m_Ready || !m_DX12Window.Ready())
+					{
+						moving = false;
+						resizing = false;
+						return msg;
+					}
 
-					m_Ready = true;
+					if (resizing)
+					{
+						m_DX12Window.Resize(GetRealSize());
+					}
+					else
+					{
+						m_DX12Window.Reset();
+					}
+
+					moving = false;
+					resizing = false;
 					break;
 				}
 				case WM_PAINT:
@@ -251,7 +290,7 @@ namespace renegade
 
 			if (!RegisterClassEx(&m_Wc))
 			{
-				LOGF(LOGSEVERITY_ASSERT, "Window registration failed.");
+				LOG(LOGSEVERITY_ASSERT, "Window registration failed.");
 				return false;
 			}
 
@@ -267,11 +306,13 @@ namespace renegade
 
 			if (!m_hWnd)
 			{
-				LOGF(LOGSEVERITY_ASSERT, "Failed creating window.");
+				LOG(LOGSEVERITY_ASSERT, "Failed creating window.");
 				return false;
 			}
 
-			LOGF(LOGSEVERITY_SUCCESS, "Window has been created.");
+			Show();
+
+			LOG(LOGSEVERITY_SUCCESS, "Window has been created.");
 			return System::Initialize();
 		}
 	}

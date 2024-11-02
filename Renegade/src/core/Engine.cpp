@@ -53,7 +53,13 @@ namespace renegade
 #endif // _DEBUG
 
 			// Initialize logger.
-			InitializeSystem(&logger::LOGGER);
+			logger::LOGGER.Initialize();
+			// Wait until the system is ready.
+			while (!logger::LOGGER.Ready())
+			{
+				// Wait...
+				std::this_thread::yield();
+			}
 
 			va_list list;
 			va_start(list, a_NumArgs);
@@ -71,12 +77,24 @@ namespace renegade
 #endif // __EDITOR__
 
 			// Initialize the window.
-			InitializeSystem(&m_Window, 4, hInst, width, height, name);
+			m_Window.Initialize(4, hInst, width, height, name);
+			// Wait until the system is ready.
+			while (!m_Window.Ready())
+			{
+				// Wait...
+				std::this_thread::yield();
+			}
 
 			// Initialize the ECS.
-			InitializeSystem(&m_ECS);
+			m_ECS.Initialize();
+			// Wait until the system is ready.
+			while (!m_Window.Ready())
+			{
+				// Wait...
+				std::this_thread::yield();
+			}
 
-			LOGF(LOGSEVERITY_SUCCESS, "Engine initialized.");
+			LOG(LOGSEVERITY_SUCCESS, "Engine initialized.");
 
 			// TODO: Start the audio thread.
 			// TODO: Initialize other systems.
@@ -110,7 +128,7 @@ namespace renegade
 #endif
 			m_Ready = false;
 
-			LOGF(LOGSEVERITY_SUCCESS, "Engine destroyed.");
+			LOG(LOGSEVERITY_SUCCESS, "Engine destroyed.");
 			return System::Destroy();
 		}
 

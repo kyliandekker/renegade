@@ -50,7 +50,7 @@ namespace renegade
 			m_Thread = std::thread(&Logger::MessageQueue, this);
 			m_Thread.detach();
 
-			LOGF(LOGSEVERITY_SUCCESS, "Logger initialized.");
+			LOG(LOGSEVERITY_SUCCESS, "Logger initialized.");
 			return success;
 		}
 

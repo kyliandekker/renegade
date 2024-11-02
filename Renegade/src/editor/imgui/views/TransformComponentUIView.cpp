@@ -43,19 +43,18 @@ namespace renegade
 				ImGui::Text("X");
 				ImGui::SameLine();
 				m_PosX.SetString(std::to_string(position.x));
-				bool changedPos = ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "POS_X_TRANSFORM_INSPECTOR").c_str(), &position.x);
+				bool changedPosition = ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "POS_X_TRANSFORM_INSPECTOR").c_str(), &position.x);
 				ImGui::SameLine();
 				ImGui::Text("Y");
 				ImGui::SameLine();
-				changedPos |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "POS_Y_TRANSFORM_INSPECTOR").c_str(), &position.y);
+				changedPosition |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "POS_Y_TRANSFORM_INSPECTOR").c_str(), &position.y);
 				ImGui::SameLine();
 				ImGui::Text("Z");
 				ImGui::SameLine();
-				changedPos |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "POS_Z_TRANSFORM_INSPECTOR").c_str(), &position.z);
-				if (changedPos)
+				changedPosition |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "POS_Z_TRANSFORM_INSPECTOR").c_str(), &position.z);
+				if (changedPosition)
 				{
 					m_Component.SetPosition(position);
-					core::ENGINE.GetEditor().SetDirty();
 				}
 
 				ImGui::Unindent();
@@ -77,7 +76,6 @@ namespace renegade
 				if (changedRotation)
 				{
 					m_Component.SetRotation(rotation);
-					core::ENGINE.GetEditor().SetDirty();
 				}
 
 				ImGui::Unindent();
@@ -87,25 +85,29 @@ namespace renegade
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("X");
 				ImGui::SameLine();
-				bool changedScale = ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "SCALE_X_TRANSFORM_INSPECTOR").c_str(), &scale.x);
+				bool changedScale = ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "SCALE_X_TRANSFORM_INSPECTOR").c_str(), &scale.x, 1.0f, 0.0f);
 				ImGui::SameLine();
 				ImGui::Text("Y");
 				ImGui::SameLine();
-				changedScale |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "SCALE_Y_TRANSFORM_INSPECTOR").c_str(), &scale.y);
+				changedScale |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "SCALE_Y_TRANSFORM_INSPECTOR").c_str(), &scale.y, 1.0f, 0.0f);
 				ImGui::SameLine();
 				ImGui::Text("Z");
 				ImGui::SameLine();
-				changedScale |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "SCALE_Z_TRANSFORM_INSPECTOR").c_str(), &scale.z);
+				changedScale |= ImGui::DragFloat(IMGUI_FORMAT_ID("", INPUT_ID, "SCALE_Z_TRANSFORM_INSPECTOR").c_str(), &scale.z, 1.0f, 0.0f);
 				if (changedScale)
 				{
 					m_Component.SetScale(scale);
-					core::ENGINE.GetEditor().SetDirty();
 				}
 
 				ImGui::PopItemWidth();
 				ImGui::PopStyleVar();
 				ImGui::PopStyleVar();
 				ImGui::Unindent();
+
+				if (changedPosition || changedRotation || changedScale)
+				{
+					core::ENGINE.GetEditor().SetDirty();
+				}
 			}
 		}
 	}

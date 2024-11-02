@@ -94,7 +94,7 @@ namespace renegade
 
 			if (a_Document.HasParseError())
 			{
-				LOGF(LOGSEVERITY_ERROR, "Something went wrong when trying to load meta file '%s'.", getMetadataPath(a_Path).c_str());
+				LOG(LOGSEVERITY_ERROR, "Something went wrong when trying to load meta file '%s'.", getMetadataPath(a_Path).c_str());
 				return false;
 			}
 
@@ -522,7 +522,7 @@ namespace renegade
 
 			if (fmt_chunk.bitsPerSample != uaudio::wave_reader::WAVE_BITS_PER_SAMPLE_16)
 			{
-				LOGF(LOGSEVERITY_ERROR, "Cannot load wave files with a higher bits per sample than 16.");
+				LOG(LOGSEVERITY_ERROR, "Cannot load wave files with a higher bits per sample than 16.");
 				return false;
 			}
 

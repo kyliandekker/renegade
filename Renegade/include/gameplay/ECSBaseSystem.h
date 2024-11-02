@@ -39,6 +39,7 @@ namespace renegade
 
 			virtual void DeleteComponent(const EntityID& a_ID) = 0;
 			virtual void Update(float a_DeltaTime) = 0;
+			virtual void UpdateComponents(float a_DeltaTime) = 0;
 			virtual bool ContainsID(const EntityID& a_ID) = 0;
 			virtual Component* GetBaseComponent(const EntityID& a_ID) { return nullptr; };
 		};
@@ -102,7 +103,7 @@ namespace renegade
 				return &comp;
 			};
 
-			virtual void Update(float a_DeltaTime)
+			virtual void UpdateComponents(float a_DeltaTime) override
 			{
 				if (!m_ComponentsToDelete.empty())
 				{
@@ -113,6 +114,10 @@ namespace renegade
 					m_ComponentsToDelete.clear();
 					core::ENGINE.GetECS().m_OnEntityComponentsUpdated();
 				}
+			}
+
+			virtual void Update(float a_DeltaTime) override
+			{
 			}
 
 			bool ContainsID(const EntityID& a_ID) override
