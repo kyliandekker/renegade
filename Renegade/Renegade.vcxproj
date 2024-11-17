@@ -45,6 +45,7 @@
     <ClInclude Include="include\core\Header.h" />
     <ClInclude Include="include\editor\AssetDatabase.h" />
     <ClInclude Include="include\editor\Editor.h" />
+    <ClInclude Include="include\editor\explorer_resources\AudioExplorerResource.h" />
     <ClInclude Include="include\editor\explorer_resources\SceneExplorerResource.h" />
     <ClInclude Include="include\editor\imgui\EditorSelectable.h" />
     <ClInclude Include="include\editor\EditorSettings.h" />
@@ -67,6 +68,7 @@
     <ClInclude Include="include\editor\imgui\windows\ExplorerWindow.h" />
     <ClInclude Include="include\editor\imgui\windows\HierarchyWindow.h" />
     <ClInclude Include="include\editor\imgui\windows\InspectorWindow.h" />
+    <ClInclude Include="include\editor\imgui\windows\LoadProjectWindow.h" />
     <ClInclude Include="include\editor\imgui\windows\MainWindow.h" />
     <ClInclude Include="include\editor\imgui\windows\SceneWindow.h" />
     <ClInclude Include="include\editor\ExplorerResource.h" />
@@ -102,6 +104,8 @@
     <ClCompile Include="external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="external\imgui\implot.cpp" />
     <ClCompile Include="external\imgui\implot_items.cpp" />
+    <ClCompile Include="src\editor\explorer_resources\AudioExplorerResource.cpp" />
+    <ClCompile Include="src\editor\imgui\windows\LoadProjectWindow.cpp" />
     <ClCompile Include="src\gameplay\ECSSystem.cpp" />
     <ClCompile Include="src\gameplay\systems\Component.cpp" />
     <ClCompile Include="src\gameplay\systems\EntityDetailSystem.cpp" />
@@ -148,6 +152,7 @@
     <ClCompile Include="src\graphics\Window.cpp" />
     <ClCompile Include="src\logger\Logger.cpp" />
     <ClCompile Include="src\file\FileLoader.cpp" />
+    <ClCompile Include="src\project\ProjectSettings.cpp" />
     <ClCompile Include="src\utils\string_extensions.cpp" />
   </ItemGroup>
   <ItemGroup>

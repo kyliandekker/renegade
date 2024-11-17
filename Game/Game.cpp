@@ -2,6 +2,7 @@
 //
 
 #include <windows.h>
+#include "file/FileLoader.h"
 
 #include <core/Engine.h>
 
@@ -12,5 +13,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _
 #else
 	renegade::core::ENGINE.Initialize(3, hInstance, 1920, 1080, L"CoopScoop");
 #endif
+	renegade::core::ENGINE.Destroy();
 	return 0;
 }

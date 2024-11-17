@@ -32,7 +32,6 @@ namespace renegade
 
         bool Editor::Initialize(int, ...)
 		{
-			m_EditorSettings.Load();
 			bool success = m_AssetDatabase.Initialize();
 			// Wait until the system is ready.
 			while (!m_AssetDatabase.Ready())
@@ -48,6 +47,11 @@ namespace renegade
 				std::this_thread::yield();
 			}
 			return success && System::Initialize();
+		}
+
+		bool Editor::InitializeEditorSettings()
+		{
+			return m_EditorSettings.Load();
 		}
 
 		bool Editor::Destroy()

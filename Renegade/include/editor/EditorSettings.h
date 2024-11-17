@@ -38,11 +38,17 @@ namespace renegade
 			bool InfoSuccess() const;
 			void SetAwesome(bool a_Awesome);
 			bool Awesome() const;
+
+			void SetPreviousProjects(const std::unordered_set<std::string>& a_PreviousProjects);
+			const std::unordered_set<std::string>& GetPreviousProjects() const;
+			void AddToPreviousProjects(const std::string& a_PreviousProject);
+			void ErasePreviousProject(const std::string& a_PreviousProject);
 		private:
 			bool m_ScrollToBottom = false;
 			bool m_Info = true, m_Warning = true, m_Error = true, m_Assert = true, m_Success = true, m_InfoSuccess = true, m_Awesome = true;
 
 			glm::vec2 m_Size = glm::vec2(DEFAULT_SIZE_X, DEFAULT_SIZE_Y);
+			std::unordered_set<std::string> m_PreviousProjects;
 		};
 	}
 }

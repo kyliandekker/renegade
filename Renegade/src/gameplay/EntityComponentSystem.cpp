@@ -83,7 +83,6 @@ namespace renegade
 			return m_Paused;
 		}
 
-		// TODO: Make it so that m_Paused gets set after the frame is finished. You know, threading and all that.
 		void EntityComponentSystem::SetPaused(bool a_Paused)
 		{
 			m_Paused = a_Paused;

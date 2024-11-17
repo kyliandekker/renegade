@@ -23,7 +23,7 @@ namespace renegade
 		{
             std::string TransformComponentUIView::GetName() const
             {
-				return "Transform";
+				return ICON_FA_TRANSFORM_COMPONENT + std::string(" Transform");
             }
 
             void TransformComponentUIView::RenderInner()

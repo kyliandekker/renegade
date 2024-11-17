@@ -36,22 +36,8 @@ namespace renegade
 			m_Frames++;
 		}
 #endif // _DEBUG
-
-		FILE* console = nullptr;
 		bool Engine::Initialize(int a_NumArgs, ...)
 		{
-			// Initialize console first.
-#ifdef _DEBUG
-			AllocConsole();
-			freopen_s(&console, "CONOUT$", "w", stdout);
-
-			HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-			DWORD dwMode = 0;
-			GetConsoleMode(hOut, &dwMode);
-			dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-			SetConsoleMode(hOut, dwMode);
-#endif // _DEBUG
-
 			// Initialize logger.
 			logger::LOGGER.Initialize();
 			// Wait until the system is ready.
@@ -72,6 +58,9 @@ namespace renegade
 			va_end(list);
 
 #ifdef __EDITOR__
+			m_Editor.InitializeEditorSettings();
+			width = m_Editor.GetEditorSettings().Size().x;
+			height = m_Editor.GetEditorSettings().Size().y;
 			// Initialize editor.
 			m_Editor.SetCallbacks(m_Window);
 #endif // __EDITOR__
@@ -100,7 +89,7 @@ namespace renegade
 			// TODO: Initialize other systems.
 			
 			UpdateDeltaTime();
-			while (true)
+			while (m_Window.Ready())
 			{
 				UpdateDeltaTime();
 
@@ -123,9 +112,6 @@ namespace renegade
 			// Destroy the logger last.
 			logger::LOGGER.Destroy();
 
-#ifdef _DEBUG
-			fclose(console);
-#endif
 			m_Ready = false;
 
 			LOG(LOGSEVERITY_SUCCESS, "Engine destroyed.");

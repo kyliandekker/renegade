@@ -3,28 +3,16 @@
 #include "editor/AssetDatabase.h"
 
 #include "logger/Logger.h"
-#include <windows.h>
+#include "file/FileLoader.h"
+#include "core/Engine.h"
 
 namespace renegade
 {
 	namespace editor
 	{
-		std::string ExePath()
-		{
-			CHAR buffer[MAX_PATH] = { 0 };
-			GetModuleFileNameA(NULL, buffer, MAX_PATH);
-			std::string::size_type pos = std::string(buffer).find_last_of("\\/");
-			return std::string(buffer).substr(0, pos);
-		}
-
 		bool AssetDatabase::Initialize(int, ...)
 		{
-			if (Scan())
-			{
-				LOG(LOGSEVERITY_SUCCESS, "AssetDatabase initialized.");
-				return System::Initialize();
-			}
-			return false;
+			return System::Initialize();
 		}
 
 		bool AssetDatabase::Destroy()
@@ -32,6 +20,20 @@ namespace renegade
 			LOG(LOGSEVERITY_SUCCESS, "AssetDatabase destroyed.");
 			return System::Destroy();
 		}
+
+        bool AssetDatabase::LoadProject(const std::string& a_Path)
+        {
+			m_ProjectPath = a_Path;
+
+			core::ENGINE.GetEditor().GetEditorSettings().AddToPreviousProjects(m_ProjectPath);
+
+			Scan();
+			m_OnProjectLoaded();
+
+			m_ProjectSettings.Load(m_ProjectPath);
+
+            return false;
+        }
 
 		void AssetDatabase::Rescan()
 		{
@@ -50,7 +52,7 @@ namespace renegade
 
 		ExplorerResource& AssetDatabase::GetRoot()
 		{
-			return m_Root;
+			return m_AssetsRoot;
 		}
 
 		bool AssetDatabase::Scan()
@@ -58,8 +60,13 @@ namespace renegade
 			m_OnBeforeScan();
 
 			m_Ready = false;
-			m_Root.m_Path = ExePath() + "/assets";
-			if (m_Root.Scan())
+			std::string path = m_ProjectPath + "/assets";
+			if (!file::FileLoader::DoesFolderExist(path))
+			{
+				file::FileLoader::CreateFolder(path);
+			}
+			m_AssetsRoot.m_Path = path;
+			if (m_AssetsRoot.Scan())
 			{
 				LOG(LOGSEVERITY_SUCCESS, "Scanned asset database.");
 				m_Ready = true;

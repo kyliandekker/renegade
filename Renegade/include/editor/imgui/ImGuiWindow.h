@@ -15,6 +15,7 @@
 #include "editor/imgui/windows/InspectorWindow.h"
 #include "editor/imgui/windows/ConsoleWindow.h"
 #include "editor/imgui/windows/ExplorerWindow.h"
+#include "editor/imgui/windows/LoadProjectWindow.h"
 
 struct ID3D12GraphicsCommandList;
 
@@ -29,6 +30,12 @@ namespace renegade
 	{
 		namespace imgui
 		{
+			enum class EditorState
+			{
+				EditorState_LoadProject,
+				EditorState_Editor,
+			};
+
 			class ImGuiWindow : public core::System
 			{
 			public:
@@ -65,6 +72,7 @@ namespace renegade
 				HierarchyWindow& GetHierarchyWindow();
 			private:
 				void UpdateMouseCursor();
+				void SetLoadProjectState();
 
 				std::string m_IniPath;
 
@@ -75,12 +83,15 @@ namespace renegade
 				ImVec2 m_WindowPadding = ImVec2(8, 8);
 				ImVec2 m_HeaderSize;
 
+				EditorState m_EditorState = EditorState::EditorState_LoadProject;
+
 				MainWindow mainWindow;
 				ConsoleWindow consoleWindow;
 				SceneWindow sceneWindow;
 				InspectorWindow inspectorWindow;
 				HierarchyWindow hierarchyWindow;
 				ExplorerWindow explorerWindow;
+				LoadProjectWindow loadProjectWindow;
 			};
 		}
 	}

@@ -10,73 +10,23 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/prettywriter.h>
 #include <imgui/imgui_helpers.h>
-#include <uaudio_wave_reader/WaveReader.h>
-#include <uaudio_wave_reader/WaveChunks.h>
-#include <uaudio_wave_reader/ChunkCollection.h>
 
 #include "editor/explorer_resources/SceneExplorerResource.h"
+#include "editor/explorer_resources/AudioExplorerResource.h"
 #include "utils/string_extensions.h"
 #include "core/datatypes/DataStream.h"
-#include "file/FileLoader.h"
 #include "logger/Logger.h"
-#include "core/Engine.h"
-#include "editor/imgui/ImGuiDefines.h"
-#include "utils/string_extensions.h"
-#include "editor/imgui/StringTextInput.h"
+#include "file/FileLoader.h"
 
 namespace fs = std::filesystem;
 
 // General Metadata Variables
 #define JSON_ASSETTYPE_VAR "assetType"
 
-constexpr int MAX_SAMPLES = 70560;
-
 namespace renegade
 {
 	namespace editor
 	{
-		double* ToSample(unsigned char* data, size_t buffersize, uint16_t bitsPerSample, uint16_t blockAlign, uint16_t, uint16_t audioFormat, size_t numSamples, bool left)
-		{
-			if (data == nullptr)
-			{
-				return nullptr;
-			}
-
-			unsigned char* pData = data;
-			size_t realNumSamples = buffersize / blockAlign;
-
-			if (realNumSamples == 0)
-			{
-				return nullptr;
-			}
-
-			size_t div = realNumSamples / numSamples;
-
-			double* samples = reinterpret_cast<double*>(malloc(numSamples * sizeof(double)));
-			if (!samples)
-			{
-				return nullptr;
-			}
-
-			if (!left)
-			{
-				pData += blockAlign / 2;
-			}
-
-			for (size_t i = 0; i < numSamples; i++)
-			{
-				if (bitsPerSample == uaudio::wave_reader::WAVE_BITS_PER_SAMPLE_16)
-				{
-					int16_t sample = *(int16_t*)pData;
-					samples[i] = static_cast<double>(sample) / INT16_MAX;
-				}
-
-				pData += div * blockAlign;
-			}
-
-			return samples;
-		}
-
 		std::string getMetadataPath(const std::string& a_Path)
 		{
 			return a_Path + ".meta";
@@ -132,53 +82,6 @@ namespace renegade
 		{
 			return m_Parent;
 		}
-
-		//imgui::StringTextInput EXPLORER_TEXT_INPUT;
-		//void ExplorerResource::RenderSelectable()
-		//{
-		//	ImVec2 toolbarSize = ImVec2(ImGui::GetContentRegionAvail().x, core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y * 2);
-		//	ImGui::BeginToolbar(toolbarSize);
-
-		//	ImVec2 padding = core::ENGINE.GetEditor().GetImGuiWindow().GetWindowPadding();
-		//	ImGui::EndToolbar(padding);
-
-		//	float fontSize = core::ENGINE.GetEditor().GetImGuiWindow().FontSize();
-
-		//	float y = ImGui::GetCursorPosY();
-		//	float x = ImGui::GetCursorPosX() + fontSize;
-		//	ImGui::SetCursorPos(ImVec2(x, y + fontSize));
-		//	ImGui::PushFont(core::ENGINE.GetEditor().GetImGuiWindow().CapitalIcon());
-		//	ImGui::Text(m_Icon.c_str());
-		//	ImGui::PopFont();
-
-		//	ImGui::SetCursorPosY(y + (fontSize / 2));
-		//	ImGui::SetCursorPosX(x + (fontSize * 3));
-
-		//	EXPLORER_TEXT_INPUT.SetString(m_Name);
-		//	if (EXPLORER_TEXT_INPUT.Render(imgui::IMGUI_FORMAT_ID("", INPUT_ID, "NAME_INSPECTOR").c_str(), ImGuiInputTextFlags_EnterReturnsTrue))
-		//	{
-		//		Rename(EXPLORER_TEXT_INPUT.GetString());
-		//	}
-
-		//	ImGui::SetCursorPosY(y + toolbarSize.y);
-		//	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x);
-
-		//	ImVec2 framePadding = core::ENGINE.GetEditor().GetImGuiWindow().GetFramePadding();
-		//	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(framePadding.x * 2, framePadding.y * 2));
-		//	if (ImGui::BeginChild(
-		//		imgui::IMGUI_FORMAT_ID("", CHILD_ID, "EXPLORER_RESOURCE_INSPECTOR").c_str(),
-		//		ImVec2(
-		//			ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x,
-		//			ImGui::GetContentRegionAvail().y - ImGui::GetStyle().ItemSpacing.y
-		//		),
-		//		ImGuiChildFlags_Borders
-		//	))
-		//	{
-		//		RenderInnerProperties();
-		//	}
-		//	ImGui::PopStyleVar();
-		//	ImGui::EndChild();
-		//}
 
 		bool ExplorerResource::Scan()
 		{
@@ -487,66 +390,6 @@ namespace renegade
 			//}
 
 			return false;
-		}
-
-        AudioExplorerResource::~AudioExplorerResource()
-        {
-			if (m_LeftSamples)
-			{
-				free(m_LeftSamples);
-			}
-			if (m_RightSamples)
-			{
-				free(m_RightSamples);
-			}
-        }
-
-		bool AudioExplorerResource::Initialize()
-		{
-			size_t size = 0;
-			uaudio::wave_reader::WaveReader::FTell(m_Path.c_str(), size);
-
-			// TODO: Use data container.
-			void* allocated_space = malloc(size);
-			uaudio::wave_reader::ChunkCollection chunkCollection(allocated_space, size);
-
-			uaudio::wave_reader::WaveReader::LoadWave(m_Path.c_str(), chunkCollection);
-
-			uaudio::wave_reader::FMT_Chunk fmt_chunk;
-			uaudio::wave_reader::UAUDIO_WAVE_READER_RESULT result = chunkCollection.GetChunkFromData<uaudio::wave_reader::FMT_Chunk>(fmt_chunk, uaudio::wave_reader::FMT_CHUNK_ID);
-
-			if (UAUDIOWAVEREADERFAILED(result))
-			{
-				return false;
-			}
-
-			if (fmt_chunk.bitsPerSample != uaudio::wave_reader::WAVE_BITS_PER_SAMPLE_16)
-			{
-				LOG(LOGSEVERITY_ERROR, "Cannot load wave files with a higher bits per sample than 16.");
-				return false;
-			}
-
-			uaudio::wave_reader::DATA_Chunk data_chunk;
-			uaudio::wave_reader::UAUDIO_WAVE_READER_RESULT result2 = chunkCollection.GetChunkFromData<uaudio::wave_reader::DATA_Chunk>(data_chunk, uaudio::wave_reader::DATA_CHUNK_ID);
-
-			if (UAUDIOWAVEREADERFAILED(result))
-			{
-				return false;
-			}
-
-			uint32_t data_chunk_size = 0;
-			chunkCollection.GetChunkSize(data_chunk_size, uaudio::wave_reader::DATA_CHUNK_ID);
-
-			m_LeftSamples = ToSample(data_chunk.data, data_chunk_size, fmt_chunk.bitsPerSample, fmt_chunk.blockAlign, fmt_chunk.numChannels, fmt_chunk.audioFormat, MAX_SAMPLES, true);
-			m_RightSamples = ToSample(data_chunk.data, data_chunk_size, fmt_chunk.bitsPerSample, fmt_chunk.blockAlign, fmt_chunk.numChannels, fmt_chunk.audioFormat, MAX_SAMPLES, false);
-			m_NumSamples = data_chunk_size / fmt_chunk.blockAlign;
-			if (m_NumSamples > MAX_SAMPLES)
-			{
-				m_NumSamples = MAX_SAMPLES;
-			}
-
-			free(allocated_space);
-			return true;
 		}
 	}
 }

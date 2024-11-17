@@ -85,6 +85,10 @@ namespace renegade
 #define ICON_FA_PAUSE "\xEF\x81\x8C"
 #define ICON_FA_STOP "\xEF\x81\x8D"
 
+/* INSPECTOR WINDOW */
+#define ICON_FA_COMPONENT "\xEF\x84\xAE"
+#define ICON_FA_TRANSFORM_COMPONENT "\xEF\x84\xAE"
+
 #define IMGUI_INDENT 16.0f
 
 			std::string IMGUI_FORMAT_ID(const std::string& a_Text, const char* a_ID, const std::string& a_IDName);

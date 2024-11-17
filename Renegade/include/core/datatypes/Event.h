@@ -90,6 +90,11 @@ namespace renegade
 			}
 		}
 
+		void clear()
+		{
+			listener = nullptr;
+		}
+
 	private:
 		std::function<void(Args...)> listener;
 	};

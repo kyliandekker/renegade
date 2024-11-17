@@ -16,11 +16,6 @@ namespace renegade
 		{
 			return core::ENGINE.GetWindow().WndProcHandler(hwnd, msg, wParam, lParam);
 		}
-		
-		bool Window::IsRunning() const
-		{
-			return m_Running;
-		}
 
 		bool Window::StartThread(HINSTANCE a_hInstance, uint32_t a_Width, uint32_t a_Height, LPCWSTR a_WindowName)
 		{
@@ -56,6 +51,7 @@ namespace renegade
 
 			va_end(list);
 
+			m_Ready = true;
 			m_Thread = std::thread(&Window::StartThread, this, hInst, width, height, name);
 
 			return true;
@@ -63,14 +59,12 @@ namespace renegade
 
 		bool Window::Destroy()
 		{
-			m_Thread.join();
-
-			m_Ready = false;
-
 			m_DX12Window.Destroy();
 
 			::DestroyWindow(m_hWnd);
 			::UnregisterClassW(m_Wc.lpszClassName, m_Wc.hInstance);
+
+			m_Thread.join();
 
 			LOG(LOGSEVERITY_SUCCESS, "Destroyed window.");
 			return true;
@@ -87,6 +81,11 @@ namespace renegade
 			}
 			switch (msg)
 			{
+				case WM_DESTROY:
+				{
+					m_Ready = false;
+					break;
+				}
 				case WM_MOVING:
 				{
 					if (!moving)
@@ -125,6 +124,10 @@ namespace renegade
 					if (resizing)
 					{
 						m_DX12Window.Resize(GetRealSize());
+
+#ifdef __EDITOR__
+						core::ENGINE.GetEditor().GetEditorSettings().SetSize(GetRealSize());
+#endif // __EDITOR__
 					}
 					else
 					{
@@ -156,8 +159,7 @@ namespace renegade
 		void Window::PollEvents()
 		{
 			MSG msg = {};
-			m_Running = true;
-			while (GetMessage(&msg, NULL, 0, 0) > 0)
+			while (GetMessage(&msg, NULL, 0, 0) > 0 && m_Ready)
 			{
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);

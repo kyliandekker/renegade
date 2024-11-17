@@ -57,14 +57,15 @@ namespace renegade
 
 			g_CurrentBackBufferIndex = g_SwapChain->GetCurrentBackBufferIndex();
 		
-			if (!CreateDescriptorHeap(g_Device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, g_NumSwapChainBuffers + 1, g_RTVDescriptorHeap))
+			if (!CreateDescriptorHeap(g_Device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, g_NumSwapChainBuffers + m_ExtraRenderTargets, g_RTVDescriptorHeap))
 			{
 				return false;
 			}
 			g_RTVDescriptorSize = g_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-			UpdateRenderTargetViews(g_Device, g_SwapChain, g_RTVDescriptorHeap, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, g_NumSwapChainBuffers + 1);
+			UpdateRenderTargetViews(g_Device, g_SwapChain, g_RTVDescriptorHeap, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, g_NumSwapChainBuffers);
 			m_OnRenderTargetCreated();
-			if (!CreateDescriptorHeap(g_Device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, g_NumSrvBuffers, g_SRVDescriptorHeap))
+
+			if (!CreateDescriptorHeap(g_Device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, g_NumSrvBuffers + m_ExtraRenderTargets, g_SRVDescriptorHeap))
 			{
 				return false;
 			}
@@ -92,6 +93,8 @@ namespace renegade
 
 		bool DX12Window::Destroy()
 		{
+			m_Ready = false;
+
 			// Make sure the command queue has finished all commands before closing.
 			m_DirectCommandQueue.Flush();
 			CleanUpRenderTargets(g_SwapChain);
@@ -406,13 +409,23 @@ namespace renegade
 			return true;
 		}
 
+		void DX12Window::Wait()
+		{
+			m_DirectCommandQueue.Signal();
+			m_DirectCommandQueue.WaitForFenceValue(g_FrameFenceValues[g_CurrentBackBufferIndex]);
+			m_Ready = false;
+		}
+
+        void DX12Window::StopWaiting()
+        {
+			m_Ready = true;
+        }
+
 		void DX12Window::Resize(glm::vec2 a_Size)
 		{
 			if (m_Size != a_Size)
 			{
-				m_DirectCommandQueue.Signal();
-				m_DirectCommandQueue.WaitForFenceValue(g_FrameFenceValues[g_CurrentBackBufferIndex]);
-				m_Ready = false;
+				Wait();
 
 				Flush();
 				for (int i = 0; i < g_NumSwapChainBuffers; ++i)
@@ -439,7 +452,7 @@ namespace renegade
 
 				UpdateRenderTargetViews(g_Device, g_SwapChain, g_RTVDescriptorHeap, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, g_NumSwapChainBuffers);
 
-				m_Ready = true;
+				StopWaiting();
 
 				m_Size = glm::vec2(a_Size.x, a_Size.y);
 			}

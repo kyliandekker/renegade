@@ -41,16 +41,14 @@ namespace renegade
 			SimpleEvent<HWND, UINT, WPARAM, LPARAM> m_OnMsg;
 			SimpleEvent<> m_OnRender;
 
-			bool IsRunning() const;
+			std::thread m_Thread;
 		private:
 			std::string m_BaseWindowTitle;
-			bool m_Running = false;
 
 			bool StartThread(HINSTANCE a_hInstance, uint32_t a_Width, uint32_t a_Height, LPCWSTR a_WindowName);
 
 			DX12Window m_DX12Window;
 
-			std::thread m_Thread;
 			bool CreateWindow(HINSTANCE a_hInstance, uint32_t a_Width, uint32_t a_Height, LPCWSTR a_WindowTitle);
 
 			HWND m_hWnd = HWND();

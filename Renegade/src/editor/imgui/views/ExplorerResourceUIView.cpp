@@ -8,6 +8,7 @@
 #include "utils/string_extensions.h"
 #include "assets/AssetType.h"
 #include "editor/ExplorerResource.h"
+#include "editor/explorer_resources/AudioExplorerResource.h"
 #include "editor/explorer_resources/SceneExplorerResource.h"
 #include "core/Engine.h"
 #include "file/FileLoader.h"
@@ -222,7 +223,6 @@ namespace renegade
 				{
 					core::ENGINE.GetEditor().SetSelectable(nullptr);
 
-					// TODO: Bool for delete instead of immediately deleting.
 					a_Resource->Delete();
 
 					core::ENGINE.GetEditor().GetAssetDatabase().Rescan();

@@ -29,6 +29,8 @@
 #define JSON_WINDOW_SIZE_X_VAR "x"
 #define JSON_WINDOW_SIZE_Y_VAR "y"
 
+#define JSON_PREVIOUS_PROJECTS_VAR "previousProjects"
+
 #define JSON_EXPLORER_TAB_SIZE_VAR "explorerTabSize"
 
 namespace renegade
@@ -42,6 +44,7 @@ namespace renegade
 			core::DataStream data;
 			if (!file::FileLoader::LoadFile(path, data))
 			{
+				Save();
 				return false;
 			}
 
@@ -86,6 +89,19 @@ namespace renegade
 				}
 			}
 
+			// Previous projects array
+			if (document.HasMember(JSON_PREVIOUS_PROJECTS_VAR) && document[JSON_PREVIOUS_PROJECTS_VAR].IsArray())
+			{
+				for (auto& element : document[JSON_PREVIOUS_PROJECTS_VAR].GetArray())
+				{
+					if (!element.IsString())
+					{
+						continue;
+					}
+					m_PreviousProjects.insert(element.GetString());
+				}
+			}
+
 			return true;
 		}
 
@@ -109,6 +125,12 @@ namespace renegade
 			document[JSON_WINDOW_SIZE_VAR].AddMember(JSON_WINDOW_SIZE_X_VAR, m_Size.x, allocator);
 			document[JSON_WINDOW_SIZE_VAR].AddMember(JSON_WINDOW_SIZE_Y_VAR, m_Size.y, allocator);
 
+			document.AddMember(JSON_PREVIOUS_PROJECTS_VAR, rapidjson::Value().SetArray(), allocator);
+			for (auto& previousProject : m_PreviousProjects)
+			{
+				document[JSON_PREVIOUS_PROJECTS_VAR].PushBack(rapidjson::Value().SetString(previousProject.c_str(), previousProject.size()), allocator);
+			}
+
 			rapidjson::StringBuffer buffer;
 			rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
 			document.Accept(writer);
@@ -116,8 +138,6 @@ namespace renegade
 			std::string path = std::string(file::FileLoader::GetAppDataPath() + SETTINGS_FOLDER + std::string(SETTINGS_PATH));
 
 			return file::FileLoader::SaveFile(path, core::Data(buffer.GetString(), buffer.GetSize()));
-
-			return true;
 		}
 
 		void EditorSettings::SetSize(const glm::vec2& a_Size)
@@ -226,6 +246,32 @@ namespace renegade
 		bool EditorSettings::Awesome() const
 		{
 			return m_Awesome;
+		}
+
+		void EditorSettings::SetPreviousProjects(const std::unordered_set<std::string>& a_PreviousProjects)
+		{
+			m_PreviousProjects = a_PreviousProjects;
+
+			Save();
+		}
+
+		const std::unordered_set<std::string>& EditorSettings::GetPreviousProjects() const
+		{
+			return m_PreviousProjects;
+		}
+
+		void EditorSettings::AddToPreviousProjects(const std::string& a_PreviousProject)
+		{
+			m_PreviousProjects.insert(a_PreviousProject);
+
+			Save();
+		}
+
+		void EditorSettings::ErasePreviousProject(const std::string& a_PreviousProject)
+		{
+			m_PreviousProjects.erase(a_PreviousProject);
+
+			Save();
 		}
 	}
 }

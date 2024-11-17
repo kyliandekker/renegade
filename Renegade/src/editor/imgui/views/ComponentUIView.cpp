@@ -22,7 +22,7 @@ namespace renegade
             {
 				ImGui::SetNextItemOpen(m_FoldedOut);
 				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
-				m_FoldedOut = ImGui::CollapsingHeader(IMGUI_FORMAT_ID(ICON_FA_SCENE + std::string(" ") + GetName(), FOLDOUT_ID, string_extensions::StringToUpper(GetName()) + "_INSPECTOR").c_str());
+				m_FoldedOut = ImGui::CollapsingHeader(IMGUI_FORMAT_ID(GetName(), FOLDOUT_ID, string_extensions::StringToUpper(GetName()) + "_INSPECTOR").c_str());
 				if (m_FoldedOut)
 				{
 					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));

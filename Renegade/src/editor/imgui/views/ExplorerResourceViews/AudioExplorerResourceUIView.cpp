@@ -5,7 +5,7 @@
 #include <imgui/imgui_helpers.h>
 #include <imgui/implot.h>
 
-#include "editor/ExplorerResource.h"
+#include "editor/explorer_resources/AudioExplorerResource.h"
 #include "editor/imgui/ImGuiDefines.h"
 #include "editor/imgui/ImGuiWindow.h"
 

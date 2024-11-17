@@ -56,13 +56,16 @@ namespace renegade
 
 		bool Logger::Destroy()
 		{
-			m_MessagesMutex.lock();
+			std::scoped_lock lock(m_MessagesMutex);
 			while (!m_Messages.empty())
 			{
 				m_Messages.pop();
 			}
-			m_MessagesMutex.unlock();
-			m_Thread.join();
+			m_Ready = false; // Signal thread to finish
+			if (m_Thread.joinable())
+			{
+				m_Thread.join();
+			}
 			return System::Destroy();
 		}
 
@@ -92,13 +95,12 @@ namespace renegade
 			t = time(NULL);
 			localtime_s(&lt, &t);
 
-			std::string message = std::format("\"{0}\" on line {1}",
+			std::string message = std::format("{0} on line {1}",
 				a_File,
 				a_Line);
 
-			m_MessagesMutex.lock();
+			std::scoped_lock lock(m_MessagesMutex);
 			m_Messages.push(Message(a_Message, message, a_Severity, std::chrono::system_clock::now()));
-			m_MessagesMutex.unlock();
 		}
 
 		constexpr auto COLOR_YELLOW = "\033[0;33m";
@@ -132,22 +134,45 @@ namespace renegade
 			"AWESOME",
 		};
 
+		FILE* console = nullptr;
 		void Logger::MessageQueue()
 		{
+			// Initialize console first.
+#ifdef _DEBUG
+			AllocConsole();
+			freopen_s(&console, "CONOUT$", "w", stdout);
+
+			HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+			DWORD dwMode = 0;
+			GetConsoleMode(hOut, &dwMode);
+			dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+			SetConsoleMode(hOut, dwMode);
+#endif // _DEBUG
 			while (m_Ready)
 			{
-				m_MessagesMutex.lock();
-				if (m_Messages.size() > 0)
+				// Use scoped lock for queue access and printing to prevent mixing
+				std::scoped_lock lock(m_MessagesMutex);
+
+				if (!m_Messages.empty())
 				{
 					const Message lm = m_Messages.front();
 					m_Messages.pop();
 
-					std::cout << "[" << LOGGER_SEVERITY_COLOR[lm.GetSeverity()].c_str() << LOGGER_SEVERITY_TEXT[lm.GetSeverity()].c_str() << COLOR_WHITE << "]: " << lm.GetRawMessage().c_str() << " " << lm.GetLocation().c_str() << std::endl;
+					std::string message =
+						"[" + LOGGER_SEVERITY_COLOR[lm.GetSeverity()] +
+						LOGGER_SEVERITY_TEXT[lm.GetSeverity()] +
+						COLOR_WHITE + "] " + lm.GetRawMessage() + " " +
+						lm.GetLocation();
+
+					std::cout << message.c_str() << std::endl;
+					fflush(stdout);
 
 					OnMessageLogged(lm);
 				}
-				m_MessagesMutex.unlock();
 			}
+#ifdef _DEBUG
+			fclose(console);
+#endif
 		}
 }
 }

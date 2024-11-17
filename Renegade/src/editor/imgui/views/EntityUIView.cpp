@@ -164,7 +164,7 @@ namespace renegade
 					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x);
 
 					float width = ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x;
-					if (ImGui::Button(IMGUI_FORMAT_ID("Add Component", BUTTON_ID, "ADD_COMPONENT_INSPECTOR").c_str(), ImVec2(width, 0)))
+					if (ImGui::Button(IMGUI_FORMAT_ID(ICON_FA_COMPONENT + std::string(" Add Component"), BUTTON_ID, "ADD_COMPONENT_INSPECTOR").c_str(), ImVec2(width, 0)))
 					{
 						ImVec2 buttonPos = ImGui::GetItemRectMin();
 
@@ -175,7 +175,7 @@ namespace renegade
 					}
 
 					gameplay::EntityComponentSystem& ecs = core::ENGINE.GetECS();
-					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, m_Window.GetFramePadding());
+					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(m_Window.GetFramePadding().x * 2, m_Window.GetFramePadding().y * 2));
 					ImGui::SetNextWindowSize(ImVec2(width, 0));
 					if (ImGui::BeginPopup(IMGUI_FORMAT_ID("", POPUP_WINDOW_ID, "ADD_COMPONENT_MENU_INSPECTOR").c_str()))
 					{
@@ -184,7 +184,7 @@ namespace renegade
 						ImVec4 textColor = ImGui::GetStyleColorVec4(ImGuiCol_Text);
 						textColor.w = 0.5f;
 						ImGui::TextColored(textColor, "Add a Component");
-						if (!transformSys.HasComponent(m_EntityID) && ImGui::MenuItem(IMGUI_FORMAT_ID(std::string(ICON_FA_SCENE) + " Transform", MENU_ITEM_ID, "ADD_TRANSFORM_COMPONENT_MENU_INSPECTOR").c_str()))
+						if (!transformSys.HasComponent(m_EntityID) && ImGui::MenuItem(IMGUI_FORMAT_ID(std::string(ICON_FA_TRANSFORM_COMPONENT) + " Transform", MENU_ITEM_ID, "ADD_TRANSFORM_COMPONENT_MENU_INSPECTOR").c_str()))
 						{
 							transformSys.CreateComponent(m_EntityID);
 							core::ENGINE.GetEditor().SetSelectable(this);

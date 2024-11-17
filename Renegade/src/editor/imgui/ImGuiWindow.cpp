@@ -27,7 +27,7 @@ namespace renegade
 	{
 		namespace imgui
 		{
-			ImGuiWindow::ImGuiWindow() : mainWindow(*this), consoleWindow(*this), sceneWindow(*this), inspectorWindow(*this), hierarchyWindow(*this), explorerWindow(*this)
+			ImGuiWindow::ImGuiWindow() : mainWindow(*this), consoleWindow(*this), sceneWindow(*this), inspectorWindow(*this), hierarchyWindow(*this), explorerWindow(*this), loadProjectWindow(*this)
 			{ }
 
 			ImGuiWindow::~ImGuiWindow()
@@ -58,6 +58,9 @@ namespace renegade
 				inspectorWindow.Initialize();
 				hierarchyWindow.Initialize();
 				explorerWindow.Initialize();
+				loadProjectWindow.Initialize();
+
+				core::ENGINE.GetEditor().GetAssetDatabase().m_OnProjectLoaded += std::bind(&ImGuiWindow::SetLoadProjectState, this);
 
 				return System::Initialize();
 			}
@@ -75,6 +78,8 @@ namespace renegade
 				ImGui_ImplWin32_Shutdown();
 				ImPlot::DestroyContext();
 				ImGui::DestroyContext();
+
+				core::ENGINE.GetEditor().GetAssetDatabase().m_OnProjectLoaded.clear();
 
 				LOG(LOGSEVERITY_SUCCESS, "ImGui destroyed.");
 				return true;
@@ -408,6 +413,11 @@ namespace renegade
 				}
 			}
 
+			void ImGuiWindow::SetLoadProjectState()
+			{
+				m_EditorState = EditorState::EditorState_Editor;
+			}
+
 			void ImGuiWindow::Render()
 			{
 				if (!m_Ready)
@@ -425,18 +435,30 @@ namespace renegade
 
 				ImGui::PushFont(m_IconFont);
 
-				glm::vec2 size = core::ENGINE.GetWindow().GetRealSize();
-				mainWindow.SetSize(ImVec2(size.x, size.y));
+				if (m_EditorState == EditorState::EditorState_LoadProject)
+				{
+					glm::vec2 size = core::ENGINE.GetWindow().GetRealSize();
+					loadProjectWindow.SetSize(ImVec2(size.x, size.y));
 
-				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-				mainWindow.Update();
-				ImGui::PopStyleVar();
+					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+					loadProjectWindow.Update();
+					ImGui::PopStyleVar();
+				}
+				else if (m_EditorState == EditorState::EditorState_Editor)
+				{
+					glm::vec2 size = core::ENGINE.GetWindow().GetRealSize();
+					mainWindow.SetSize(ImVec2(size.x, size.y));
 
-				hierarchyWindow.Update();
-				sceneWindow.Update();
-				inspectorWindow.Update();
-				consoleWindow.Update();
-				explorerWindow.Update();
+					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+					mainWindow.Update();
+					ImGui::PopStyleVar();
+
+					hierarchyWindow.Update();
+					sceneWindow.Update();
+					inspectorWindow.Update();
+					consoleWindow.Update();
+					explorerWindow.Update();
+				}
 
 				UpdateMouseCursor();
 
