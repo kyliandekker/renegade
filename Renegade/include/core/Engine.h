@@ -7,23 +7,12 @@
 #include "graphics/Window.h"
 #include "gameplay/EntityComponentSystem.h"
 #include "editor/Editor.h"
+#include "file/FileLoader.h"
 
 namespace renegade
 {
 	namespace core
 	{
-#ifdef _DEBUG
-		class FPSCounter
-		{
-		public:
-			float GetFPS();
-			void AddFrame();
-		private:
-			unsigned int m_Frames = 0;
-			float m_TimeAccumulation = 0.0f;
-		};
-#endif // _DEBUG
-
 		class Engine : public System
 		{
 		public:
@@ -32,24 +21,18 @@ namespace renegade
 
 			graphics::Window& GetWindow();
 			gameplay::EntityComponentSystem& GetECS();
+			file::FileLoader& GetFileLoader();
 #ifdef __EDITOR__
 			editor::Editor& GetEditor();
 #endif
-			float GetFPS();
-
-			float GetDeltaTime() const;
 		private:
 			graphics::Window m_Window;
 			gameplay::EntityComponentSystem m_ECS;
-
-			void UpdateDeltaTime();
+			file::FileLoader m_FileLoader;
 #ifdef __EDITOR__
 			editor::Editor m_Editor;
 #endif
 
-#ifdef _DEBUG
-			FPSCounter m_FpsCounter;
-#endif
 			float m_DeltaTime = 0.0f;
 
 			std::chrono::steady_clock::time_point m_TimeSinceEngineStart = std::chrono::steady_clock::now();

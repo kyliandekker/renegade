@@ -1,6 +1,6 @@
 #ifdef __EDITOR__
 
-#include "editor/imgui/views/ExplorerResourceViews/TextureExplorerResourceUIView.h"
+#include "editor/imgui/views/Selectables/ExplorerResourceViews/TextureExplorerResourceUIView.h"
 
 #include <imgui/imgui_helpers.h>
 
@@ -59,7 +59,7 @@ namespace renegade
 			void ImageExplorerResourceUIView<T>::SetData(ExplorerResource* a_Resource)
 			{
 				ExplorerResourceWithPreviewUIView::SetData(a_Resource);
-				m_AssetTypeDropdown = StringDropdown<assets::AssetType>(
+				m_AssetTypeDropdown.Initialize(
 					m_Resource.GetAssetType(),
 					{
 						assets::AssetType::Texture,
@@ -75,12 +75,12 @@ namespace renegade
 			}
 
 			template<class T>
-			ImageExplorerResourceUIView<T>::ImageExplorerResourceUIView(ImGuiWindow& a_Window, T* a_Resource) : ExplorerResourceWithPreviewUIView(a_Window), m_Resource(*a_Resource)
+			ImageExplorerResourceUIView<T>::ImageExplorerResourceUIView(ImGuiWindow& a_Window, T* a_Resource) : ExplorerResourceWithPreviewUIView(a_Window), m_Resource(*a_Resource), m_AssetTypeDropdown(a_Window)
 			{
 			}
 
 			template <class T>
-			ImageExplorerResourceUIView<T>::ImageExplorerResourceUIView<T>(const ImageExplorerResourceUIView& a_Other) : ExplorerResourceWithPreviewUIView(a_Other), m_Resource(a_Other.m_Resource)
+			ImageExplorerResourceUIView<T>::ImageExplorerResourceUIView<T>(const ImageExplorerResourceUIView& a_Other) : ExplorerResourceWithPreviewUIView(a_Other), m_Resource(a_Other.m_Resource), m_AssetTypeDropdown(a_Other.m_Window)
 			{ }
 
 			TextureExplorerResourceUIView::TextureExplorerResourceUIView(ImGuiWindow& a_Window, TextureExplorerResource* a_Resource) : ImageExplorerResourceUIView(a_Window, a_Resource)

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "editor/imgui/views/ExplorerResourceViews/ExplorerResourceWithPreviewUIView.h"
-#include "editor/imgui/StringDropdown.h"
+#include "editor/imgui/views/selectables/ExplorerResourceViews/ExplorerResourceWithPreviewUIView.h"
+#include "editor/imgui/views/DataTypes/StringDropdown.h"
 
 namespace renegade
 {

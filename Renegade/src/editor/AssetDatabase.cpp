@@ -32,7 +32,7 @@ namespace renegade
 
 			m_ProjectSettings.Load(m_ProjectPath);
 
-            return false;
+            return true;
         }
 
 		void AssetDatabase::Rescan()
@@ -54,6 +54,11 @@ namespace renegade
 		{
 			return m_AssetsRoot;
 		}
+
+        project::ProjectSettings& AssetDatabase::GetProjectSettings()
+        {
+			return m_ProjectSettings;
+        }
 
 		bool AssetDatabase::Scan()
 		{

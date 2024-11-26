@@ -1,6 +1,7 @@
 #ifdef __EDITOR__
 
 #include "editor/EditorSettings.h"
+#include "core/Engine.h"
 
 // # Rapidjson
 #include <rapidjson/document.h>
@@ -39,12 +40,18 @@ namespace renegade
 	{
 		bool EditorSettings::Load()
 		{
-			std::string path = std::string(file::FileLoader::GetAppDataPath() + SETTINGS_FOLDER + std::string(SETTINGS_PATH));
-
 			core::DataStream data;
-			if (!file::FileLoader::LoadFile(path, data))
+			std::string path = std::string(file::FileLoader::GetAppDataPath() + SETTINGS_FOLDER + std::string(SETTINGS_PATH));
+			
+			std::promise<bool> promise;
+			std::future<bool> future = promise.get_future();
+			core::ENGINE.GetFileLoader().EnqueueTask([&path, &data]() mutable
 			{
-				Save();
+				return file::FileLoader::LoadFile(path, data);
+			}, promise, future); 
+
+			if (!future.get())
+			{
 				return false;
 			}
 
@@ -137,7 +144,14 @@ namespace renegade
 
 			std::string path = std::string(file::FileLoader::GetAppDataPath() + SETTINGS_FOLDER + std::string(SETTINGS_PATH));
 
-			return file::FileLoader::SaveFile(path, core::Data(buffer.GetString(), buffer.GetSize()));
+			std::promise<bool> promise;
+			std::future<bool> future = promise.get_future();
+			core::ENGINE.GetFileLoader().EnqueueTask([&path, &buffer]() mutable
+			{
+				return file::FileLoader::SaveFile(path, core::Data(buffer.GetString(), buffer.GetSize()));
+			}, promise, future);
+
+			return future.get();
 		}
 
 		void EditorSettings::SetSize(const glm::vec2& a_Size)

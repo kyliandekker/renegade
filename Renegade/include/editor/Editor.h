@@ -8,6 +8,7 @@
 #include "editor/EditorSettings.h"
 #include "editor/AssetDatabase.h"
 #include "core/datatypes/Data.h"
+#include "project/ProjectSettings.h"
 
 #define SETTINGS_FOLDER "/renegade/"
 

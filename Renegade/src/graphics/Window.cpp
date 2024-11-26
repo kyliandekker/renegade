@@ -54,7 +54,7 @@ namespace renegade
 			m_Ready = true;
 			m_Thread = std::thread(&Window::StartThread, this, hInst, width, height, name);
 
-			return true;
+			return System::Initialize();
 		}
 
 		bool Window::Destroy()
@@ -67,7 +67,7 @@ namespace renegade
 			m_Thread.join();
 
 			LOG(LOGSEVERITY_SUCCESS, "Destroyed window.");
-			return true;
+			return System::Destroy();
 		}
 
 		bool resizing = false;

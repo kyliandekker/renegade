@@ -7,6 +7,6 @@ namespace renegade
 {
 	namespace core
 	{
-		inline std::mutex m_EntityMutex;
+		inline std::recursive_mutex m_EntityMutex;
 	}
 }

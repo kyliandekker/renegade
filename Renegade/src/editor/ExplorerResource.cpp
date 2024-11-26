@@ -17,6 +17,7 @@
 #include "core/datatypes/DataStream.h"
 #include "logger/Logger.h"
 #include "file/FileLoader.h"
+#include "core/Engine.h"
 
 namespace fs = std::filesystem;
 
@@ -56,6 +57,15 @@ namespace renegade
 			rapidjson::StringBuffer buffer;
 			rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
 			a_JsonFile.Accept(writer);
+
+			std::promise<bool> promise;
+			std::future<bool> future = promise.get_future();
+			core::ENGINE.GetFileLoader().EnqueueTask([&a_Path, &buffer]() mutable
+			{
+				return file::FileLoader::SaveFile(getMetadataPath(a_Path), core::Data(buffer.GetString(), buffer.GetSize()));
+			}, promise, future);
+
+			return future.get();
 
 			return file::FileLoader::SaveFile(getMetadataPath(a_Path), core::Data(buffer.GetString(), buffer.GetSize()));
 		}

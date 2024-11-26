@@ -8,7 +8,7 @@
 #include <mutex>
 
 #include "logger/Logger.h"
-#include "editor/imgui/StringTextInput.h"
+#include "editor/imgui/views/DataTypes/StringTextInput.h"
 
 namespace renegade
 {

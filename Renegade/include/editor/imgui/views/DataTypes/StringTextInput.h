@@ -2,9 +2,12 @@
 
 #ifdef __EDITOR__
 
+#include "editor/imgui/views/ImGuiUIView.h"
+
 #include <string>
+#include <imgui/imgui.h>
+
 #include "core/datatypes/Data.h"
-#include "imgui/imgui.h"
 
 namespace renegade
 {
@@ -12,15 +15,17 @@ namespace renegade
 	{
 		namespace imgui
 		{
-			class StringTextInput
+			class StringTextInput : public ImGuiUIView
 			{
 			public:
-				StringTextInput(const std::string& a_InitialValue = "", size_t a_BufferSize = 256);
+				StringTextInput(ImGuiWindow& a_Window);
+                void Initialize(const std::string& a_InitialValue, size_t a_BufferSize = 256);
 
 				void SetString(const std::string& a_String);
 
 				std::string GetString();
 
+				void Render() override { }
 				bool Render(const char* a_Label, ImGuiInputTextFlags flags = 0);
 			protected:
 				core::Data m_Data;
@@ -29,8 +34,7 @@ namespace renegade
 			class SearchBarInput : public StringTextInput
 			{
 			public:
-				SearchBarInput(const std::string& a_InitialValue = "", size_t a_BufferSize = 256);
-
+				SearchBarInput(ImGuiWindow& a_Window);
 				bool Render(const char* a_Label, const ImVec2& a_Size, float a_Padding);
 
 				int m_PreviousResult = 0;

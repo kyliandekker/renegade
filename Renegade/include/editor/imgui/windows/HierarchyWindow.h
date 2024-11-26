@@ -6,8 +6,8 @@
 
 #include <vector>
 
-#include "editor/imgui/StringTextInput.h"
-#include "editor/imgui/views/EntityUIView.h"
+#include "editor/imgui/views/DataTypes/StringTextInput.h"
+#include "editor/imgui/views/Selectables/EntityUIView.h"
 
 namespace renegade
 {

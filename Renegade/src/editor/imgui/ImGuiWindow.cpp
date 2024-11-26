@@ -27,7 +27,7 @@ namespace renegade
 	{
 		namespace imgui
 		{
-			ImGuiWindow::ImGuiWindow() : mainWindow(*this), consoleWindow(*this), sceneWindow(*this), inspectorWindow(*this), hierarchyWindow(*this), explorerWindow(*this), loadProjectWindow(*this)
+			ImGuiWindow::ImGuiWindow() : mainWindow(*this), consoleWindow(*this), sceneWindow(*this), inspectorWindow(*this), hierarchyWindow(*this), explorerWindow(*this), loadProjectWindow(*this), projectSettingsWindow(*this)
 			{ }
 
 			ImGuiWindow::~ImGuiWindow()
@@ -458,6 +458,7 @@ namespace renegade
 					inspectorWindow.Update();
 					consoleWindow.Update();
 					explorerWindow.Update();
+					projectSettingsWindow.Update();
 				}
 
 				UpdateMouseCursor();

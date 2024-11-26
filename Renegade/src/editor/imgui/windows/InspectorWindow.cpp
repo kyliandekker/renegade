@@ -28,7 +28,7 @@ namespace renegade
 			{
 				if (core::ENGINE.GetEditor().GetSelectable())
 				{
-					std::lock_guard<std::mutex> lock(core::m_EntityMutex);
+					std::lock_guard<std::recursive_mutex> lock(core::m_EntityMutex);
 					core::ENGINE.GetEditor().GetSelectable()->RenderSelectable();
 				}
 				//if (ImGui::Button("Info"))

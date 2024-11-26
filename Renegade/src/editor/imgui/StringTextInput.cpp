@@ -1,6 +1,6 @@
 #ifdef __EDITOR__
 
-#include "editor/imgui/StringTextInput.h"
+#include "editor/imgui/views/DataTypes/StringTextInput.h"
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_helpers.h>
@@ -13,13 +13,22 @@ namespace renegade
 	{
 		namespace imgui
 		{
-			StringTextInput::StringTextInput(const std::string& a_InitialValue, size_t a_BufferSize) : m_Data(a_BufferSize)
+			StringTextInput::StringTextInput(ImGuiWindow& a_Window) : ImGuiUIView(a_Window)
+			{ }
+
+			void StringTextInput::Initialize(const std::string& a_InitialValue, size_t a_BufferSize)
 			{
+				m_Data = core::Data(a_BufferSize);
 				SetString(a_InitialValue);
 			}
 
 			void StringTextInput::SetString(const std::string& a_String)
 			{
+				if (a_String.size() == 0)
+				{
+					return;
+				}
+
 				m_Data.Clear();
 				strncpy_s(reinterpret_cast<char*>(m_Data.data()), m_Data.size(), a_String.c_str(), a_String.size());
 			}
@@ -41,7 +50,7 @@ namespace renegade
 				return success;
 			}
 
-			SearchBarInput::SearchBarInput(const std::string& a_InitialValue, size_t a_BufferSize) : StringTextInput(a_InitialValue, a_BufferSize)
+			SearchBarInput::SearchBarInput(ImGuiWindow& a_Window) : StringTextInput(a_Window)
 			{ }
 
 			bool SearchBarInput::Render(const char* a_Label, const ImVec2& a_Size, float a_Padding)

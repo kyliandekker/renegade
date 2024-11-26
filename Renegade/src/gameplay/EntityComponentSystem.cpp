@@ -33,7 +33,7 @@ namespace renegade
 
 		void EntityComponentSystem::Update(const float& a_DeltaTime)
 		{
-			std::lock_guard<std::mutex> lock(core::m_EntityMutex);
+			std::lock_guard<std::recursive_mutex> lock(core::m_EntityMutex);
 
 			bool changed = (!m_EntitiesToDelete.empty()) || m_Clear || (!m_EntitiesToAdd.empty());
 

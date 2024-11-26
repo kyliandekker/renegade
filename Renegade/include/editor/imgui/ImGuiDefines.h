@@ -89,6 +89,10 @@ namespace renegade
 #define ICON_FA_COMPONENT "\xEF\x84\xAE"
 #define ICON_FA_TRANSFORM_COMPONENT "\xEF\x84\xAE"
 
+/* PROJECT SETTINGS WINDOW */
+#define ICON_FA_PROJECT_SETTINGS "\xEF\x80\x93"
+#define ICON_FA_PROJECT_SETTINGS_LOCALIZATION "\xEF\xA1\xA6"
+
 #define IMGUI_INDENT 16.0f
 
 			std::string IMGUI_FORMAT_ID(const std::string& a_Text, const char* a_ID, const std::string& a_IDName);
@@ -108,6 +112,7 @@ namespace renegade
 #define DRAG_ITEM_ID "###DRAG_ITEM_"
 #define SELECTABLE_ID "###SELECTABLE_"
 #define FOLDOUT_ID "###FOLDOUT_"
+#define COLOR_WHEEL_ID "###COLOR_WHEEL_"
 		}
 	}
 }

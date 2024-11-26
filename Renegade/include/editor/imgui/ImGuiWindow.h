@@ -16,6 +16,7 @@
 #include "editor/imgui/windows/ConsoleWindow.h"
 #include "editor/imgui/windows/ExplorerWindow.h"
 #include "editor/imgui/windows/LoadProjectWindow.h"
+#include "editor/imgui/windows/ProjectSettingsWindow.h"
 
 struct ID3D12GraphicsCommandList;
 
@@ -92,6 +93,7 @@ namespace renegade
 				HierarchyWindow hierarchyWindow;
 				ExplorerWindow explorerWindow;
 				LoadProjectWindow loadProjectWindow;
+				ProjectSettingsWindow projectSettingsWindow;
 			};
 		}
 	}

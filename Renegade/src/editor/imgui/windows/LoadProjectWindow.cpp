@@ -16,23 +16,6 @@ namespace renegade
 	{
 		namespace imgui
 		{
-			// TODO: This is awful.
-			std::thread fileThread;
-
-			void openFolder()
-			{
-				HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-				if (SUCCEEDED(hr))
-				{
-					std::string path;
-					if (file::FileLoader::PickContainer(path))
-					{
-						core::ENGINE.GetEditor().GetAssetDatabase().LoadProject(path);
-					}
-					CoUninitialize();
-				}
-			}
-
 			LoadProjectWindow::LoadProjectWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDocking, "", "Load Project", true)
 			{
 			}
@@ -47,16 +30,40 @@ namespace renegade
 				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - (openProjectButtonWidth + createNewProjectButtonWidth + ImGui::GetStyle().ItemSpacing.x + ImGui::GetStyle().ItemSpacing.x + (m_Window.GetFramePadding().x * 2)));
 				if (ImGui::Button("Open Project", ImVec2(openProjectButtonWidth, 0)))
 				{
-					// TODO: This is awful.
-					fileThread = std::thread(&openFolder);
-					fileThread.detach();
+					std::string path;
+					core::ENGINE.GetFileLoader().EnqueueTask([&path]() mutable
+					{
+						HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+						if (SUCCEEDED(hr))
+						{
+							if (file::FileLoader::PickContainer(path))
+							{
+								core::ENGINE.GetEditor().GetAssetDatabase().LoadProject(path);
+								return true;
+							}
+						}
+						CoUninitialize();
+						return false;
+					});
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("Create New Project", ImVec2(createNewProjectButtonWidth, 0)))
 				{
-					// TODO: This is awful.
-					fileThread = std::thread(&openFolder);
-					fileThread.detach();
+					std::string path;
+					core::ENGINE.GetFileLoader().EnqueueTask([&path]() mutable
+					{
+						HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+						if (SUCCEEDED(hr))
+						{
+							if (file::FileLoader::PickContainer(path))
+							{
+								core::ENGINE.GetEditor().GetAssetDatabase().LoadProject(path);
+								return true;
+							}
+						}
+						CoUninitialize();
+						return false;
+					});
 				}
 
 				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x);

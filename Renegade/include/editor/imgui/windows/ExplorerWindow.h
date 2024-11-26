@@ -6,8 +6,8 @@
 #include <string>
 
 #include "editor/imgui/windows/BaseWindow.h"
-#include "editor/imgui/StringTextInput.h"
-#include "editor/imgui/views/ExplorerResourceUIView.h"
+#include "editor/imgui/views/DataTypes/StringTextInput.h"
+#include "editor/imgui/views/Selectables/ExplorerResourceUIView.h"
 
 namespace renegade
 {

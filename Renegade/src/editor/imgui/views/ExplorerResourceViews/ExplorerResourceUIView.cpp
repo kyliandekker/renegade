@@ -1,6 +1,6 @@
 #ifdef __EDITOR__
 
-#include "editor/imgui/views/ExplorerResourceUIView.h"
+#include "editor/imgui/views/Selectables/ExplorerResourceUIView.h"
 
 #include <imgui/imgui_helpers.h>
 
@@ -13,10 +13,10 @@
 #include "core/Engine.h"
 #include "file/FileLoader.h"
 
-#include "editor/imgui/views/ExplorerResourceViews/DefaultExplorerResourceUIView.h"
-#include "editor/imgui/views/ExplorerResourceViews/TextureExplorerResourceUIView.h"
-#include "editor/imgui/views/ExplorerResourceViews/AudioExplorerResourceUIView.h"
-#include "editor/imgui/views/ExplorerResourceViews/SceneExplorerResourceUIView.h"
+#include "editor/imgui/views/Selectables/ExplorerResourceViews/DefaultExplorerResourceUIView.h"
+#include "editor/imgui/views/Selectables/ExplorerResourceViews/TextureExplorerResourceUIView.h"
+#include "editor/imgui/views/Selectables/ExplorerResourceViews/AudioExplorerResourceUIView.h"
+#include "editor/imgui/views/Selectables/ExplorerResourceViews/SceneExplorerResourceUIView.h"
 
 namespace renegade
 {
@@ -117,7 +117,7 @@ namespace renegade
 				m_Resources.clear();
 			}
 
-			ExplorerResourceUIView::ExplorerResourceUIView(ImGuiWindow& a_Window) : EditorSelectable(a_Window)
+			ExplorerResourceUIView::ExplorerResourceUIView(ImGuiWindow& a_Window) : EditorSelectable(a_Window), m_NameInput(a_Window)
 			{ }
 
 			const std::string& ExplorerResourceUIView::GetName() const
@@ -216,7 +216,10 @@ namespace renegade
 
 				if (ImGui::TransparentButton(IMGUI_FORMAT_ID(std::string(ICON_FA_ARROW_TURN_UP), BUTTON_ID, "SHOW_IN_EXPLORER_INSPECTOR").c_str(), ImVec2(core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y, core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y)))
 				{
-					file::FileLoader::OpenInExplorer(a_Resource->GetParent()->GetPath().c_str());
+					core::ENGINE.GetFileLoader().EnqueueTask([&a_Resource]() mutable
+					{
+						return file::FileLoader::OpenInExplorer(a_Resource->GetParent()->GetPath().c_str());
+					});
 				}
 				ImGui::SameLine();
 				if (ImGui::TransparentButton(IMGUI_FORMAT_ID(std::string(ICON_FA_DELETE), BUTTON_ID, "DELETE_INSPECTOR").c_str(), ImVec2(core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y, core::ENGINE.GetEditor().GetImGuiWindow().HeaderSize().y)))

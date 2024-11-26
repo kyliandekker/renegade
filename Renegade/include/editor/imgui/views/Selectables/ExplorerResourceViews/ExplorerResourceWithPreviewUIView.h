@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "editor/imgui/views/ExplorerResourceUIView.h"
+#include "editor/imgui/views/Selectables/ExplorerResourceUIView.h"
 
 namespace renegade
 {

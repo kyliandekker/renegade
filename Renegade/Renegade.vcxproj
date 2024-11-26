@@ -47,22 +47,24 @@
     <ClInclude Include="include\editor\Editor.h" />
     <ClInclude Include="include\editor\explorer_resources\AudioExplorerResource.h" />
     <ClInclude Include="include\editor\explorer_resources\SceneExplorerResource.h" />
-    <ClInclude Include="include\editor\imgui\EditorSelectable.h" />
+    <ClInclude Include="include\editor\imgui\views\DataTypes\ColorView.h" />
+    <ClInclude Include="include\editor\imgui\views\DataTypes\VectorView.h" />
+    <ClInclude Include="include\editor\imgui\views\Selectables\EditorSelectable.h" />
     <ClInclude Include="include\editor\EditorSettings.h" />
-    <ClInclude Include="include\editor\imgui\views\EntityUIView.h" />
-    <ClInclude Include="include\editor\imgui\views\ExplorerResourceUIView.h" />
+    <ClInclude Include="include\editor\imgui\views\Selectables\EntityUIView.h" />
+    <ClInclude Include="include\editor\imgui\views\Selectables\ExplorerResourceUIView.h" />
     <ClInclude Include="include\editor\imgui\font_file.h" />
     <ClInclude Include="include\editor\imgui\ImGuiDefines.h" />
-    <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\AudioExplorerResourceUIView.h" />
-    <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\DefaultExplorerResourceUIView.h" />
-    <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\ExplorerResourceWithPreviewUIView.h" />
-    <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\SceneExplorerResourceUIView.h" />
-    <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\TextureExplorerResourceUIView.h" />
+    <ClInclude Include="include\editor\imgui\views\Selectables\ExplorerResourceViews\AudioExplorerResourceUIView.h" />
+    <ClInclude Include="include\editor\imgui\views\Selectables\ExplorerResourceViews\DefaultExplorerResourceUIView.h" />
+    <ClInclude Include="include\editor\imgui\views\Selectables\ExplorerResourceViews\ExplorerResourceWithPreviewUIView.h" />
+    <ClInclude Include="include\editor\imgui\views\Selectables\ExplorerResourceViews\SceneExplorerResourceUIView.h" />
+    <ClInclude Include="include\editor\imgui\views\Selectables\ExplorerResourceViews\TextureExplorerResourceUIView.h" />
     <ClInclude Include="include\editor\imgui\views\ImGuiUIView.h" />
     <ClInclude Include="include\editor\imgui\ImGuiWindow.h" />
-    <ClInclude Include="include\editor\imgui\StringDropdown.h" />
-    <ClInclude Include="include\editor\imgui\StringTextInput.h" />
-    <ClInclude Include="include\editor\imgui\views\TransformComponentUIView.h" />
+    <ClInclude Include="include\editor\imgui\views\DataTypes\StringDropdown.h" />
+    <ClInclude Include="include\editor\imgui\views\DataTypes\StringTextInput.h" />
+    <ClInclude Include="include\editor\imgui\views\Components\TransformComponentUIView.h" />
     <ClInclude Include="include\editor\imgui\windows\BaseWindow.h" />
     <ClInclude Include="include\editor\imgui\windows\ConsoleWindow.h" />
     <ClInclude Include="include\editor\imgui\windows\ExplorerWindow.h" />
@@ -70,6 +72,7 @@
     <ClInclude Include="include\editor\imgui\windows\InspectorWindow.h" />
     <ClInclude Include="include\editor\imgui\windows\LoadProjectWindow.h" />
     <ClInclude Include="include\editor\imgui\windows\MainWindow.h" />
+    <ClInclude Include="include\editor\imgui\windows\ProjectSettingsWindow.h" />
     <ClInclude Include="include\editor\imgui\windows\SceneWindow.h" />
     <ClInclude Include="include\editor\ExplorerResource.h" />
     <ClInclude Include="include\gameplay\ECSBaseSystem.h" />
@@ -90,7 +93,7 @@
     <ClInclude Include="include\file\FileLoader.h" />
     <ClInclude Include="include\utils\string_extensions.h" />
     <ClInclude Include="include\utils\utils.h" />
-    <ClInclude Include="include\editor\imgui\views\ComponentUIView.h" />
+    <ClInclude Include="include\editor\imgui\views\Components\ComponentUIView.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="external\imgui\backends\imgui_impl_dx12.cpp" />
@@ -105,15 +108,17 @@
     <ClCompile Include="external\imgui\implot.cpp" />
     <ClCompile Include="external\imgui\implot_items.cpp" />
     <ClCompile Include="src\editor\explorer_resources\AudioExplorerResource.cpp" />
+    <ClCompile Include="src\editor\imgui\views\DataTypes\VectorView.cpp" />
     <ClCompile Include="src\editor\imgui\windows\LoadProjectWindow.cpp" />
+    <ClCompile Include="src\editor\imgui\windows\ProjectSettingsWindow.cpp" />
     <ClCompile Include="src\gameplay\ECSSystem.cpp" />
     <ClCompile Include="src\gameplay\systems\Component.cpp" />
     <ClCompile Include="src\gameplay\systems\EntityDetailSystem.cpp" />
     <ClCompile Include="src\gameplay\systems\TransformSystem.cpp" />
     <ClCompile Include="src\editor\explorer_resources\SceneExplorerResource.cpp" />
-    <ClCompile Include="src\editor\imgui\views\ComponentUIView.cpp" />
-    <ClCompile Include="src\editor\imgui\views\EntityUIView.cpp" />
-    <ClCompile Include="src\editor\imgui\views\ExplorerResourceUIView.cpp" />
+    <ClCompile Include="src\editor\imgui\views\Components\ComponentUIView.cpp" />
+    <ClCompile Include="src\editor\imgui\views\Selectables\EntityUIView.cpp" />
+    <ClCompile Include="src\editor\imgui\views\ExplorerResourceViews\ExplorerResourceUIView.cpp" />
     <ClCompile Include="src\core\datatypes\Data.cpp" />
     <ClCompile Include="src\core\datatypes\DataStream.cpp" />
     <ClCompile Include="src\core\datatypes\ReserveDataStream.cpp" />
@@ -133,7 +138,7 @@
     <ClCompile Include="src\editor\imgui\ImGuiWindow.cpp" />
     <ClCompile Include="src\editor\imgui\StringDropdown.cpp" />
     <ClCompile Include="src\editor\imgui\StringTextInput.cpp" />
-    <ClCompile Include="src\editor\imgui\views\TransformComponentUIView.cpp" />
+    <ClCompile Include="src\editor\imgui\views\Components\TransformComponentUIView.cpp" />
     <ClCompile Include="src\editor\imgui\windows\BaseWindow.cpp" />
     <ClCompile Include="src\editor\imgui\windows\ConsoleWindow.cpp" />
     <ClCompile Include="src\editor\imgui\windows\ExplorerWindow.cpp" />
@@ -360,7 +365,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>DX12_ENABLE_DEBUG_LAYER;RAPIDJSON_NOMEMBERITERATORCLASS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DX12_ENABLE_DEBUG_LAYER;RAPIDJSON_NOMEMBERITERATORCLASS;_DEBUG;_CONSOLE;__EDITOR__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)external;$(SolutionDir)packages/Microsoft.Direct3D.D3D12.1.614.1/build/native/include</AdditionalIncludeDirectories>

@@ -1,17 +1,17 @@
 #ifdef __EDITOR__
 
-#include "editor/imgui/views/EntityUIView.h"
+#include "editor/imgui/views/Selectables/EntityUIView.h"
 
 #include <imgui/imgui_helpers.h>
 
 #include "editor/explorer_resources/SceneExplorerResource.h"
-#include "editor/imgui/EditorSelectable.h"
+#include "editor/imgui/views/Selectables/EditorSelectable.h"
 #include "core/Engine.h"
 #include "editor/imgui/ImGuiDefines.h"
 #include "utils/string_extensions.h"
 #include "editor/imgui/ImGuiWindow.h"
 #include "gameplay/systems/TransformSystem.h"
-#include "editor/imgui/views/TransformComponentUIView.h"
+#include "editor/imgui/views/Components/TransformComponentUIView.h"
 #include "gameplay/systems/EntityDetailComponent.h"
 #include "gameplay/systems/EntityDetailSystem.h"
 
@@ -21,8 +21,10 @@ namespace renegade
 	{
 		namespace imgui
 		{
-			EntityUIView::EntityUIView(ImGuiWindow& a_Window, gameplay::EntityID& a_EntityID) : EditorSelectable(a_Window), m_EntityID(a_EntityID)
-			{ }
+			EntityUIView::EntityUIView(ImGuiWindow& a_Window, gameplay::EntityID& a_EntityID) : EditorSelectable(a_Window), m_EntityID(a_EntityID), m_NameInput(a_Window)
+			{
+				m_NameInput.Initialize("");
+			}
 
 			std::string EntityUIView::GetIcon() const
 			{

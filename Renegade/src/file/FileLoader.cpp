@@ -13,6 +13,76 @@ namespace renegade
 {
 	namespace file
 	{
+		Task::Task(std::function<bool()> a_Function) : m_Function(a_Function)
+		{ }
+
+		PromiseTask::PromiseTask(std::function<bool()> a_Function, std::promise<bool>& a_Promise, std::future<bool>& a_Future) : Task(a_Function), m_Promise(a_Promise), m_Future(a_Future)
+		{ }
+
+		void TaskQueue::EnqueueTask(std::function<bool()> a_Function, std::promise<bool>& a_Promise, std::future<bool>& a_Future)
+		{
+			std::lock_guard<std::mutex> lock(m_Mutex);
+			m_PromiseTasks.push(PromiseTask(std::move(a_Function), a_Promise, a_Future));
+		}
+
+		void TaskQueue::EnqueueTask(std::function<bool()> a_Function)
+		{
+			std::lock_guard<std::mutex> lock(m_Mutex);
+			m_Tasks.push(Task(std::move(a_Function)));
+		}
+
+		void TaskQueue::Run()
+		{
+			if (!m_PromiseTasks.empty())
+			{
+				PromiseTask task = std::move(m_PromiseTasks.front());
+				m_PromiseTasks.pop();
+				bool success = task.m_Function();
+				task.m_Promise.set_value(success);
+			}
+			else if (!m_Tasks.empty())
+			{
+				Task task = std::move(m_Tasks.front());
+				m_Tasks.pop();
+				bool success = task.m_Function();
+			}
+		}
+
+		bool FileLoader::Initialize(int nArgs, ...)
+		{
+			m_FileThread = std::thread(&FileLoader::StartThread, this);
+			bool success = System::Initialize();
+
+			LOG(LOGSEVERITY_SUCCESS, "File loader has been created.");
+			return success;
+		}
+
+		bool FileLoader::Destroy()
+		{
+			m_FileThread.join();
+
+			LOG(LOGSEVERITY_SUCCESS, "Destroyed file loader.");
+			return System::Destroy();
+		}
+
+		void FileLoader::EnqueueTask(std::function<bool()> a_Function, std::promise<bool>& a_Promise, std::future<bool>& a_Future)
+		{
+			m_Tasks.EnqueueTask(a_Function, a_Promise, a_Future);
+		}
+
+		void FileLoader::EnqueueTask(std::function<bool()> a_Function)
+		{
+			m_Tasks.EnqueueTask(a_Function);
+		}
+
+		void FileLoader::StartThread()
+		{
+			while (m_Ready)
+			{
+				m_Tasks.Run();
+			}
+		}
+
 		bool FileLoader::LoadFile(const std::string& a_Path, core::DataStream& a_Data)
 		{
 			FILE* file = nullptr;
@@ -64,10 +134,11 @@ namespace renegade
 		{
 			return fs::create_directories(a_Path);
 		}
+
 		bool FileLoader::OpenInExplorer(const std::string& a_Path)
 		{
 			ShellExecuteA(NULL, "open", a_Path.c_str(), NULL, NULL, SW_SHOWDEFAULT);
-			return false;
+			return true;
 		}
 
         std::string FileLoader::GetAppDataPath()

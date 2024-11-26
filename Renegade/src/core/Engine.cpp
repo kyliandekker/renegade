@@ -17,31 +17,21 @@ namespace renegade
 {
 	namespace core
 	{
-#ifdef _DEBUG
-		float FPSCounter::GetFPS()
-		{
-			float fps = m_Frames / m_TimeAccumulation;
-			constexpr float STEPINTERVAL = 4.0f; // In seconds
-			constexpr float INTERVAL = 1.0f / STEPINTERVAL;
-			if ((m_TimeAccumulation * INTERVAL) > 1.0f)
-			{
-				m_Frames = 0, m_TimeAccumulation = 0;
-			}
-			return fps;
-		}
-
-		void FPSCounter::AddFrame()
-		{
-			m_TimeAccumulation += core::ENGINE.GetDeltaTime();
-			m_Frames++;
-		}
-#endif // _DEBUG
 		bool Engine::Initialize(int a_NumArgs, ...)
 		{
 			// Initialize logger.
+			// TODO: Logger is still a global var while I'd prefer it to be a local var of Engine.
 			logger::LOGGER.Initialize();
 			// Wait until the system is ready.
 			while (!logger::LOGGER.Ready())
+			{
+				// Wait...
+				std::this_thread::yield();
+			}
+
+			m_FileLoader.Initialize();
+			// Wait until the system is ready.
+			while (!m_FileLoader.Ready())
 			{
 				// Wait...
 				std::this_thread::yield();
@@ -88,11 +78,8 @@ namespace renegade
 			// TODO: Start the audio thread.
 			// TODO: Initialize other systems.
 			
-			UpdateDeltaTime();
-			while (m_Window.Ready())
+			while (true /* m_Window.Ready() */)
 			{
-				UpdateDeltaTime();
-
 				m_ECS.Update(m_DeltaTime);
 			}
 
@@ -128,32 +115,16 @@ namespace renegade
 			return m_ECS;
 		}
 
+		file::FileLoader& Engine::GetFileLoader()
+		{
+			return m_FileLoader;
+		}
+
 #ifdef __EDITOR__
 		editor::Editor& Engine::GetEditor()
 		{
 			return m_Editor;
 		}
 #endif // __EDITOR__
-#ifdef _DEBUG
-		float Engine::GetFPS()
-		{
-			return m_FpsCounter.GetFPS();
-		}
-
-		float Engine::GetDeltaTime() const
-		{
-			return m_DeltaTime;
-		}
-
-		void Engine::UpdateDeltaTime()
-		{
-			std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-			SecondsDuration elapsed = std::chrono::duration_cast<SecondsDuration>(now - m_LastFrame);
-
-			m_LastFrame = now;
-			m_DeltaTime = elapsed.count();
-			m_FpsCounter.AddFrame();
-		}
-#endif 
 	}
 }

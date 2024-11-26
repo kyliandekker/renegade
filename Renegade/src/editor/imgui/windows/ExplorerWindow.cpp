@@ -17,8 +17,10 @@ namespace renegade
 	{
 		namespace imgui
 		{
-			ExplorerWindow::ExplorerWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_EXPLORER) + " Explorer", "Explorer")
-			{ }
+			ExplorerWindow::ExplorerWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_EXPLORER) + " Explorer", "Explorer"), m_SearchBar(a_Window)
+			{
+				m_SearchBar.Initialize("");
+			}
 
 			bool ExplorerWindow::Initialize()
 			{

@@ -1,6 +1,6 @@
 #ifdef __EDITOR__
 
-#include "editor/imgui/views/ExplorerResourceViews/SceneExplorerResourceUIView.h"
+#include "editor/imgui/views/Selectables/ExplorerResourceViews/SceneExplorerResourceUIView.h"
 
 #include <imgui/imgui_helpers.h>
 

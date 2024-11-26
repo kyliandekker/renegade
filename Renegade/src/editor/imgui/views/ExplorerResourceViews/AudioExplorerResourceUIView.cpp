@@ -1,6 +1,6 @@
 #ifdef __EDITOR__
 
-#include "editor/imgui/views/ExplorerResourceViews/AudioExplorerResourceUIView.h"
+#include "editor/imgui/views/Selectables/ExplorerResourceViews/AudioExplorerResourceUIView.h"
 
 #include <imgui/imgui_helpers.h>
 #include <imgui/implot.h>
@@ -100,7 +100,7 @@ namespace renegade
 			void AudioExplorerResourceUIView<T>::SetData(ExplorerResource* a_Resource)
 			{
 				ExplorerResourceWithPreviewUIView::SetData(a_Resource);
-				m_AssetTypeDropdown = StringDropdown<assets::AssetType>(
+				m_AssetTypeDropdown.Initialize(
 					m_Resource.GetAssetType(),
 					{
 						assets::AssetType::Sound,
@@ -116,11 +116,11 @@ namespace renegade
 			}
 
 			template<class T>
-			AudioExplorerResourceUIView<T>::AudioExplorerResourceUIView(ImGuiWindow& a_Window, T* a_Resource) : ExplorerResourceWithPreviewUIView(a_Window), m_Resource(*a_Resource)
+			AudioExplorerResourceUIView<T>::AudioExplorerResourceUIView(ImGuiWindow& a_Window, T* a_Resource) : ExplorerResourceWithPreviewUIView(a_Window), m_Resource(*a_Resource), m_AssetTypeDropdown(a_Window)
 			{ }
 
 			template <class T>
-			AudioExplorerResourceUIView<T>::AudioExplorerResourceUIView<T>(const AudioExplorerResourceUIView& a_Other) : ExplorerResourceWithPreviewUIView(a_Other), m_Resource(a_Other.m_Resource)
+			AudioExplorerResourceUIView<T>::AudioExplorerResourceUIView<T>(const AudioExplorerResourceUIView& a_Other) : ExplorerResourceWithPreviewUIView(a_Other), m_Resource(a_Other.m_Resource), m_AssetTypeDropdown(a_Other.m_Window)
 			{ }
 
 			SoundExplorerResourceUIView::SoundExplorerResourceUIView(ImGuiWindow& a_Window, SoundExplorerResource* a_Resource) : AudioExplorerResourceUIView(a_Window, a_Resource)

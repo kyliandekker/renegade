@@ -1,6 +1,6 @@
 #ifdef __EDITOR__
 
-#include "editor/imgui/views/ComponentUIView.h"
+#include "editor/imgui/views/Components/ComponentUIView.h"
 
 #include <imgui/imgui_helpers.h>
 #include <rapidjson/document.h>

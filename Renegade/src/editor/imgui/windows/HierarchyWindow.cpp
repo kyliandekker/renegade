@@ -21,8 +21,10 @@ namespace renegade
 	{
 		namespace imgui
 		{
-			HierarchyWindow::HierarchyWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_HIERARCHY) + " Hierarchy", "Hierarchy")
-			{ }
+			HierarchyWindow::HierarchyWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_HIERARCHY) + " Hierarchy", "Hierarchy"), m_SearchBar(a_Window)
+			{
+				m_SearchBar.Initialize("");
+			}
 
             bool HierarchyWindow::Initialize()
             {
@@ -40,7 +42,7 @@ namespace renegade
 
 			void HierarchyWindow::Render()
 			{
-				std::lock_guard<std::mutex> lock(core::m_EntityMutex);
+				std::lock_guard<std::recursive_mutex> lock(core::m_EntityMutex);
 
 				if (ImGui::IsKeyDown(ImGuiMod_Ctrl) && ImGui::IsKeyPressed(ImGuiKey_S) && core::ENGINE.GetEditor().GetCurrentScene() && core::ENGINE.GetEditor().GetCurrentScene()->IsDirty())
 				{

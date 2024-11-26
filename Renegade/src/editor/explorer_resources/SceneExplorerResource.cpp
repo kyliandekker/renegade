@@ -64,7 +64,15 @@ namespace renegade
 			rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
 			document.Accept(writer);
 
-			if (file::FileLoader::SaveFile(m_Path, core::Data(buffer.GetString(), buffer.GetSize())))
+			std::string path = m_Path;
+			std::promise<bool> promise;
+			std::future<bool> future = promise.get_future();
+			core::ENGINE.GetFileLoader().EnqueueTask([&path, &buffer]() mutable
+			{
+				return file::FileLoader::SaveFile(path, core::Data(buffer.GetString(), buffer.GetSize()));
+			}, promise, future);
+
+			if (future.get())
 			{
 				ResetDirty();
 				return true;

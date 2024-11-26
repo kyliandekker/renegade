@@ -15,8 +15,10 @@ namespace renegade
 	{
 		namespace imgui
 		{
-			ConsoleWindow::ConsoleWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_CONSOLE) + " Console", "Console")
+			ConsoleWindow::ConsoleWindow(ImGuiWindow& a_Window) : BaseWindow(a_Window, ImGuiWindowFlags_NoCollapse, std::string(ICON_FA_CONSOLE) + " Console", "Console"), m_SearchBar(a_Window)
 			{
+				m_SearchBar.Initialize("");
+
 				// We want every log message. Not just the ones after ImGui has been initialized.
 				logger::LOGGER.OnMessageLogged += std::bind(&ConsoleWindow::LoggerCallback, this, std::placeholders::_1);
 			}

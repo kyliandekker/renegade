@@ -8,6 +8,7 @@
 
 #include "core/datatypes/DataStream.h"
 #include "file/FileLoader.h"
+#include "core/Engine.h"
 
 #define PROJECT_SETTINGS_PATH "project-settings.json"
 
@@ -32,7 +33,13 @@ namespace renegade
 			rapidjson::Document document;
 			document.Parse(reinterpret_cast<char*>(data.data()), data.size());
 
-			if (document.HasMember(JSON_LOCALIZATION_VAR) && document[JSON_LANGUAGES_VAR].IsObject())
+			if (document.HasParseError())
+			{
+				Save(a_Path);
+				return false;
+			}
+
+			if (document.HasMember(JSON_LOCALIZATION_VAR) && document[JSON_LOCALIZATION_VAR].IsObject())
 			{
 				if (document[JSON_LOCALIZATION_VAR].HasMember(JSON_LANGUAGES_VAR) && document[JSON_LOCALIZATION_VAR][JSON_LANGUAGES_VAR].IsArray())
 				{
@@ -44,11 +51,13 @@ namespace renegade
 						}
 						if (std::find(m_Languages.begin(), m_Languages.end(), element.GetInt()) == m_Languages.end())
 						{
-							m_Languages.push_back(element.GetInt());
+							m_Languages.push_back((Language)element.GetInt());
 						}
 					}
 				}
 			}
+
+			return true;
 		}
 		
 		bool ProjectSettings::Save(const std::string& a_Path) const
@@ -59,9 +68,9 @@ namespace renegade
 
 			document.AddMember(JSON_LOCALIZATION_VAR, rapidjson::Value().SetObject(), allocator);
 			document[JSON_LOCALIZATION_VAR].AddMember(JSON_LANGUAGES_VAR, rapidjson::Value().SetArray(), allocator);
-			for (auto& previousProject : m_Languages)
+			for (auto& language : m_Languages)
 			{
-				document[JSON_LOCALIZATION_VAR][JSON_LOCALIZATION_VAR].PushBack(previousProject, allocator);
+				document[JSON_LOCALIZATION_VAR][JSON_LOCALIZATION_VAR].PushBack((int) language, allocator);
 			}
 
 			rapidjson::StringBuffer buffer;
@@ -70,10 +79,22 @@ namespace renegade
 
 			std::string path = std::string(a_Path + "/" + PROJECT_SETTINGS_PATH);
 
-			return file::FileLoader::SaveFile(path, core::Data(buffer.GetString(), buffer.GetSize()));
+			std::promise<bool> promise;
+			std::future<bool> future = promise.get_future();
+			core::ENGINE.GetFileLoader().EnqueueTask([&path, &buffer]() mutable
+			{
+				return file::FileLoader::SaveFile(path, core::Data(buffer.GetString(), buffer.GetSize()));
+			}, promise, future);
+
+			return future.get();
 		}
 
-		void ProjectSettings::AddLanguage(int a_Language)
+		const std::vector<Language>& ProjectSettings::GetLanguages() const
+		{
+			return m_Languages;
+		}
+
+		void ProjectSettings::AddLanguage(Language a_Language)
 		{
 			if (std::find(m_Languages.begin(), m_Languages.end(), a_Language) == m_Languages.end())
 			{
@@ -81,7 +102,7 @@ namespace renegade
 			}
 		}
 
-		void ProjectSettings::RemoveLanguage(int a_Language)
+		void ProjectSettings::RemoveLanguage(Language a_Language)
 		{
 			m_Languages.erase(std::find(m_Languages.begin(), m_Languages.end(), a_Language));
 		}

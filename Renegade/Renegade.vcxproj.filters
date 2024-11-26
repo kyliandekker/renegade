@@ -90,7 +90,7 @@
     <ClInclude Include="include\editor\Editor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\imgui\StringTextInput.h">
+    <ClInclude Include="include\editor\imgui\views\DataTypes\StringTextInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\editor\AssetDatabase.h">
@@ -105,13 +105,13 @@
     <ClInclude Include="include\graphics\DescHandle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\imgui\EditorSelectable.h">
+    <ClInclude Include="include\editor\imgui\views\Selectables\EditorSelectable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\imgui\views\ExplorerResourceUIView.h">
+    <ClInclude Include="include\editor\imgui\views\Selectables\ExplorerResourceUIView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\imgui\StringDropdown.h">
+    <ClInclude Include="include\editor\imgui\views\DataTypes\StringDropdown.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\gameplay\EntityID.h">
@@ -135,25 +135,25 @@
     <ClInclude Include="include\gameplay\systems\Component.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\imgui\views\EntityUIView.h">
+    <ClInclude Include="include\editor\imgui\views\Selectables\EntityUIView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\imgui\views\ComponentUIView.h">
+    <ClInclude Include="include\editor\imgui\views\Components\ComponentUIView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\imgui\views\TransformComponentUIView.h">
+    <ClInclude Include="include\editor\imgui\views\Components\TransformComponentUIView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\TextureExplorerResourceUIView.h">
+    <ClInclude Include="include\editor\imgui\views\Selectables\ExplorerResourceViews\TextureExplorerResourceUIView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\DefaultExplorerResourceUIView.h">
+    <ClInclude Include="include\editor\imgui\views\Selectables\ExplorerResourceViews\DefaultExplorerResourceUIView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\AudioExplorerResourceUIView.h">
+    <ClInclude Include="include\editor\imgui\views\Selectables\ExplorerResourceViews\AudioExplorerResourceUIView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\ExplorerResourceWithPreviewUIView.h">
+    <ClInclude Include="include\editor\imgui\views\Selectables\ExplorerResourceViews\ExplorerResourceWithPreviewUIView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\gameplay\systems\EntityDetailSystem.h">
@@ -162,7 +162,7 @@
     <ClInclude Include="include\gameplay\systems\EntityDetailComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\editor\imgui\views\ExplorerResourceViews\SceneExplorerResourceUIView.h">
+    <ClInclude Include="include\editor\imgui\views\Selectables\ExplorerResourceViews\SceneExplorerResourceUIView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\editor\explorer_resources\SceneExplorerResource.h">
@@ -178,6 +178,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\editor\imgui\windows\LoadProjectWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\editor\imgui\windows\ProjectSettingsWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\editor\imgui\views\DataTypes\VectorView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\editor\imgui\views\DataTypes\ColorView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -290,7 +299,7 @@
     <ClCompile Include="src\editor\imgui\EditorSelectable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\editor\imgui\views\ExplorerResourceUIView.cpp">
+    <ClCompile Include="src\editor\imgui\views\ExplorerResourceViews\ExplorerResourceUIView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\editor\imgui\StringDropdown.cpp">
@@ -305,13 +314,13 @@
     <ClCompile Include="src\gameplay\systems\TransformComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\editor\imgui\views\EntityUIView.cpp">
+    <ClCompile Include="src\editor\imgui\views\Selectables\EntityUIView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\editor\imgui\views\TransformComponentUIView.cpp">
+    <ClCompile Include="src\editor\imgui\views\Components\TransformComponentUIView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\editor\imgui\views\ComponentUIView.cpp">
+    <ClCompile Include="src\editor\imgui\views\Components\ComponentUIView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\editor\imgui\views\ExplorerResourceViews\TextureExplorerResourceUIView.cpp">
@@ -363,6 +372,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\project\ProjectSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\editor\imgui\windows\ProjectSettingsWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\editor\imgui\views\DataTypes\VectorView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

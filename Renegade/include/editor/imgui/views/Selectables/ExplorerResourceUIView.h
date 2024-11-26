@@ -2,12 +2,12 @@
 
 #ifdef __EDITOR__
 
-#include "editor/imgui/EditorSelectable.h"
+#include "editor/imgui/views/Selectables/EditorSelectable.h"
 
 #include <vector>
 #include <string>
 
-#include "editor/imgui/StringTextInput.h"
+#include "editor/imgui/views/DataTypes/StringTextInput.h"
 #include "assets/AssetType.h"
 
 namespace renegade

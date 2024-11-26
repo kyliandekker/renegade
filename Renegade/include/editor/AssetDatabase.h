@@ -30,6 +30,7 @@ namespace renegade
 			void CheckAssetDatabase();
 
 			ExplorerResource& GetRoot();
+			project::ProjectSettings& GetProjectSettings();
 
 			SimpleEvent<> m_OnScanCompleted;
 			SimpleEvent<> m_OnBeforeScan;

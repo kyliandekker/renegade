@@ -6,6 +6,7 @@
 #include <vcruntime_string.h>
 #include <string>
 
+#include "core/Engine.h"
 #include "file/FileLoader.h"
 
 namespace renegade
@@ -88,7 +89,14 @@ namespace renegade
 
         bool Data::Save(const std::string& a_Path) const
         {
-			return file::FileLoader::SaveFile(a_Path, *this);
+			std::promise<bool> promise;
+			std::future<bool> future = promise.get_future();
+			core::ENGINE.GetFileLoader().EnqueueTask([&a_Path, this]() mutable
+			{
+					return file::FileLoader::SaveFile(a_Path, *this);
+			}, promise, future);
+
+			return future.get();
         }
 	}
 }

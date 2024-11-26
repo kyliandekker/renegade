@@ -1,6 +1,6 @@
 #pragma once
 
-#include "editor/imgui/views/ExplorerResourceViews/ExplorerResourceWithPreviewUIView.h"
+#include "editor/imgui/views/Selectables/ExplorerResourceViews/ExplorerResourceWithPreviewUIView.h"
 
 namespace renegade
 {

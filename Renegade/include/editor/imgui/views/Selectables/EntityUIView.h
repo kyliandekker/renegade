@@ -2,13 +2,13 @@
 
 #ifdef __EDITOR__
 
-#include "editor/imgui/EditorSelectable.h"
+#include "editor/imgui/views/Selectables/EditorSelectable.h"
 
 #include <vector>
 
 #include "gameplay/EntityID.h"
-#include "editor/imgui/StringTextInput.h"
-#include "editor/imgui/StringDropdown.h"
+#include "editor/imgui/views/DataTypes/StringTextInput.h"
+#include "editor/imgui/views/DataTypes/StringDropdown.h"
 
 namespace renegade
 {

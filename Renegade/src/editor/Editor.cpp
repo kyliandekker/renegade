@@ -3,7 +3,7 @@
 #include "editor/Editor.h"
 
 #include "core/Engine.h"
-#include "editor/imgui/EditorSelectable.h"
+#include "editor/imgui/views/Selectables/EditorSelectable.h"
 #include "utils/string_extensions.h"
 #include "editor/explorer_resources/SceneExplorerResource.h"
 
